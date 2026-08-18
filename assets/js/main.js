@@ -5,9 +5,11 @@
   const fineHover = window.matchMedia("(hover: hover) and (pointer: fine)");
 
   // Hero entrance stagger — see .js-anim rules in style.css
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    document.documentElement.classList.add("hero-in");
-  }));
+  // rAF is throttled/paused on background tabs, so pair it with a timeout
+  // safety net — classList.add is idempotent, calling it twice is harmless.
+  const showHero = () => document.documentElement.classList.add("hero-in");
+  requestAnimationFrame(() => requestAnimationFrame(showHero));
+  setTimeout(showHero, 500);
 
   // Nav — solid background after scroll > 80px
   const nav = document.getElementById("siteNav");
