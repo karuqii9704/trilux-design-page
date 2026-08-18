@@ -2,6 +2,12 @@
   "use strict";
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const fineHover = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+  // Hero entrance stagger — see .js-anim rules in style.css
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.documentElement.classList.add("hero-in");
+  }));
 
   // Nav — solid background after scroll > 80px
   const nav = document.getElementById("siteNav");
@@ -103,4 +109,65 @@
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: reducedMotion.matches ? "auto" : "smooth" });
   });
+
+  // Magnetic buttons — subtle pointer-follow on fine-pointer devices only
+  if (fineHover.matches && !reducedMotion.matches) {
+    document.querySelectorAll(".btn").forEach((btn) => {
+      btn.addEventListener("pointermove", (e) => {
+        const r = btn.getBoundingClientRect();
+        const x = e.clientX - (r.left + r.width / 2);
+        const y = e.clientY - (r.top + r.height / 2);
+        btn.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
+      });
+      btn.addEventListener("pointerleave", () => { btn.style.transform = ""; });
+    });
+  }
+
+  // "View Project" chip follows the cursor over the featured project cover
+  if (fineHover.matches) {
+    document.querySelectorAll(".work__media").forEach((media) => {
+      const chip = media.querySelector(".cursor-chip");
+      if (!chip) return;
+      media.addEventListener("pointermove", (e) => {
+        const r = media.getBoundingClientRect();
+        chip.style.left = `${e.clientX - r.left}px`;
+        chip.style.top = `${e.clientY - r.top}px`;
+      });
+    });
+  }
+
+  // Count-up for tabular figures (e.g. project budget) — once, on scroll into view
+  const countEls = document.querySelectorAll(".js-count");
+  if (countEls.length) {
+    const formatIDR = (n) => "$ " + n.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const animateCount = (el) => {
+      const target = parseFloat(el.dataset.target);
+      if (reducedMotion.matches || Number.isNaN(target)) return;
+      const start = performance.now();
+      const duration = 900;
+      const tick = (now) => {
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = formatIDR(target * eased);
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    if (!("IntersectionObserver" in window)) {
+      countEls.forEach(animateCount);
+    } else {
+      const countIo = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateCount(entry.target);
+              countIo.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.6 }
+      );
+      countEls.forEach((el) => countIo.observe(el));
+    }
+  }
 })();

@@ -13,6 +13,11 @@
 <link rel="preload" href="assets/fonts/playfair-display-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/img/hero.jpg" as="image">
 <link rel="stylesheet" href="assets/css/style.css">
+<script>
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("js-anim");
+  }
+</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -64,10 +69,10 @@
     <img class="hero__bg" src="assets/img/hero.jpg" alt="Warmly lit living room interior with arched brass floor lamp, grey sofa and floor-to-ceiling windows" fetchpriority="high">
     <div class="hero__scrim" aria-hidden="true"></div>
     <div class="hero__inner">
-      <p class="eyebrow">Portfolio + Interior Design &amp; Architecture</p>
-      <h1>Trilux Design</h1>
-      <p class="hero__sub">Spaces built on precision, finished with artistry.</p>
-      <div class="hero__row">
+      <p class="eyebrow hero-anim">Portfolio + Interior Design &amp; Architecture</p>
+      <h1 class="hero-anim">Trilux Design</h1>
+      <p class="hero__sub hero-anim">Spaces built on precision, finished with artistry.</p>
+      <div class="hero__row hero-anim">
         <span class="hero__scroll">Scroll to explore <span class="hero__scroll-line" aria-hidden="true"></span></span>
         <a class="btn btn-on-ink" href="#selected-work">View Project →</a>
       </div>
@@ -156,7 +161,7 @@
             <span class="work__index">01/04</span>
             <h2 class="work__name">Padang Residence I</h2>
           </div>
-          <p class="work__location">Padang, West Sumatera</p>
+          <p class="work__location">Padang, West Sumatera <span class="work__year">— 2024</span></p>
         </div>
         <div class="pagination" role="group" aria-label="Featured projects">
           <button class="pagination__dot" type="button" aria-current="true" aria-label="Lihat proyek 1"><span>1</span></button>
@@ -173,7 +178,7 @@
         </div>
         <div>
           <dt>Budget</dt>
-          <dd>$ 100.593,84</dd>
+          <dd><span class="js-count" data-target="100593.84">$ 100.593,84</span></dd>
         </div>
         <div>
           <dt>Client Description</dt>
@@ -183,6 +188,7 @@
 
       <div class="work__media reveal">
         <img id="workMainImage" src="assets/img/cover.jpg" alt="Two-storey contemporary house with a hip roof, stone-clad facade and a red hatchback parked in front" loading="lazy" decoding="async">
+        <span class="cursor-chip" aria-hidden="true">View Project →</span>
       </div>
 
       <div class="work__bottom reveal">

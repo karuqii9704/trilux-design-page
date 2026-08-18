@@ -203,8 +203,9 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
   letter-spacing: 0.02em;
   background: transparent;
   cursor: pointer;
-  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
   min-height: 44px;
+  will-change: transform;
 }
 .btn-on-ink { color: var(--text-on-ink); }
 .btn-on-ink:hover { background: var(--text-on-ink); color: var(--ink-800); }
@@ -249,15 +250,26 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
 }
 .nav__list--right { justify-content: flex-end; }
 .nav__link {
+  position: relative;
   color: var(--text-on-ink);
   font-size: var(--body-s);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding-block: var(--sp-1);
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--dur-fast) var(--ease-out);
 }
-.nav__link:hover, .nav__link.is-active { border-bottom-color: var(--brass-500); }
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--brass-500);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.nav__link:hover::after, .nav__link.is-active::after { transform: scaleX(1); transform-origin: left; }
 
 .nav__logo {
   font-family: var(--font-display);
@@ -390,6 +402,19 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
   gap: var(--sp-5);
   margin-top: var(--sp-9);
 }
+
+/* JS-only entrance stagger — html.js-anim gates it so no-JS/reduced-motion visitors
+   always get the fully visible state from the base rules above. */
+.js-anim .hero-anim { opacity: 0; transform: translateY(16px); }
+.js-anim.hero-in .hero-anim {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+}
+.js-anim.hero-in .eyebrow.hero-anim { transition-delay: 80ms; }
+.js-anim.hero-in h1.hero-anim { transition-delay: 180ms; }
+.js-anim.hero-in .hero__sub.hero-anim { transition-delay: 300ms; }
+.js-anim.hero-in .hero__row.hero-anim { transition-delay: 400ms; }
 .hero__scroll {
   display: inline-flex;
   align-items: center;
@@ -519,6 +544,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
 .work__index { font-size: var(--label); color: var(--brass-700); letter-spacing: 0.1em; }
 .work__name { font-size: var(--display-m); }
 .work__location { font-size: var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-on-bone-muted); margin-top: var(--sp-2); }
+.work__year { color: var(--brass-700); font-variant-numeric: tabular-nums; }
 
 .pagination { display: flex; gap: var(--sp-2); }
 .pagination__dot {
@@ -558,8 +584,30 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
 .meta-row dt { font-size: var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-on-bone-muted); margin-bottom: var(--sp-2); }
 .meta-row dd { margin: 0; font-size: var(--body-s); }
 
-.work__media { margin-bottom: var(--sp-6); }
-.work__media img { width: 100%; aspect-ratio: 3/2; object-fit: cover; }
+.work__media { position: relative; margin-bottom: var(--sp-6); overflow: hidden; }
+.work__media img { width: 100%; aspect-ratio: 3/2; object-fit: cover; transition: transform var(--dur-base) var(--ease-out); }
+.work__media:hover img { transform: scale(1.03); }
+.cursor-chip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%) scale(0.85);
+  background: var(--ink-900);
+  color: var(--text-on-ink);
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  z-index: 2;
+}
+.work__media:hover .cursor-chip { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+@media (hover: none) { .cursor-chip { display: none; } }
 
 .work__bottom { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-9); align-items: start; }
 .work__desc { font-size: var(--body-s); color: var(--text-on-bone-muted); max-width: 42ch; }
@@ -630,6 +678,11 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
 .reveal.is-visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
+  .js-anim .hero-anim { opacity: 1; transform: none; transition: none; }
+  .btn { transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }
+  .work__media img { transition: none; }
+  .work__media:hover img { transform: none; }
+  .nav__link::after { transition: none; }
 }
 
 /* ==========================================================================
