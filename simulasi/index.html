@@ -89,8 +89,13 @@ input[type="range"].area-slider::-moz-range-thumb {
 .addon input { accent-color: var(--brass-700); width: 16px; height: 16px; }
 .addon .addon-price { margin-left: auto; color: var(--text-on-bone-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-.sim-layout { display: grid; grid-template-columns: 7fr 5fr; gap: var(--sp-8); align-items: start; }
+.sim-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--sp-8); align-items: start; }
 @media (max-width: 1023px) { .sim-layout { grid-template-columns: 1fr; } }
+/* long Rupiah ranges must wrap, not force the page wide */
+.sum-total .total-value { white-space: normal; overflow-wrap: anywhere; min-width: 0; }
+@media (max-width: 767px) {
+  .seg, input[type="range"].area-slider, .cat-card, .tier-opt { min-width: 0; max-width: 100%; }
+}
 
 .summary-card {
   position: sticky; top: calc(var(--nav-h, 88px) + 16px);
@@ -99,7 +104,7 @@ input[type="range"].area-slider::-moz-range-thumb {
 .summary-card h2 { font-size: var(--title-s); margin-bottom: var(--sp-5); }
 .sum-table { width: 100%; border-collapse: collapse; font-size: var(--body-s); }
 .sum-table td { padding: var(--sp-2) 0; vertical-align: top; }
-.sum-table td:last-child { text-align: right; white-space: nowrap; }
+.sum-table td:last-child { text-align: right; }
 .sum-table tr.dim td:first-child { color: var(--text-on-ink-muted); }
 .sum-table .rule td { border-top: 1px solid var(--rule-on-ink); }
 .share-wrap { display: inline-flex; align-items: center; gap: var(--sp-2); }

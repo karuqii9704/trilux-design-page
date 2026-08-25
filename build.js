@@ -72,7 +72,7 @@ const block = `<!-- CMS:PROJECT:START — rendered by build.js from data/project
 
       <div class="work__bottom reveal">
         <p class="work__desc">${esc(p.description)}</p>
-        <div class="thumb-grid" role="group" aria-label="Project gallery">
+        <div class="thumb-grid" id="thumbGrid" role="group" aria-label="Project gallery">
 ${gallery}
         </div>
       </div>

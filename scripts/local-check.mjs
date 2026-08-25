@@ -11,22 +11,66 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 page.on("pageerror", (e) => results.push("PAGEERROR: " + e.message));
 page.on("console", (m) => { if (m.type() === "error") results.push("CONSOLE-ERR: " + m.text().slice(0, 200)); });
 
-// ---- Home
+// ---- Home: cinema stage
 await page.goto(base + "/index.html", { waitUntil: "networkidle" });
 ok("home title", (await page.title()).includes("Trilux"));
 ok("budget hidden", !(await page.content()).includes("100.593") && !(await page.content()).includes("js-count"));
 
-// scroll pass for lazy images + reveals
-for (let y = 0; y < 6000; y += 700) { await page.evaluate((yy) => window.scrollTo(0, yy), y); await page.waitForTimeout(120); }
+const heroTitle = page.locator(".hero-title");
+ok("cinema stage renders", await heroTitle.isVisible());
+ok("stage height ~4600px", Math.abs(await page.locator(".cinema-scroll").evaluate((el) => el.offsetHeight - (window.innerHeight + 3700))) < 50,
+  `h=${await page.locator(".cinema-scroll").evaluate((el) => el.offsetHeight)}`);
+
+// scrub the scroll rig: mid-frame → bridge panel visible
+await page.evaluate(() => window.scrollTo(0, 1100));
+await page.waitForTimeout(900);
+ok("frame2 bridge panel appears", parseFloat(
+  await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--panel2-opacity"))
+) > 0.3);
+
+// end of rig → slider cards fly in and become interactive
+await page.evaluate(() => window.scrollTo(0, 3800));
+await page.waitForTimeout(1200);
+const enterX = parseFloat(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--sights-enter-x")));
+ok("slider flown in", enterX < 5, `enter-x=${enterX}vw`);
+ok("15 cloned sight cards", await page.locator(".sights-track .sight-card").count() === 15);
+
+// next button advances the track
+await page.evaluate(() => window.scrollTo(0, 4200));
+await page.waitForTimeout(400);
+const before = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--sights-shift"));
+await page.click(".sight-next");
 await page.waitForTimeout(800);
+const after = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--sights-shift"));
+ok("next shifts track", before !== after, `${before.trim()} → ${after.trim()}`);
+
+// note-button scrolls to featured work
+await page.evaluate(() => window.scrollTo(0, 2400));
+await page.waitForTimeout(300);
+const bazaarVisible = parseFloat(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--panel3-opacity")));
+ok("frame3 bazaar panel appears", bazaarVisible > 0.3);
+await page.evaluate(() => window.scrollTo(0, 2600));
+await page.waitForTimeout(600);
+if (bazaarVisible > 0.3) {
+  // pointer-events are gated by .is-ready only for controls; the pill is always clickable when visible
+  await page.evaluate(() => document.querySelector(".note-button").scrollIntoView({ block: "center" }));
+}
+await page.evaluate(() => window.scrollTo(0, 3800));
+await page.waitForTimeout(500);
+await page.evaluate(() => { document.querySelector(".note-button").click(); });
+await page.waitForTimeout(1600);
+const workTop = await page.evaluate(() => document.getElementById("selected-work").getBoundingClientRect().top);
+ok("note-button scrolls to work", workTop >= -80 && workTop < 500, `top=${Math.round(workTop)}`);
+
+// overflow checks after full pass
+for (let y = 0; y < 6200; y += 700) { await page.evaluate((yy) => window.scrollTo(0, yy), y); await page.waitForTimeout(90); }
+await page.waitForTimeout(600);
 await page.screenshot({ path: `${shots}/01-home-full.png`, fullPage: true });
+const overflowD = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+ok("no h-overflow 1440", overflowD <= 0, `delta=${overflowD}`);
 
 // nav to simulasi link present?
 ok("nav simulasi", await page.locator('a[href="simulasi"]').count() > 0);
-
-// overflow check desktop
-const overflowD = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-ok("no h-overflow 1440", overflowD <= 0, `delta=${overflowD}`);
 
 // ---- Simulasi: interact
 await page.goto(base + "/simulasi/", { waitUntil: "networkidle" });
@@ -34,26 +78,21 @@ await page.waitForTimeout(400);
 const t1 = await page.textContent("#totalOut");
 ok("simulasi total renders", /Rp [\d.]+/.test(t1), t1);
 
-// change area slider → total changes
 await page.locator("#areaRange").evaluate((el) => { el.value = 300; el.dispatchEvent(new Event("input")); });
 const t2 = await page.textContent("#totalOut");
 ok("slider updates total", t1 !== t2, `${t1} → ${t2}`);
 
-// pick Luxury on first category → total grows
 await page.locator('.tier-opt[data-cat="0"][data-tier="2"]').click();
 const t3 = await page.textContent("#totalOut");
 ok("tier switch updates total", parseFloat(t3.replace(/\D/g, "")) > parseFloat(t2.replace(/\D/g, "")));
 
-// add-on toggle
 await page.locator('input[data-addon="0"]').check();
 const t4 = await page.textContent("#totalOut");
 ok("addon adds cost", t3 !== t4);
 
-// WA link carries the summary
 const wa = await page.getAttribute("#waBtn", "href");
-ok("wa link has estimate", wa.includes("Total%20estimasi") || decodeURIComponent(wa).includes("Total estimasi"));
+ok("wa link has estimate", wa.includes("Estimasi%20total") || decodeURIComponent(wa).includes("Estimasi total"));
 
-// scope switch
 await page.locator('.seg[data-mult="1.15"]').click();
 const t5 = await page.textContent("#totalOut");
 ok("scope switch works", t5 !== t4);
@@ -66,7 +105,8 @@ ok("no h-overflow sim 1440", overflowS <= 0, `delta=${overflowS}`);
 const mob = await browser.newPage({ viewport: { width: 390, height: 844 } });
 mob.on("pageerror", (e) => results.push("MOB PAGEERROR: " + e.message));
 await mob.goto(base + "/index.html", { waitUntil: "networkidle" });
-for (let y = 0; y < 7000; y += 600) { await mob.evaluate((yy) => window.scrollTo(0, yy), y); await mob.waitForTimeout(80); }
+await mob.screenshot({ path: `${shots}/03-cinema-mobile.png` });
+for (let y = 0; y < 7200; y += 600) { await mob.evaluate((yy) => window.scrollTo(0, yy), y); await mob.waitForTimeout(70); }
 await mob.screenshot({ path: `${shots}/03-home-mobile.png`, fullPage: true });
 const overflowM = await mob.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 ok("no h-overflow home 390", overflowM <= 0, `delta=${overflowM}`);

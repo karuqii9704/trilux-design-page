@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trilux Design — Interior, Exterior & Architecture</title>
-<meta name="description" content="Trilux Design is a Jakarta-based studio for interior, exterior and architectural design. Explore our portfolio and request a quotation.">
+<meta name="description" content="A cinematic scroll through Trilux Design — a Jakarta-based studio for interior, exterior and architectural design. Explore our portfolio and request a quotation.">
 <link rel="canonical" href="https://trilux-design-page.vercel.app/">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo-mark.svg">
 <meta property="og:title" content="Trilux Design — Interior, Exterior & Architecture">
@@ -17,11 +17,7 @@
 <link rel="preload" href="assets/fonts/playfair-display-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/img/hero.jpg" as="image">
 <link rel="stylesheet" href="assets/css/style.css?v=2">
-<script>
-  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    document.documentElement.classList.add("js-anim");
-  }
-</script>
+<link rel="stylesheet" href="assets/css/cinema.css?v=1">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -38,122 +34,106 @@
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
 
-<header class="nav" id="siteNav">
-  <div class="nav__inner">
-    <nav class="nav__list" aria-label="Primary">
-      <a class="nav__link" href="#welcome">Story</a>
-      <a class="nav__link" href="#selected-work">Portfolio</a>
-    </nav>
-    <a class="nav__logo" href="#top" aria-label="Trilux Design — home">
-      <img class="nav__logo-mark" src="assets/img/logo-mark.svg" alt="" width="22" height="22">
-      Trilux Design
-      <span class="nav__logo-sub">Interior · Exterior · Building</span>
-    </a>
-    <nav class="nav__list nav__list--right" aria-label="Secondary">
-      <a class="nav__link" href="#contact">Services</a>
-      <a class="nav__link" href="simulasi">Simulasi</a>
-      <a class="nav__link" href="#contact">Contact</a>
-    </nav>
-    <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navOverlay" aria-label="Open menu">
-      <span class="nav__toggle-bars"><span></span><span></span><span></span></span>
-    </button>
-  </div>
-  <div class="nav__overlay" id="navOverlay">
-    <a href="#welcome">Story</a>
-    <a href="#selected-work">Portfolio</a>
-    <a href="#contact">Services</a>
-    <a href="simulasi">Simulasi</a>
-    <a href="#contact">Contact</a>
-    <a class="btn btn-on-ink" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
-  </div>
-</header>
-
 <main id="main">
 
-  <!-- S1 — Hero -->
-  <section class="hero" id="top">
-    <img class="hero__bg" src="assets/img/hero.jpg" alt="Warmly lit living room interior with arched brass floor lamp, grey sofa and floor-to-ceiling windows" fetchpriority="high">
-    <div class="hero__scrim" aria-hidden="true"></div>
-    <div class="hero__inner">
-      <p class="eyebrow hero-anim">Portfolio + Interior Design &amp; Architecture</p>
-      <h1 class="hero-anim">Trilux Design</h1>
-      <p class="hero__sub hero-anim">Spaces built on precision, finished with artistry.</p>
-      <div class="hero__row hero-anim">
-        <span class="hero__scroll">Scroll to explore <span class="hero__scroll-line" aria-hidden="true"></span></span>
-        <a class="btn btn-on-ink" href="#selected-work">View Project →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- S2 — Welcome -->
-  <section class="welcome panel-ink" id="welcome">
-    <div class="wrap welcome__grid">
-      <div class="welcome__text reveal">
-        <p class="eyebrow">Welcome</p>
-        <h2 class="section-title">Welcome to Trilux Design</h2>
-        <p class="welcome__intro">Welcome to our architectural portfolio, a journey through our vision, creativity, and expertise.</p>
-        <p class="welcome__body">At Trilux Design, we are dedicated to designing spaces that inspire, elevate, and endure. Explore our portfolio to witness how we merge functionality with artistry, delivering exceptional architectural solutions.</p>
-      </div>
-      <div class="welcome__media reveal">
-        <img src="assets/img/welcome.jpg" alt="Living room with a circular crystal chandelier, marble feature wall and framed abstract artwork" loading="lazy" decoding="async">
-        <span class="chip">Padang — Residence</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- S3 — Mission & Philosophy -->
-  <section class="mission panel-bone">
-    <div class="wrap mission__grid">
-      <div class="mission__media reveal">
-        <img src="assets/img/mission.jpg" alt="Lounge with terracotta armchairs, a dark round coffee table and backlit wood-panel wall" loading="lazy" decoding="async">
-      </div>
-      <div class="reveal">
-        <p class="eyebrow">About Us</p>
-        <h2 class="section-title">Mission and Philosophy</h2>
-        <div class="mission__blocks">
-          <div class="mission__block">
-            <h3>Mission</h3>
-            <p>Our mission is to craft meaningful spaces that enrich lives and transform communities. Rooted in sustainability, innovation, and collaboration, we believe architecture has the power to inspire and shape a better future.</p>
-          </div>
-          <hr class="hairline">
-          <div class="mission__block">
-            <h3>Our Approach</h3>
-            <p>We focus on deeply understanding our clients' vision and blending it with sustainable design principles. This includes enhancing natural light, optimizing the flow of spaces, and carefully choosing high-quality materials. Our philosophy is that architecture should be enduring and thoughtfully aligned with its surroundings.</p>
-          </div>
+  <!-- S1 — Cinematic scroll stage -->
+  <section class="cinema-scroll" id="cinema" aria-label="Trilux Design cinematic scroll story">
+    <div class="stage">
+      <div class="world">
+        <img class="scene-img sky-img" src="assets/img/hero.jpg" alt="">
+        <div class="sky-scrim" aria-hidden="true"></div>
+        <header class="site-header" aria-label="Primary navigation">
+          <a class="cinema-logo" href="#cinema">Trilux Design</a>
+          <nav class="cinema-nav" aria-label="Main menu">
+            <a href="#cinema">Intro</a>
+            <a href="#selected-work">Work</a>
+            <a href="simulasi">Simulasi</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <a class="lang-switcher" href="https://wa.me/6282287348422" target="_blank" rel="noopener">WhatsApp <span aria-hidden="true">→</span></a>
+        </header>
+        <div class="back-stack">
+          <img class="scene-img back-img back-four" src="assets/img/mission.jpg" alt="">
+          <section class="sights-slider" aria-label="Trilux services slider">
+            <div class="sights-track">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Interior and spatial design card">
+                <span class="sight-kicker">Studio Discipline</span>
+                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Crect x='21' y='21' width='22' height='22' transform='rotate(45 32 32)'/%3E%3C/svg%3E" alt="">
+                <h3>Interior &amp; Spatial Design</h3>
+                <p>Layouts, lighting scenarios, and material stories shaped around how you actually live.</p>
+              </article>
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Exterior facades card">
+                <span class="sight-kicker">Street Presence</span>
+                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Cpath d='M12 34L32 15l20 19M19 29v20h26V29'/%3E%3C/svg%3E" alt="">
+                <h3>Exterior Facades</h3>
+                <p>Strong lines, stone and timber cladding, and facades that age with dignity.</p>
+              </article>
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Architecture and building card">
+                <span class="sight-kicker">Design &amp; Build</span>
+                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Crect x='17' y='13' width='30' height='38'/%3E%3Cpath d='M25 22h4m6 0h4M25 31h4m6 0h4M25 40h4m6 0h4'/%3E%3C/svg%3E" alt="">
+                <h3>Architecture &amp; Building</h3>
+                <p>From permit drawings to handover — one team, one contract, one standard.</p>
+              </article>
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Renovation and retrofit card">
+                <span class="sight-kicker">Existing Homes</span>
+                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Ccircle cx='32' cy='32' r='24'/%3E%3Cpath d='M41 23l-5 12-12 5 5-12z' fill='%23c08a3e' stroke='none'/%3E%3C/svg%3E" alt="">
+                <h3>Renovation &amp; Retrofit</h3>
+                <p>Careful surgery for older houses — new light, flow, and services without losing soul.</p>
+              </article>
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Consultation and estimation card">
+                <span class="sight-kicker">Start Here</span>
+                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Cpath d='M32 10l6 14 15 1-11 10 3 15-13-8-13 8 3-15-11-10 15-1z'/%3E%3C/svg%3E" alt="">
+                <h3>Consultation &amp; Estimation</h3>
+                <p>Budget clarity before commitment — try the online simulation or talk to us directly.</p>
+              </article>
+            </div>
+          </section>
+          <img class="scene-img back-img back-bazaar" src="assets/img/welcome.jpg" alt="">
         </div>
+        <div class="sights-controls" aria-label="Slider controls">
+          <button class="sight-nav sight-prev" type="button" aria-label="Previous service">←</button>
+          <button class="sight-nav sight-next" type="button" aria-label="Next service">→</button>
+        </div>
+        <h1 class="hero-title">TRILUX</h1>
+        <img class="scene-img splitframe-img splitframe-left" src="assets/img/cover.jpg" alt="">
+        <img class="scene-img splitframe-img splitframe-right" src="assets/img/cover.jpg" alt="">
+        <img class="scene-img bridge-img" src="assets/img/thumb-2.jpg" alt="">
+        <img class="scene-img frame-two-img" src="assets/img/contact.jpg" alt="">
+        <div class="shade"></div>
       </div>
-    </div>
-  </section>
 
-  <!-- S4 — Our Expertise -->
-  <section class="expertise panel-ink">
-    <div class="wrap">
-      <div class="reveal" style="margin-bottom: var(--sp-8)">
-        <p class="eyebrow">Capabilities</p>
-        <h2 class="section-title">Our Expertise</h2>
-      </div>
-      <div class="expertise__grid reveal">
-        <article class="expertise__item">
-          <span class="expertise__num">01</span>
-          <h3>Pioneering Sustainability</h3>
-          <p>Our mission is to craft meaningful spaces that enrich lives and transform communities. Rooted in sustainability, innovation, and collaboration, we believe architecture has the power to inspire and shape a better future.</p>
-        </article>
-        <article class="expertise__item">
-          <span class="expertise__num">02</span>
-          <h3>Creative Innovation</h3>
-          <p>We combine technology and creative concepts to create architectural works that are different from the usual.</p>
-        </article>
-        <article class="expertise__item">
-          <span class="expertise__num">03</span>
-          <h3>Intelligent Functionality</h3>
-          <p>Our designs balance aesthetics with practicality. By understanding client needs and site-specific challenges, we create spaces that are as functional as they are visually stunning.</p>
-        </article>
-        <article class="expertise__item">
-          <span class="expertise__num">04</span>
-          <h3>Collaborative Excellence</h3>
-          <p>Collaboration is at the heart of our work. We partner with clients, communities, and industry experts to ensure every project is a shared success.</p>
-        </article>
-      </div>
+      <section class="intro-copy" aria-label="Trilux overview">
+        <p>An architecture and interior studio shaping calm, precise spaces — from the first sketch to the final brass fitting.</p>
+        <div class="hero-tags" aria-label="Trilux highlights">
+          <span>Interior</span>
+          <span>Exterior</span>
+          <span>Architecture</span>
+        </div>
+      </section>
+
+      <section class="story-panel story-panel-bridge" aria-label="Studio approach">
+        <h2>Every project starts with structure.</h2>
+        <p>We pair architectural rigour with warm materiality — concrete discipline softened by timber, brass, and natural light.</p>
+        <dl class="facts">
+          <div>
+            <dt>2024</dt>
+            <dd>Latest residence delivered in Padang</dd>
+          </div>
+          <div>
+            <dt>01/04</dt>
+            <dd>Featured project showing below</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="story-panel story-panel-bazaar" aria-label="Featured project teaser">
+        <h2>Craft stays close to home.</h2>
+        <p>Our current featured residence — stone facade, high voids, marble and gold — is one scroll away.</p>
+        <button class="note-button" type="button">
+          <span aria-hidden="true">↗</span>
+          <span>See the featured project</span>
+        </button>
+      </section>
     </div>
   </section>
 
@@ -165,10 +145,10 @@
       <div class="work__head reveal">
         <div>
           <div class="work__title-row">
-            <span class="work__index">01/04</span>
-            <h2 class="work__name">Padang Residence I</h2>
+            <span class="work__index" id="workIndex">01/04</span>
+            <h2 class="work__name" id="workName">Padang Residence I</h2>
           </div>
-          <p class="work__location">Padang, West Sumatera <span class="work__year">— 2024</span></p>
+          <p class="work__location"><span id="workLocation">Padang, West Sumatera</span> <span class="work__year" id="workYear">— 2024</span></p>
         </div>
         <div class="pagination" role="group" aria-label="Featured projects">
           <button class="pagination__dot" type="button" aria-current="true" aria-label="Lihat proyek 1"><span>1</span></button>
@@ -181,15 +161,15 @@
       <dl class="meta-row reveal">
         <div>
           <dt>Project Specifics</dt>
-          <dd>A Residential Masterpiece</dd>
+          <dd id="workSpecs">A Residential Masterpiece</dd>
         </div>
         <div>
           <dt>Project Type</dt>
-          <dd>Full Scope — Design &amp; Build</dd>
+          <dd id="workType">Full Scope — Design &amp; Build</dd>
         </div>
         <div>
           <dt>Client Description</dt>
-          <dd>General Practitioner</dd>
+          <dd id="workClient">General Practitioner</dd>
         </div>
       </dl>
 
@@ -199,8 +179,8 @@
       </div>
 
       <div class="work__bottom reveal">
-        <p class="work__desc">Located in Padang, this design features an architectural approach that prioritizes modern luxury through the harmonization of premium materials and bold geometric play. From a contemporary exterior facade dominated by strong lines to a grand living room interior with a high void and marble accents and gold elements that give a prestigious impression, this aesthetic is combined with flexible public functionality through the use of vertical wooden panels and warm indirect lighting, creating an elegant spatial transition that still feels comfortable and organic.</p>
-        <div class="thumb-grid" role="group" aria-label="Project gallery">
+        <p class="work__desc" id="workDesc">Located in Padang, this design features an architectural approach that prioritizes modern luxury through the harmonization of premium materials and bold geometric play. From a contemporary exterior facade dominated by strong lines to a grand living room interior with a high void and marble accents and gold elements that give a prestigious impression, this aesthetic is combined with flexible public functionality through the use of vertical wooden panels and warm indirect lighting, creating an elegant spatial transition that still feels comfortable and organic.</p>
+        <div class="thumb-grid" id="thumbGrid" role="group" aria-label="Project gallery">
           <button type="button" aria-current="true" aria-label="Tampilkan foto taman dan tangga eksterior" data-full="assets/img/thumb-1.jpg">
             <img src="assets/img/thumb-1.jpg" alt="" loading="lazy" decoding="async">
           </button>
@@ -229,7 +209,7 @@
         <dl class="contact-details">
           <div>
             <dt>Phone</dt>
-            <dd><a href="tel:+6282287348422">0822 8734 8422</a></dd>
+            <dd><a href="tel:+628****8422">0822 8734 8422</a></dd>
           </div>
           <div>
             <dt>Social</dt>
@@ -258,7 +238,7 @@
 <!-- S7 — Footer -->
 <footer class="site-footer panel-ink wrap">
   <span>© 2026 Trilux Design · Interior · Exterior · Building</span>
-  <a href="#top" id="backToTop">Back to top ↑</a>
+  <a href="#cinema" id="backToTop">Back to top ↑</a>
 </footer>
 
 <script src="assets/js/track.js" defer></script>
@@ -296,6 +276,7 @@
     .catch(() => { /* static seed already rendered — hydration is best-effort */ });
 })();
 </script>
-<script src="assets/js/main.js"></script>
+<script src="assets/js/main.js?v=2"></script>
+<script src="assets/js/cinema.js" defer></script>
 </body>
 </html>
