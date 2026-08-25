@@ -1,0 +1,19 @@
+{
+  "featured": {
+    "index": "01/04",
+    "name": "Padang Residence I",
+    "location": "Padang, West Sumatera",
+    "year": "2024",
+    "specifics": "A Residential Masterpiece",
+    "type": "Full Scope — Design & Build",
+    "client": "General Practitioner",
+    "cover": "assets/img/cover.jpg",
+    "coverAlt": "Two-storey contemporary house with a hip roof, stone-clad facade and a red hatchback parked in front",
+    "description": "Located in Padang, this design features an architectural approach that prioritizes modern luxury through the harmonization of premium materials and bold geometric play. From a contemporary exterior facade dominated by strong lines to a grand living room interior with a high void and marble accents and gold elements that give a prestigious impression, this aesthetic is combined with flexible public functionality through the use of vertical wooden panels and warm indirect lighting, creating an elegant spatial transition that still feels comfortable and organic.",
+    "gallery": [
+      { "thumb": "assets/img/thumb-1.jpg", "label": "Tampilkan foto taman dan tangga eksterior" },
+      { "thumb": "assets/img/thumb-2.jpg", "label": "Tampilkan foto ruang makan" },
+      { "thumb": "assets/img/thumb-3.jpg", "label": "Tampilkan foto ruang keluarga dengan cermin emas" }
+    ]
+  }
+}

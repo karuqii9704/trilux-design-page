@@ -5,14 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trilux Design — Interior, Exterior & Architecture</title>
 <meta name="description" content="Trilux Design is a Jakarta-based studio for interior, exterior and architectural design. Explore our portfolio and request a quotation.">
-<link rel="canonical" href="/">
+<link rel="canonical" href="https://trilux-design-page.vercel.app/">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo-mark.svg">
 <meta property="og:title" content="Trilux Design — Interior, Exterior & Architecture">
 <meta property="og:description" content="Spaces built on precision. Finished with warmth. Explore the Trilux Design portfolio.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://trilux-design-page.vercel.app/">
+<meta property="og:image" content="https://trilux-design-page.vercel.app/assets/img/cover.jpg">
+<meta property="og:image:alt" content="Two-storey contemporary house designed by Trilux Design">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/playfair-display-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/img/hero.jpg" as="image">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
 <script>
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     document.documentElement.classList.add("js-anim");
@@ -23,7 +27,7 @@
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "Trilux Design",
-  "image": "assets/img/hero.jpg",
+  "image": "https://trilux-design-page.vercel.app/assets/img/hero.jpg",
   "telephone": "+62822-8734-8422",
   "email": "triluxdesign@gmail.com",
   "address": { "@type": "PostalAddress", "addressLocality": "Jakarta", "addressCountry": "ID" },
@@ -47,6 +51,7 @@
     </a>
     <nav class="nav__list nav__list--right" aria-label="Secondary">
       <a class="nav__link" href="#contact">Services</a>
+      <a class="nav__link" href="simulasi">Simulasi</a>
       <a class="nav__link" href="#contact">Contact</a>
     </nav>
     <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navOverlay" aria-label="Open menu">
@@ -57,6 +62,7 @@
     <a href="#welcome">Story</a>
     <a href="#selected-work">Portfolio</a>
     <a href="#contact">Services</a>
+    <a href="simulasi">Simulasi</a>
     <a href="#contact">Contact</a>
     <a class="btn btn-on-ink" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
   </div>
@@ -154,6 +160,7 @@
   <!-- S5 — Selected Work -->
   <section class="selected-work panel-bone" id="selected-work">
     <div class="wrap">
+    <!-- CMS:PROJECT:START — rendered by build.js from data/projects.json -->
       <p class="eyebrow reveal">Featured Project</p>
       <div class="work__head reveal">
         <div>
@@ -177,8 +184,8 @@
           <dd>A Residential Masterpiece</dd>
         </div>
         <div>
-          <dt>Budget</dt>
-          <dd><span class="js-count" data-target="100593.84">$ 100.593,84</span></dd>
+          <dt>Project Type</dt>
+          <dd>Full Scope — Design &amp; Build</dd>
         </div>
         <div>
           <dt>Client Description</dt>
@@ -205,6 +212,7 @@
           </button>
         </div>
       </div>
+    <!-- /CMS:PROJECT:END -->
     </div>
   </section>
 
@@ -237,8 +245,9 @@
           </div>
         </dl>
         <div class="contact__ctas">
+          <a class="btn btn-on-ink" href="simulasi">Hitung Estimasi →</a>
           <a class="btn btn-on-ink" href="mailto:triluxdesign@gmail.com">Email Us →</a>
-          <a class="btn btn-on-ink" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20menanyakan%20proyek." target="_blank" rel="noopener">Whatsapp →</a>
+          <a class="btn btn-on-ink js-wa" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20menanyakan%20proyek." target="_blank" rel="noopener">Whatsapp →</a>
         </div>
       </div>
     </div>
@@ -252,6 +261,41 @@
   <a href="#top" id="backToTop">Back to top ↑</a>
 </footer>
 
+<script src="assets/js/track.js" defer></script>
+<script>
+/* CMS runtime hydration — admin edits go live without redeploy.
+   Static markup above is the build-time seed; this fetch overrides it. */
+(() => {
+  "use strict";
+  const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  fetch("/api/admin?cms=1")
+    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then((p) => {
+      const f = p && p.featured;
+      if (!f) return;
+      const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+      set("workIndex", f.index);
+      set("workName", f.name);
+      set("workLocation", f.location);
+      set("workYear", "— " + (f.year || ""));
+      set("workSpecs", f.specifics);
+      set("workType", f.type);
+      set("workClient", f.client);
+      set("workDesc", f.description);
+      const img = document.getElementById("workMainImage");
+      if (img && f.cover) img.src = f.cover;
+      if (img && f.coverAlt) img.alt = f.coverAlt;
+      const grid = document.getElementById("thumbGrid");
+      if (grid && Array.isArray(f.gallery) && f.gallery.length) {
+        grid.innerHTML = f.gallery.map((g, i) =>
+          `<button type="button"${i === 0 ? ' aria-current="true"' : ''} aria-label="${esc(g.label)}" data-full="${esc(g.thumb)}">
+            <img src="${esc(g.thumb)}" alt="" loading="lazy" decoding="async">
+          </button>`).join("");
+      }
+    })
+    .catch(() => { /* static seed already rendered — hydration is best-effort */ });
+})();
+</script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>

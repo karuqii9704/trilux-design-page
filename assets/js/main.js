@@ -61,13 +61,15 @@
   });
 
   // Selected Work — thumbnail crossfade into main image
+  // (event delegation so it keeps working after CMS hydration rebuilds the grid)
   const mainImage = document.getElementById("workMainImage");
-  const thumbButtons = document.querySelectorAll(".thumb-grid button[data-full]");
-  thumbButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const nextSrc = btn.dataset.full;
-      if (!mainImage || mainImage.src.endsWith(nextSrc)) return;
-      thumbButtons.forEach((b) => b.removeAttribute("aria-current"));
+  const thumbGrid = document.getElementById("thumbGrid");
+  thumbGrid.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-full]");
+    if (!btn || !mainImage) return;
+    const nextSrc = btn.dataset.full;
+    if (!mainImage.src.endsWith(nextSrc)) {
+      thumbGrid.querySelectorAll("button[data-full]").forEach((b) => b.removeAttribute("aria-current"));
       btn.setAttribute("aria-current", "true");
       const swap = () => {
         mainImage.src = nextSrc;
@@ -76,7 +78,6 @@
       if (reducedMotion.matches) {
         swap();
       } else {
-        mainImage.style.transition = `opacity var(--dur-base) var(--ease-out)`;
         mainImage.style.transition = "opacity 240ms";
         mainImage.style.opacity = "0";
         setTimeout(() => {
@@ -84,7 +85,7 @@
           mainImage.style.opacity = "1";
         }, 240);
       }
-    });
+    }
   });
 
   // Scroll reveal — IntersectionObserver, fires once
@@ -138,38 +139,4 @@
     });
   }
 
-  // Count-up for tabular figures (e.g. project budget) — once, on scroll into view
-  const countEls = document.querySelectorAll(".js-count");
-  if (countEls.length) {
-    const formatIDR = (n) => "$ " + n.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const animateCount = (el) => {
-      const target = parseFloat(el.dataset.target);
-      if (reducedMotion.matches || Number.isNaN(target)) return;
-      const start = performance.now();
-      const duration = 900;
-      const tick = (now) => {
-        const p = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = formatIDR(target * eased);
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-    if (!("IntersectionObserver" in window)) {
-      countEls.forEach(animateCount);
-    } else {
-      const countIo = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              animateCount(entry.target);
-              countIo.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.6 }
-      );
-      countEls.forEach((el) => countIo.observe(el));
-    }
-  }
 })();

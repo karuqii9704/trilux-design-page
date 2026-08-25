@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulasi Estimasi Biaya — Trilux Design</title>
+<meta name="description" content="Hitung estimasi biaya desain interior, renovasi, dan build rumah Anda secara instan. Transparan, tanpa biaya tersembunyi.">
+<link rel="canonical" href="https://trilux-design-page.vercel.app/simulasi">
+<link rel="icon" type="image/svg+xml" href="../assets/img/logo-mark.svg">
+<meta property="og:title" content="Simulasi Estimasi Biaya — Trilux Design">
+<meta property="og:description" content="Pilih lingkup dan kelas material, dapatkan estimasi biaya instan untuk proyek interior & arsitektur Anda.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/css/style.css?v=2">
+<style>
+/* ===== Simulasi-specific styles (tokens inherited from style.css) ===== */
+.sim-hero { min-height: 52svh; }
+.sim-hero h1 { font-size: var(--display-l); margin-bottom: var(--sp-4); }
+.sim-hero p { color: var(--text-on-ink-muted); max-width: 56ch; font-size: var(--body-m); }
+
+.sim-controls { display: flex; flex-direction: column; gap: var(--sp-7); }
+
+.sim-block > .eyebrow { margin-bottom: var(--sp-4); }
+.sim-hint { font-size: var(--body-s); color: var(--text-on-bone-muted); margin-top: var(--sp-3); max-width: 62ch; }
+
+.area-row { display: flex; align-items: baseline; gap: var(--sp-5); flex-wrap: wrap; }
+.area-value { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3rem); line-height: 1; }
+.area-unit { color: var(--text-on-bone-muted); font-size: var(--body-m); letter-spacing: 0.06em; }
+
+input[type="range"].area-slider {
+  width: 100%; appearance: none; height: 2px; background: var(--rule-on-bone);
+  outline-offset: 6px; cursor: pointer;
+}
+input[type="range"].area-slider::-webkit-slider-thumb {
+  appearance: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--brass-700); border: none;
+}
+input[type="range"].area-slider::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--brass-700); border: none;
+}
+
+.scope-row { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+.seg {
+  border: 1px solid var(--rule-on-bone); background: transparent; cursor: pointer;
+  padding: var(--sp-3) var(--sp-5); font-size: var(--body-s); letter-spacing: 0.04em;
+  min-height: 44px; transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.seg[aria-pressed="true"] { background: var(--ink-800); color: var(--bone-100); border-color: var(--ink-800); }
+.seg:hover { border-color: var(--brass-700); }
+
+.cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
+@media (max-width: 1023px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 767px) { .cat-grid { grid-template-columns: 1fr; } }
+.cat-card { border: 1px solid var(--rule-on-bone); padding: var(--sp-5); background: rgba(255,255,255,0.35); }
+.cat-card h3 { font-size: var(--title-s); margin-bottom: var(--sp-4); line-height: 1.2; }
+.tier-row { display: flex; flex-direction: column; gap: var(--sp-2); }
+.tier-opt {
+  display: flex; flex-direction: column; gap: 2px;
+  border: 1px solid transparent; background: transparent; cursor: pointer; text-align: left;
+  padding: var(--sp-2) var(--sp-3); min-height: 44px;
+  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+.tier-top { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-3); }
+.tier-opt .tier-name { letter-spacing: 0.05em; font-size: var(--body-s); }
+.tier-opt .tier-price { font-size: var(--body-s); font-variant-numeric: tabular-nums; color: var(--text-on-bone-muted); white-space: nowrap; }
+.tier-opt .tier-spec { font-size: 0.68rem; line-height: 1.45; color: var(--text-on-bone-muted); }
+.tier-opt[aria-pressed="true"] { border-color: var(--brass-700); background: rgba(192, 138, 62, 0.10); }
+.tier-opt[aria-pressed="true"] .tier-price,
+.tier-opt[aria-pressed="true"] .tier-spec { color: var(--brass-700); }
+.tier-opt:hover { border-color: var(--brass-700); }
+
+.cond-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-6); }
+@media (max-width: 767px) { .cond-grid { grid-template-columns: 1fr; } }
+.field label { display: block; font-size: var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-on-bone-muted); margin-bottom: var(--sp-2); }
+.field .field-note { font-size: 0.68rem; color: var(--text-on-bone-muted); margin-top: var(--sp-1); min-height: 1.2em; }
+.field select {
+  width: 100%; min-height: 44px; padding: 0 var(--sp-4);
+  font: inherit; font-size: var(--body-s); color: var(--text-on-bone);
+  background: transparent; border: 1px solid var(--rule-on-bone); border-radius: var(--radius-sm);
+}
+.seg-group .seg { font-size: var(--body-s); }
+
+.addon-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-3); }
+@media (max-width: 767px) { .addon-list { grid-template-columns: 1fr; } }
+.addon {
+  display: flex; align-items: center; gap: var(--sp-3); border: 1px solid var(--rule-on-bone);
+  padding: var(--sp-3) var(--sp-4); cursor: pointer; font-size: var(--body-s); min-height: 44px;
+}
+.addon:hover { border-color: var(--brass-700); }
+.addon input { accent-color: var(--brass-700); width: 16px; height: 16px; }
+.addon .addon-price { margin-left: auto; color: var(--text-on-bone-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.sim-layout { display: grid; grid-template-columns: 7fr 5fr; gap: var(--sp-8); align-items: start; }
+@media (max-width: 1023px) { .sim-layout { grid-template-columns: 1fr; } }
+
+.summary-card {
+  position: sticky; top: calc(var(--nav-h, 88px) + 16px);
+  background: var(--ink-800); color: var(--text-on-ink); padding: var(--sp-6);
+}
+.summary-card h2 { font-size: var(--title-s); margin-bottom: var(--sp-5); }
+.sum-table { width: 100%; border-collapse: collapse; font-size: var(--body-s); }
+.sum-table td { padding: var(--sp-2) 0; vertical-align: top; }
+.sum-table td:last-child { text-align: right; white-space: nowrap; }
+.sum-table tr.dim td:first-child { color: var(--text-on-ink-muted); }
+.sum-table .rule td { border-top: 1px solid var(--rule-on-ink); }
+.share-wrap { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.share-bar { width: 56px; height: 4px; background: rgba(242,237,228,0.12); position: relative; overflow: hidden; }
+.share-bar i { position: absolute; inset: 0 auto 0 0; background: var(--brass-500); }
+.share-num { font-variant-numeric: tabular-nums; color: var(--text-on-ink-muted); min-width: 3.2ch; text-align: right; }
+.lock-note {
+  margin-top: var(--sp-4); padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed var(--rule-on-ink); font-size: var(--body-s); color: var(--text-on-ink-muted);
+}
+.lock-note strong { color: var(--brass-300); font-weight: normal; }
+.sum-total td { border-top: 1px solid var(--rule-on-ink); padding-top: var(--sp-4); }
+.sum-total .total-label { font-size: var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass-500); }
+.sum-total .total-value { font-family: var(--font-display); font-size: clamp(1.3rem, 2.6vw, 1.8rem); line-height: 1.25; }
+.total-perm { font-size: var(--body-s); color: var(--text-on-ink-muted); margin-top: var(--sp-1); }
+.summary-note { font-size: var(--label); line-height: 1.7; color: var(--text-on-ink-muted); margin-top: var(--sp-5); }
+.summary-cta { display: flex; flex-direction: column; gap: var(--sp-3); margin-top: var(--sp-5); }
+.summary-cta .btn { justify-content: center; }
+.btn-brass { background: var(--brass-700); border-color: var(--brass-700); color: #fff; }
+.btn-brass:hover { background: var(--brass-500); border-color: var(--brass-500); color: var(--ink-900); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .summary-card { position: static; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="nav is-scrolled">
+  <div class="nav__inner">
+    <nav class="nav__list" aria-label="Primary">
+      <a class="nav__link" href="../#welcome">Story</a>
+      <a class="nav__link" href="../#selected-work">Portfolio</a>
+    </nav>
+    <a class="nav__logo" href="../" aria-label="Trilux Design — home">
+      <img class="nav__logo-mark" src="../assets/img/logo-mark.svg" alt="" width="22" height="22">
+      Trilux Design
+      <span class="nav__logo-sub">Interior · Exterior · Building</span>
+    </a>
+    <nav class="nav__list nav__list--right" aria-label="Secondary">
+      <a class="nav__link" href="../#contact">Services</a>
+      <a class="nav__link" href="../simulasi" aria-current="page">Simulasi</a>
+      <a class="nav__link" href="../#contact">Contact</a>
+    </nav>
+    <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navOverlay" aria-label="Open menu">
+      <span class="nav__toggle-bars"><span></span><span></span><span></span></span>
+    </button>
+  </div>
+  <div class="nav__overlay" id="navOverlay">
+    <a href="../#welcome">Story</a>
+    <a href="../#selected-work">Portfolio</a>
+    <a href="../#contact">Services</a>
+    <a href="../simulasi">Simulasi</a>
+    <a href="../#contact">Contact</a>
+    <a class="btn btn-on-ink" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero sim-hero">
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <img class="hero__bg" src="../assets/img/contact.jpg" alt="" aria-hidden="true">
+    <div class="hero__inner">
+      <p class="eyebrow hero-anim">Estimasi Instan</p>
+      <h1 class="hero-anim">Simulasi Biaya Bangun &amp; Renovasi</h1>
+      <p class="hero-anim">Pilih lingkup, luas area, dan kelas material per pekerjaan untuk mendapat estimasi awal biaya proyek Anda. Tanpa biaya tersembunyi — hasil simulasi langsung bisa dikirim ke tim kami via WhatsApp.</p>
+    </div>
+  </section>
+
+  <section class="panel-bone">
+    <div class="wrap">
+      <div class="sim-layout">
+
+        <div class="sim-controls">
+
+          <div class="sim-block">
+            <p class="eyebrow">01 — Lingkup Proyek</p>
+            <div class="scope-row" role="group" aria-label="Lingkup proyek">
+              <button class="seg" type="button" data-mult="1" aria-pressed="true">Desain Interior</button>
+              <button class="seg" type="button" data-mult="0.85" aria-pressed="false">Renovasi / Re-design</button>
+              <button class="seg" type="button" data-mult="1.15" aria-pressed="false">Bangun Baru / Full Build</button>
+            </div>
+          </div>
+
+          <div class="sim-block">
+            <p class="eyebrow">02 — Luas Area</p>
+            <div class="area-row">
+              <span class="area-value"><output id="areaOut">120</output> <span class="area-unit">m²</span></span>
+            </div>
+            <input class="area-slider" type="range" id="areaRange" min="20" max="500" step="5" value="120" aria-label="Luas area dalam meter persegi">
+          </div>
+
+          <div class="sim-block">
+            <p class="eyebrow">03 — Pilih Kelas Material per Pekerjaan</p>
+            <div class="cat-grid" id="catGrid"><!-- rendered by script --></div>
+            <p class="sim-hint">Harga dihitung per m² berdasarkan harga pokok produksi rata-rata wilayah Jabodetabek. Kelas Premium &amp; Luxury memakai material impor dan finishing kelas atas.</p>
+          </div>
+
+          <div class="sim-block">
+            <p class="eyebrow">04 — Kondisi Khusus</p>
+            <div class="cond-grid">
+              <div class="field">
+                <label for="cluster">Lingkungan</label>
+                <select id="cluster" data-note="clusterNote">
+                  <option value="0" data-add="0">Perumahan biasa — biaya normal</option>
+                  <option value="150000" data-add="per-m2">Rumah dalam cluster — +Rp 150.000/m²</option>
+                </select>
+                <p class="field-note" id="clusterNote">Setiap hari kerja — biaya normal.</p>
+              </div>
+              <div class="field">
+                <label for="akses">Akses Jalanan</label>
+                <select id="akses" data-note="aksesNote">
+                  <option value="0">Normal — material bisa masuk</option>
+                  <option value="100000">Sempit — +Rp 100.000/m² (langsir)</option>
+                </select>
+                <p class="field-note" id="aksesNote">Mobil material bisa masuk, tanpa langsir.</p>
+              </div>
+              <div class="field">
+                <label for="air">Air Kerja</label>
+                <select id="air" data-note="airNote">
+                  <option value="0">Pakai air tanah — biaya normal</option>
+                  <option value="50000">Pakai PAM — +Rp 50.000/m²</option>
+                </select>
+                <p class="field-note" id="airNote">Hanya bayar listrik pompa.</p>
+              </div>
+              <div class="field">
+                <label for="tanah">Kondisi Tanah</label>
+                <select id="tanah" data-note="tanahNote">
+                  <option value="hard">Tanah keras — biaya normal</option>
+                  <option value="soft">Bekas rawa / urugan — +Rp 250.000/m² (lantai 1)</option>
+                  <option value="unknown">Belum tahu — +Rp 4.000.000 (uji sondir)</option>
+                </select>
+                <p class="field-note" id="tanahNote">Biaya normal.</p>
+              </div>
+            </div>
+            <div class="cond-grid" style="margin-top:var(--sp-6)">
+              <div class="field seg-group">
+                <label>High Ceiling — Tinggi Plafond Tambahan</label>
+                <div class="scope-row" role="group" aria-label="Tinggi plafond tambahan" id="ceilGroup">
+                  <button class="seg" type="button" data-perm2="0" aria-pressed="true">Sesuai Paket</button>
+                  <button class="seg" type="button" data-perm2="200000" aria-pressed="false">+50 cm</button>
+                  <button class="seg" type="button" data-perm2="400000" aria-pressed="false">+100 cm</button>
+                  <button class="seg" type="button" data-perm2="600000" aria-pressed="false">+150 cm</button>
+                </div>
+                <p class="field-note" id="ceilNote">Tinggi plafond sesuai paket material.</p>
+              </div>
+              <div class="field seg-group">
+                <label>Urugan di Atas Standar (standar 50–60 cm, lantai 1)</label>
+                <div class="scope-row" role="group" aria-label="Urugan di atas standar" id="fillGroup">
+                  <button class="seg" type="button" data-perm2="0" aria-pressed="true">Sesuai Paket</button>
+                  <button class="seg" type="button" data-perm2="300000" aria-pressed="false">Urug 1 m</button>
+                  <button class="seg" type="button" data-perm2="600000" aria-pressed="false">Urug 1,5 m</button>
+                  <button class="seg" type="button" data-perm2="900000" aria-pressed="false">Urug 2 m</button>
+                </div>
+                <p class="field-note" id="fillNote">Tanpa urugan tambahan.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="sim-block">
+            <p class="eyebrow">05 — Add-On Request</p>
+            <div class="addon-list" id="addonList"><!-- rendered by script --></div>
+          </div>
+
+        </div>
+
+        <aside class="summary-card" aria-live="polite">
+          <h2>Ringkasan Estimasi</h2>
+          <table class="sum-table">
+            <tbody id="sumBody"><!-- rendered by script --></tbody>
+            <tfoot>
+              <tr class="sum-total">
+                <td class="total-label">Total Estimasi</td>
+                <td class="total-value" id="totalOut">Rp —</td>
+              </tr>
+              <tr>
+                <td colspan="2" class="total-perm" id="permOut"></td>
+              </tr>
+            </tfoot>
+          </table>
+          <p class="lock-note"><strong>🔒 Detail biaya per pekerjaan dikunci.</strong> Kirim hasil simulasi ini via WhatsApp untuk membuka rincian RAB &amp; konsultasi gratis dengan tim kami.</p>
+          <p class="summary-note">Hasil simulasi merupakan estimasi awal berdasarkan harga pokok produksi rata-rata wilayah Jabodetabek. Angka final yang akurat dan mengikat akan diterbitkan resmi oleh tim Trilux Design melalui Rencana Anggaran Biaya (RAB) detail setelah proses survei lokasi dan finalisasi desain.</p>
+          <div class="summary-cta">
+            <a class="btn btn-brass" id="waBtn" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Kirim Hasil via WhatsApp →</a>
+            <a class="btn btn-on-ink" href="../#selected-work">Lihat Portfolio Kami →</a>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="panel-ink">
+    <div class="wrap contact__grid">
+      <div class="reveal">
+        <p class="eyebrow">Butuh angka pasti?</p>
+        <h2 class="section-title">Survei gratis, RAB detail.</h2>
+        <p class="contact__sub">Kirim hasil simulasi ini ke tim kami — kami survei lokasi, finalisasi konsep, lalu terbitkan RAB yang akurat dan mengikat.</p>
+        <dl class="contact-details">
+          <div><dt>Phone</dt><dd><a href="tel:+628****8422">0822 8734 8422</a></dd></div>
+          <div><dt>Email</dt><dd><a href="mailto:triluxdesign@gmail.com">triluxdesign@gmail.com</a></dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer panel-ink wrap">
+  <span>© 2026 Trilux Design · Interior · Exterior · Building</span>
+  <a href="../#top" id="backToTop">Back to top ↑</a>
+</footer>
+
+<script src="../assets/js/track.js" defer></script>
+<script>
+(() => {
+  "use strict";
+  const fmtRp = (n) => "Rp " + Math.round(n).toLocaleString("id-ID");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ponytail: flat price tables — move to data/*.json if tiers need frequent remote updates
+  // HPP rata-rata Jabodetabek, per m² — [Standar, Premium, Luxury]
+  const CATS = [
+    { name: "Struktur & Pondasi", tiers: [1700000, 1900000, 2400000], specs: [
+      "Pondasi tapak 50–60 cm, besi beton ∅10/12 campur polos, beton site-mix K-225",
+      "Pondasi Strauss pile, besi beton ∅12/16, beton site-mix K-250",
+      "Ready-mix K-300, pondasi footplate, waterproofing struktural" ] },
+    { name: "Dinding & Plester Aci", tiers: [1100000, 1150000, 1250000], specs: [
+      "Bata ringan 7,5 cm + plester + aci (tinggi max 3,2 m)",
+      "Bata ringan 10 cm / bata merah standar + plester pasir Bangka + aci mortar (max 3,5 m)",
+      "Bata merah jumbo press, double dinding + plester pasir Bangka + aci mortar (max 3,8 m)" ] },
+    { name: "Atap & Genteng", tiers: [550000, 750000, 1250000], specs: [
+      "Rangka baja ringan C75 0,75 mm, genteng metal pasir / spandek",
+      "Baja ringan C75 1,00 mm, genteng beton flat / keramik M-Class",
+      "Rangka baja IWF / genteng keramik glazur premium / aspal bitumen" ] },
+    { name: "Plafond", tiers: [200000, 250000, 350000], specs: [
+      "Rangka hollow galvanis, gypsum 9 mm, tanpa drop ceiling",
+      "Hollow tebal, gypsum Jayaboard/Knauf 9 mm, drop ceiling lurus",
+      "Double frame, gypsum moisture resistant, drop ceiling melengkung + ornamen wood lathe" ] },
+    { name: "Penutup Lantai", tiers: [475000, 650000, 850000], specs: [
+      "Homogeneous tile (HT) / granit 60×60 standar",
+      "Granit impor / HT 80×80 atau 60×120, vinyl SPC premium",
+      "Marmer lokal / impor Italia / parket kayu solid jati" ] },
+    { name: "Instalasi Kelistrikan", tiers: [225000, 275000, 400000], specs: [
+      "Kabel standar SNI, saklar/stop-kontak Broco/Panasonic, downlight standar",
+      "Kabel Supreme, saklar Nero/Schneider, pembagian grup MCB Schneider komplit",
+      "Smart home wireless/kabel, saklar premium touch screen, jalur LED strip hidden" ] },
+    { name: "Instalasi Air", tiers: [150000, 200000, 300000], specs: [
+      "Pipa PVC kelas D (tipis), jalur air dingin saja",
+      "Pipa PVC kelas AW (tebal), jalur air panas ganda PPR + pompa pendorong standar",
+      "Pipa PPR seluruh jalur, sistem manifold PEX, pompa booster senyap + tandon 1000 L" ] },
+    { name: "Sanitasi", tiers: [100000, 200000, 350000], specs: [
+      "Kloset duduk standar, wastafel gantung, kran tipe ekonomis",
+      "Kloset Toto/American Standard menengah, shower set wall shower, wastafel kabinet meja",
+      "Smart toilet otomatis, shower set Grohe/Kohler, bathtub freestanding akrilik" ] },
+    { name: "Pengecatan", tiers: [250000, 300000, 350000], specs: [
+      "Cat interior Vinilex/setara, cat eksterior Nippon Paint standar",
+      "Interior Dulux Pentalite / Jotun Majestic, eksterior Jotun Jotashield",
+      "Interior Jotun Majestic Gold (bisa dilap), eksterior Jotashield Ultra Clean + wall texture" ] },
+    { name: "Kusen, Pintu & Jendela", tiers: [400000, 500000, 750000], specs: [
+      "Kusen aluminium 3 inci, flush door plywood finishing cat, baja kodai",
+      "Aluminium 4 inci Alexindo, pintu utama kayu solid, pintu kamar engineering + HPL",
+      "Kusen YKK AP premium / kayu jati oven, pintu jati solid custom + smart lock" ] },
+    { name: "Railing & Kanopi", tiers: [150000, 225000, 450000], specs: [
+      "Railing besi hollow hitam minimalis, kanopi hollow + polikarbonat/solartuff",
+      "Besi plat perforated + handrail kayu kamper, kanopi tempered glass 8 mm",
+      "Railing tempered glass 10 mm + stainless, kanopi H-beam + kaca laminated" ] },
+    { name: "Konsep Desain & Manajemen", tiers: [100000, 150000, 300000], specs: [
+      "Konsep standar minimalis — gambar 2D teknis + 3D render skematik",
+      "Konsep modern premium — gambar arsitektur, struktur, MEP + cinematic 3D walkthrough",
+      "Luxury custom design, interior detailing, VR simulation" ] }
+  ];
+  const TIER_NAMES = ["Standar", "Premium", "Luxury"];
+
+  const ADDONS = [
+    { name: "Sumur Bor 25–30 m", price: 12500000 },
+    { name: "Sumur Bor 50–60 m + Pompa Satelit", price: 25000000 },
+    { name: "Septic Tank Konvensional 150×250×150", price: 7500000 },
+    { name: "Smart Home Basic", price: 15000000 },
+    { name: "Furniture Custom Ekstra", price: 40000000 }
+  ];
+
+  const state = {
+    area: 120, mult: 1,
+    tiers: CATS.map(() => 1),
+    condPerm2: { cluster: 0, akses: 0, air: 0, tanahSoft: false },
+    sondirFee: 0,
+    ceilPerm2: 0, fillPerm2: 0,
+    addons: new Set()
+  };
+
+  /* ---- render controls ---- */
+  const catGrid = document.getElementById("catGrid");
+  catGrid.innerHTML = CATS.map((c, i) => `
+    <article class="cat-card">
+      <h3>${i + 1}. ${c.name}</h3>
+      <div class="tier-row" role="group" aria-label="Kelas material ${c.name}">
+        ${c.tiers.map((price, ti) => `
+          <button type="button" class="tier-opt" data-cat="${i}" data-tier="${ti}" aria-pressed="${ti === 1}">
+            <span class="tier-top">
+              <span class="tier-name">${TIER_NAMES[ti]}</span>
+              <span class="tier-price">${fmtRp(price)}/m²</span>
+            </span>
+            <span class="tier-spec">${c.specs[ti]}</span>
+          </button>`).join("")}
+      </div>
+    </article>`).join("");
+
+  document.getElementById("addonList").innerHTML = ADDONS.map((a, i) => `
+    <label class="addon"><input type="checkbox" data-addon="${i}"> ${a.name}<span class="addon-price">+${fmtRp(a.price)}</span></label>
+  `).join("");
+
+  const sumBody = document.getElementById("sumBody");
+  const totalOut = document.getElementById("totalOut");
+  const permOut = document.getElementById("permOut");
+  const waBtn = document.getElementById("waBtn");
+
+  /* ---- compute + render summary ---- */
+  function compute() {
+    const area = state.area;
+
+    // base work items (scope multiplier applied)
+    const items = CATS.map((c, i) => ({ name: c.name, tier: TIER_NAMES[state.tiers[i]], value: c.tiers[state.tiers[i]] * area * state.mult }));
+    const base = items.reduce((s, it) => s + it.value, 0);
+
+    // per-m² condition surcharges
+    const condPerm2 = state.condPerm2.cluster + state.condPerm2.akses + state.condPerm2.air
+      + (state.condPerm2.tanahSoft ? 250000 : 0);
+    const condCost = condPerm2 * area;
+    const sondir = state.sondirFee;
+    const ceilCost = state.ceilPerm2 * area;
+    const fillCost = state.fillPerm2 * area;
+    const addonCost = [...state.addons].reduce((s, i) => s + ADDONS[i].price, 0);
+
+    const total = base + condCost + sondir + ceilCost + fillCost + addonCost;
+    const lo = total * 0.92, hi = total * 1.08;
+
+    // summary rows — per-category amounts stay locked, only share % is public
+    const grand = Math.max(base + condCost, 1);
+    sumBody.innerHTML =
+      items.map((it) => {
+        const pct = Math.round((it.value / grand) * 100);
+        return `<tr class="dim"><td>${it.name} · ${it.tier}</td><td><span class="share-wrap"><span class="share-bar"><i style="width:${pct}%"></i></span><span class="share-num">${pct}%</span></span></td></tr>`;
+      }).join("")
+      + (condCost ? `<tr class="dim"><td>Kondisi khusus${state.condPerm2.tanahSoft ? " + pondasi dalam" : ""}</td><td><span class="share-wrap"><span class="share-bar"><i style="width:${Math.min(100, Math.round(condCost / grand * 100))}%"></i></span><span class="share-num">${fmtRp(condCost)}</span></span></td></tr>` : "")
+      + (sondir ? `<tr class="dim"><td>Uji sondir (add-on tanah)</td><td>+${fmtRp(sondir)}</td></tr>` : "")
+      + (ceilCost ? `<tr class="dim"><td>High ceiling treatment</td><td><span class="share-wrap"><span class="share-bar"><i style="width:${Math.min(100, Math.round(ceilCost / grand * 100))}%"></i></span><span class="share-num">${fmtRp(ceilCost)}</span></span></td></tr>` : "")
+      + (fillCost ? `<tr class="dim"><td>Urugan di atas standar</td><td><span class="share-wrap"><span class="share-bar"><i style="width:${Math.min(100, Math.round(fillCost / grand * 100))}%"></i></span><span class="share-num">${fmtRp(fillCost)}</span></span></td></tr>` : "")
+      + ADDONS.map((a, i) => state.addons.has(i) ? `<tr class="dim"><td>Add-on: ${a.name}</td><td>+${fmtRp(a.price)}</td></tr>` : "").join("");
+
+    totalOut.textContent = `${fmtRp(lo)} – ${fmtRp(hi)}`;
+    permOut.textContent = `≈ ${fmtRp(lo / area)} – ${fmtRp(hi / area)}/m²`;
+
+    // WhatsApp deep-link — scope, config, total range (detail unlocked after submission)
+    const scopeName = document.querySelector(".scope-row .seg[aria-pressed=\"true\"]").textContent.trim();
+    const condBits = [];
+    if (state.condPerm2.cluster) condBits.push("Rumah dalam cluster");
+    if (state.condPerm2.akses) condBits.push("Akses jalan sempit (langsir)");
+    if (state.condPerm2.air) condBits.push("Pakai PAM");
+    if (state.condPerm2.tanahSoft) condBits.push("Tanah bekas rawa/urugan (pondasi dalam)");
+    if (sondir) condBits.push("Uji sondir");
+    if (state.ceilPerm2) condBits.push(`High ceiling +${{ 200000: "50", 400000: "100", 600000: "150" }[state.ceilPerm2]} cm`);
+    if (state.fillPerm2) condBits.push(`Urugan ${{ 300000: "1 m", 600000: "1,5 m", 900000: "2 m" }[state.fillPerm2]} di atas standar`);
+    const lines = [
+      "Halo Trilux Design! Hasil simulasi estimasi saya:",
+      `• Lingkup: ${scopeName}`,
+      `• Luas area: ${area} m²`,
+      `• Kelas material per pekerjaan:`,
+      ...CATS.map((c, i) => `   - ${c.name}: ${TIER_NAMES[state.tiers[i]]}`),
+      condBits.length ? `• Kondisi khusus: ${condBits.join("; ")}` : "• Kondisi khusus: normal",
+      ...([...state.addons].map((i) => `• Add-on: ${ADDONS[i].name}`)),
+      `• Estimasi total: ${fmtRp(lo)} – ${fmtRp(hi)}`,
+      "Mohon buka rincian RAB & info survei lebih lanjut. Terima kasih!"
+    ];
+    waBtn.href = "https://wa.me/6282287348422?text=" + encodeURIComponent(lines.join("\n"));
+  }
+
+  /* ---- wire controls ---- */
+  document.querySelectorAll(".scope-row")[0].addEventListener("click", (e) => {
+    const btn = e.target.closest(".seg");
+    if (!btn) return;
+    btn.parentElement.querySelectorAll(".seg").forEach((x) => x.setAttribute("aria-pressed", "false"));
+    btn.setAttribute("aria-pressed", "true");
+    state.mult = parseFloat(btn.dataset.mult);
+    compute();
+  });
+
+  const areaRange = document.getElementById("areaRange");
+  areaRange.addEventListener("input", () => {
+    state.area = parseInt(areaRange.value, 10);
+    document.getElementById("areaOut").textContent = state.area;
+    compute();
+  });
+
+  catGrid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".tier-opt");
+    if (!btn) return;
+    const i = parseInt(btn.dataset.cat, 10);
+    btn.parentElement.querySelectorAll(".tier-opt").forEach((x) => x.setAttribute("aria-pressed", "false"));
+    btn.setAttribute("aria-pressed", "true");
+    state.tiers[i] = parseInt(btn.dataset.tier, 10);
+    compute();
+  });
+
+  // condition selects — value = Rp/m² surcharge (tanah handled separately)
+  const COND_NOTES = {
+    cluster: ["Setiap hari kerja — biaya normal.", "Aturan ketat — Sabtu/Minggu/tanggal merah libur."],
+    akses: ["Mobil material bisa masuk, tanpa langsir.", "Mobil engkel saja / material tidak masuk — perlu langsir."],
+    air: ["Hanya bayar listrik pompa.", "Bayar bulanan — biaya air kerja."]
+  };
+  [["cluster", "cluster"], ["akses", "akses"], ["air", "air"]].forEach(([id]) => {
+    document.getElementById(id).addEventListener("change", (e) => {
+      state.condPerm2[id] = parseInt(e.target.value, 10) || 0;
+      document.getElementById(id + "Note").textContent = COND_NOTES[id][e.target.selectedIndex];
+      compute();
+    });
+  });
+  document.getElementById("tanah").addEventListener("change", (e) => {
+    const v = e.target.value;
+    state.condPerm2.tanahSoft = v === "soft";
+    state.sondirFee = v === "unknown" ? 4000000 : 0;
+    document.getElementById("tanahNote").textContent =
+      v === "soft" ? "Biaya pondasi dalam (Strauss pile) — dikalikan luas bangunan lantai 1."
+      : v === "unknown" ? "Disarankan uji sondir minimal 2 titik — add-on."
+      : "Biaya normal.";
+    compute();
+  });
+
+  // high-ceiling & urugan segmented groups (per-m²)
+  [["ceilGroup", "ceilPerm2", "ceilNote"], ["fillGroup", "fillPerm2", "fillNote"]].forEach(([gid, key, nid]) => {
+    const NOTES = gid === "ceilGroup"
+      ? ["Tinggi plafond sesuai paket material.", "Tambah 50 cm dari paket — +Rp 200.000/m².", "Tambah 100 cm dari paket — +Rp 400.000/m².", "Tambah 150 cm dari paket — +Rp 600.000/m²."]
+      : ["Tanpa urugan tambahan.", "Urugan 1 meter — +Rp 300.000/m² (hanya lantai 1).", "Urugan 1,5 meter — +Rp 600.000/m² (hanya lantai 1).", "Urugan 2 meter — +Rp 900.000/m² (hanya lantai 1)."];
+    document.getElementById(gid).addEventListener("click", (e) => {
+      const btn = e.target.closest(".seg");
+      if (!btn) return;
+      btn.parentElement.querySelectorAll(".seg").forEach((x) => x.setAttribute("aria-pressed", "false"));
+      btn.setAttribute("aria-pressed", "true");
+      state[key] = parseInt(btn.dataset.perm2, 10) || 0;
+      document.getElementById(nid).textContent = NOTES[[...btn.parentElement.children].indexOf(btn)];
+      compute();
+    });
+  });
+
+  document.getElementById("addonList").addEventListener("change", (e) => {
+    const cb = e.target.closest("input[data-addon]");
+    if (!cb) return;
+    cb.checked ? state.addons.add(parseInt(cb.dataset.addon, 10)) : state.addons.delete(parseInt(cb.dataset.addon, 10));
+    compute();
+  });
+
+  /* ---- chrome ---- */
+  const navToggle = document.getElementById("navToggle");
+  const navOverlay = document.getElementById("navOverlay");
+  navToggle.addEventListener("click", () => {
+    const open = document.body.classList.toggle("nav-open");
+    navToggle.setAttribute("aria-expanded", String(open));
+  });
+  navOverlay.addEventListener("click", (e) => { if (e.target.tagName === "A") { document.body.classList.remove("nav-open"); navToggle.setAttribute("aria-expanded", "false"); } });
+
+  document.getElementById("backToTop").addEventListener("click", (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+  });
+
+  compute();
+})();
+</script>
+</body>
+</html>

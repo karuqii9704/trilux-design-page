@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trilux Admin — Dashboard</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="../assets/img/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css?v=2">
+<style>
+/* Admin-only surface — reuses brand tokens, own layout */
+body.admin-body { background: var(--ink-900); color: var(--text-on-ink); min-height: 100svh; }
+.admin-wrap { max-width: 1200px; margin-inline: auto; padding: var(--sp-6) var(--sp-5) var(--sp-9); }
+.admin-head { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-4); padding-block: var(--sp-4); border-bottom: 1px solid var(--rule-on-ink); margin-bottom: var(--sp-6); flex-wrap: wrap; }
+.admin-brand { display: flex; align-items: center; gap: var(--sp-3); }
+.admin-brand img { width: 20px; height: 20px; }
+.admin-brand h1 { font-size: 1.05rem; letter-spacing: 0.02em; margin: 0; }
+.admin-sub { font-size: var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-on-ink-muted); }
+
+.card { background: var(--ink-800); border: 1px solid var(--rule-on-ink); padding: var(--sp-5); }
+.login-card { max-width: 420px; margin: 12vh auto 0; text-align: left; }
+.login-card h2 { font-size: var(--title-s); margin-bottom: var(--sp-2); }
+.login-card p { color: var(--text-on-ink-muted); font-size: var(--body-s); margin-bottom: var(--sp-5); }
+.field-l { display: block; font-size: var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-on-ink-muted); margin-bottom: var(--sp-2); }
+.txt {
+  width: 100%; min-height: 44px; padding: 0 var(--sp-4); font: inherit; font-size: var(--body-s);
+  background: var(--ink-900); color: var(--text-on-ink); border: 1px solid var(--rule-on-ink); border-radius: var(--radius-sm);
+}
+.txt:focus-visible { outline-color: var(--brass-300); }
+.err { color: #e08a80; font-size: var(--body-s); margin-top: var(--sp-3); min-height: 1.2em; }
+
+.tabs { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-5); }
+.tab { background: none; border: 1px solid var(--rule-on-ink); color: var(--text-on-ink-muted); padding: var(--sp-3) var(--sp-5); cursor: pointer; font-size: var(--body-s); letter-spacing: 0.06em; min-height: 44px; }
+.tab[aria-selected="true"] { background: var(--brass-700); border-color: var(--brass-700); color: #fff; }
+
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-4); margin-bottom: var(--sp-5); }
+@media (max-width: 1023px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .kpis { grid-template-columns: 1fr; } }
+.kpi .kpi-num { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; }
+.kpi .kpi-label { font-size: var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass-500); margin-bottom: var(--sp-2); }
+
+.grid-2 { display: grid; grid-template-columns: 3fr 2fr; gap: var(--sp-4); }
+@media (max-width: 1023px) { .grid-2 { grid-template-columns: 1fr; } }
+.panel-title { font-size: var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass-500); margin-bottom: var(--sp-4); }
+
+.chart { display: flex; align-items: flex-end; gap: 2px; height: 160px; margin-top: var(--sp-4); }
+.chart .bar { flex: 1; min-width: 3px; background: var(--brass-500); opacity: 0.85; position: relative; }
+.chart .bar:hover { opacity: 1; background: var(--brass-300); }
+.chart .bar .tip { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--bone-100); color: var(--ink-900); font-size: 10px; padding: 2px 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity var(--dur-fast); z-index: 5; }
+.chart .bar:hover .tip { opacity: 1; }
+.chart-x { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-on-ink-muted); margin-top: var(--sp-2); }
+
+table.data { width: 100%; border-collapse: collapse; font-size: var(--body-s); }
+table.data td, table.data th { text-align: left; padding: var(--sp-2) 0; border-bottom: 1px solid var(--rule-on-ink); }
+table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.data th { font-size: var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-on-ink-muted); font-weight: normal; }
+.bar-mini { height: 6px; background: var(--brass-700); min-width: 2px; }
+
+.cms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+@media (max-width: 1023px) { .cms-grid { grid-template-columns: 1fr; } }
+.cms-grid .full { grid-column: 1 / -1; }
+textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height: 1.6; resize: vertical; }
+.save-row { display: flex; align-items: center; gap: var(--sp-4); margin-top: var(--sp-5); flex-wrap: wrap; }
+.status { font-size: var(--body-s); color: var(--brass-300); min-height: 1.3em; }
+.btn-sm { padding: var(--sp-3) var(--sp-5); }
+.hidden { display: none !important; }
+.refresh-note { font-size: var(--label); color: var(--text-on-ink-muted); }
+</style>
+</head>
+<body class="admin-body">
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<div class="admin-wrap" id="main">
+  <div class="admin-head">
+    <div class="admin-brand">
+      <img src="../assets/img/logo-mark.svg" alt="">
+      <h1>Trilux Admin</h1>
+    </div>
+    <span class="admin-sub">Dashboard · Monitoring &amp; CMS</span>
+    <button class="btn btn-on-ink btn-sm hidden" id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="card login-card" id="loginView">
+    <h2>Masuk</h2>
+    <p>Halaman ini hanya untuk internal Trilux Design. Masukkan admin token untuk melanjutkan.</p>
+    <label class="field-l" for="tokenInput">Admin Token</label>
+    <input class="txt" type="password" id="tokenInput" autocomplete="current-password" placeholder="••••••••••••">
+    <p class="err" id="loginErr" role="alert"></p>
+    <button class="btn btn-on-ink btn-brass btn-sm" id="loginBtn" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff;">Login →</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashView" class="hidden">
+    <div class="tabs" role="tablist" aria-label="Panel admin">
+      <button class="tab" role="tab" id="tabStats" aria-selected="true" aria-controls="statsPanel">📊 Monitoring</button>
+      <button class="tab" role="tab" id="tabCms" aria-selected="false" aria-controls="cmsPanel">✎ Kelola Konten</button>
+    </div>
+
+    <!-- STATS PANEL -->
+    <section id="statsPanel" role="tabpanel" aria-labelledby="tabStats">
+      <div class="kpis">
+        <div class="card kpi"><div class="kpi-label">Total Views (30d)</div><div class="kpi-num" id="kViews">—</div></div>
+        <div class="card kpi"><div class="kpi-label">Unique Visitors</div><div class="kpi-num" id="kVisitors">—</div></div>
+        <div class="card kpi"><div class="kpi-label">Klik CTA (30d)</div><div class="kpi-num" id="kClicks">—</div></div>
+        <div class="card kpi"><div class="kpi-label">Views Hari Ini</div><div class="kpi-num" id="kToday">—</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="panel-title">Kunjungan Harian — 30 hari terakhir</div>
+          <div class="chart" id="chart"></div>
+          <div class="chart-x"><span id="xStart"></span><span id="xEnd"></span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--sp-4);">
+          <div class="card">
+            <div class="panel-title">Halaman Terpopuler</div>
+            <table class="data"><tbody id="tblPaths"></tbody></table>
+          </div>
+          <div class="card">
+            <div class="panel-title">Browser</div>
+            <table class="data"><tbody id="tblBrowsers"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:var(--sp-4)">
+        <div class="panel-title">Klik CTA Teratas (WhatsApp / Email / Simulasi)</div>
+        <table class="data"><tbody id="tblClicks"></tbody></table>
+      </div>
+      <p class="refresh-note" style="margin-top:var(--sp-4)">Data refresh tiap kali halaman dibuka. Analytics tanpa cookie — tidak menyimpan data pribadi pengunjung.</p>
+    </section>
+
+    <!-- CMS PANEL -->
+    <section id="cmsPanel" role="tabpanel" aria-labelledby="tabCms" class="hidden">
+      <div class="card">
+        <div class="panel-title">Proyek Featured — Selected Work</div>
+        <div class="cms-grid">
+          <div><label class="field-l" for="fName">Nama Proyek</label><input class="txt" id="fName"></div>
+          <div><label class="field-l" for="fIndex">Index</label><input class="txt" id="fIndex"></div>
+          <div><label class="field-l" for="fLoc">Lokasi</label><input class="txt" id="fLoc"></div>
+          <div><label class="field-l" for="fYear">Tahun</label><input class="txt" id="fYear"></div>
+          <div><label class="field-l" for="fSpec">Project Specifics</label><input class="txt" id="fSpec"></div>
+          <div><label class="field-l" for="fType">Project Type</label><input class="txt" id="fType"></div>
+          <div><label class="field-l" for="fClient">Client Description</label><input class="txt" id="fClient"></div>
+          <div><label class="field-l" for="fCover">Cover Image Path</label><input class="txt" id="fCover"></div>
+          <div class="full"><label class="field-l" for="fAlt">Cover Alt Text</label><input class="txt" id="fAlt"></div>
+          <div class="full"><label class="field-l" for="fDesc">Deskripsi Proyek</label><textarea class="txt" id="fDesc"></textarea></div>
+          <div class="full"><label class="field-l" for="fGallery">Gallery (JSON array)</label><textarea class="txt" id="fGallery" style="min-height:90px;font-size:var(--body-s)"></textarea></div>
+        </div>
+        <div class="save-row">
+          <button class="btn btn-sm" id="saveBtn" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff;">Simpan</button>
+          <span class="status" id="saveStatus" role="status"></span>
+        </div>
+        <p class="refresh-note" style="margin-top:var(--sp-4)">Perubahan tersimpan ke Blob storage dan langsung tayang di halaman utama (hydrate runtime) — tidak perlu redeploy.</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="../assets/js/track.js" defer></script>
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => Number(n || 0).toLocaleString("id-ID");
+
+  /* ---- auth ---- */
+  let token = sessionStorage.getItem("trilux_admin_token") || "";
+  const setAuthed = (on) => {
+    $("loginView").classList.toggle("hidden", on);
+    $("dashView").classList.toggle("hidden", !on);
+    $("logoutBtn").classList.toggle("hidden", !on);
+  };
+  const tryAuth = async () => {
+    if (!token) return false;
+    try {
+      const r = await fetch("/api/admin", { headers: { Authorization: "Bearer " + token } });
+      return r.ok;
+    } catch (_) { return false; }
+  };
+
+  async function login() {
+    const t = $("tokenInput").value.trim();
+    if (!t) return;
+    const prev = token; token = t;
+    if (await tryAuth()) {
+      sessionStorage.setItem("trilux_admin_token", t);
+      $("loginErr").textContent = "";
+      setAuthed(true);
+      boot();
+    } else {
+      token = prev;
+      $("loginErr").textContent = "Token salah atau server tidak merespons.";
+    }
+  }
+  $("loginBtn").addEventListener("click", login);
+  $("tokenInput").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+  $("logoutBtn").addEventListener("click", () => { sessionStorage.removeItem("trilux_admin_token"); location.reload(); });
+
+  /* ---- tabs ---- */
+  function tab(name) {
+    $("tabStats").setAttribute("aria-selected", String(name === "stats"));
+    $("tabCms").setAttribute("aria-selected", String(name === "cms"));
+    $("statsPanel").classList.toggle("hidden", name !== "stats");
+    $("cmsPanel").classList.toggle("hidden", name !== "cms");
+    history.replaceState(null, "", "#" + name);
+  }
+  $("tabStats").addEventListener("click", () => tab("stats"));
+  $("tabCms").addEventListener("click", () => tab("cms"));
+
+  /* ---- stats ---- */
+  async function loadStats() {
+    const r = await fetch("/api/admin?stats=1&days=30", { headers: { Authorization: "Bearer " + token } });
+    if (!r.ok) throw new Error("stats failed");
+    const s = await r.json();
+
+    const today = s.perDay.length ? s.perDay[s.perDay.length - 1].views : 0;
+    $("kViews").textContent = fmt(s.totalViews);
+    $("kVisitors").textContent = fmt(s.uniqueVisitors);
+    $("kClicks").textContent = fmt(s.totalClicks);
+    $("kToday").textContent = fmt(today);
+
+    // chart
+    const max = Math.max(1, ...s.perDay.map((d) => d.views));
+    $("chart").innerHTML = s.perDay.map((d) =>
+      `<div class="bar" style="height:${Math.max(2, (d.views / max) * 100)}%"><span class="tip">${d.date.slice(5)} · ${d.views} views</span></div>`
+    ).join("");
+    $("xStart").textContent = s.perDay.length ? s.perDay[0].date.slice(5) : "";
+    $("xEnd").textContent = s.perDay.length ? s.perDay[s.perDay.length - 1].date.slice(5) : "";
+
+    // top paths
+    const paths = Object.entries(s.topPaths).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const pmax = Math.max(1, ...paths.map(([, n]) => n));
+    $("tblPaths").innerHTML = paths.map(([p, n]) =>
+      `<tr><td>${p}</td><td class="num">${fmt(n)}</td></tr>` +
+      `<tr><td colspan="2" style="border-bottom:none;padding-top:0"><div class="bar-mini" style="width:${(n / pmax) * 100}%"></div></td></tr>`
+    ).join("") || `<tr><td>Belum ada data kunjungan.</td></tr>`;
+
+    // browsers
+    $("tblBrowsers").innerHTML = Object.entries(s.browsers).sort((a, b) => b[1] - a[1]).map(([b, n]) =>
+      `<tr><td>${b}</td><td class="num">${fmt(n)}</td></tr>`
+    ).join("") || `<tr><td>—</td></tr>`;
+
+    // clicks
+    $("tblClicks").innerHTML = Object.entries(s.topClicks).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([l, n]) =>
+      `<tr><td>${l}</td><td class="num">${fmt(n)}</td></tr>`
+    ).join("") || `<tr><td>Belum ada klik CTA tercatat.</td></tr>`;
+  }
+
+  /* ---- cms ---- */
+  let projects = null;
+  async function loadCms() {
+    const r = await fetch("/api/admin", { headers: { Authorization: "Bearer " + token } });
+    if (!r.ok) throw new Error("cms read failed");
+    projects = await r.json();
+    const f = projects.featured;
+    $("fName").value = f.name || ""; $("fIndex").value = f.index || "";
+    $("fLoc").value = f.location || ""; $("fYear").value = f.year || "";
+    $("fSpec").value = f.specifics || ""; $("fType").value = f.type || "";
+    $("fClient").value = f.client || ""; $("fCover").value = f.cover || "";
+    $("fAlt").value = f.coverAlt || ""; $("fDesc").value = f.description || "";
+    $("fGallery").value = JSON.stringify(f.gallery || [], null, 2);
+  }
+
+  $("saveBtn").addEventListener("click", async () => {
+    const st = $("saveStatus");
+    let gallery;
+    try { gallery = JSON.parse($("fGallery").value); }
+    catch (_) { st.textContent = "⚠ Gallery JSON tidak valid."; return; }
+    projects.featured = {
+      ...projects.featured,
+      name: $("fName").value, index: $("fIndex").value,
+      location: $("fLoc").value, year: $("fYear").value,
+      specifics: $("fSpec").value, type: $("fType").value,
+      client: $("fClient").value, cover: $("fCover").value,
+      coverAlt: $("fAlt").value, description: $("fDesc").value,
+      gallery
+    };
+    st.textContent = "Menyimpan…";
+    try {
+      const r = await fetch("/api/admin", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({ projects })
+      });
+      const j = await r.json();
+      if (r.ok && j.ok) {
+        st.textContent = j.saved === "blob"
+          ? "✅ Tersimpan & langsung live di halaman utama."
+          : "⚠ Tersimpan sementara (" + j.saved + ") — set BLOB_READ_WRITE_TOKEN agar permanen.";
+      } else {
+        st.textContent = "⚠ Gagal: " + (j.error || r.status);
+      }
+    } catch (e) {
+      st.textContent = "⚠ Error jaringan.";
+    }
+  });
+
+  async function boot() {
+    try { await Promise.all([loadStats(), loadCms()]); }
+    catch (e) { $("loginErr").textContent = "Gagal memuat data: " + e.message; setAuthed(false); }
+  }
+
+  (async () => {
+    if (await tryAuth()) { setAuthed(true); boot(); }
+    else setAuthed(false);
+  })();
+})();
+</script>
+</body>
+</html>
