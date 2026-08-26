@@ -90,8 +90,10 @@
     setVar("--bazaar-y", `${20 - progress * 8}vh`);
     setVar("--blur-px", `${blurActive * 14}px`);
     setVar("--back-brightness", String(1 - blurActive * 0.255));
-    setVar("--bazaar-blur-px", `${frame2.active * 14}px`);
-    setVar("--bazaar-brightness", String(1 - frame2.active * 0.255 - frame3.active * 0.06));
+    setVar("--bazaar-blur-px", `${frame2.active * 14 + frame3.enter * 8}px`);
+    // frame3.ENTER (not .active) so the backdrop stays dark through the
+    // slider stage — bright photo behind cream cards kills card contrast
+    setVar("--bazaar-brightness", String(1 - frame2.active * 0.255 - frame3.enter * 0.62));
     setVar("--bazaar-saturation", String(1 + frame3.active * 0.18));
     setVar("--shade-opacity", "1");
     setVar("--shade-z", frame2.active > 0.02 ? "2" : "0");
@@ -129,6 +131,7 @@
     setVar("--panel3-y", `calc(-50% + ${-frame3.exit * 86 + (1 - frame3.enter) * 58}px)`);
 
     setVar("--sights-opacity", String(sightsEnter));
+    setVar("--split-fade", String(1 - sightsEnter));
     setVar("--sights-controls-opacity", String(sightsControlsEnter));
     if (controls) controls.classList.toggle("is-ready", sightsControlsEnter > 0.98);
     setVar("--sights-visibility", sightsEnter > 0.01 ? "visible" : "hidden");
