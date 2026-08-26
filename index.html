@@ -14,16 +14,16 @@
 <meta property="og:image" content="https://trilux-design-page.vercel.app/assets/img/cover.jpg">
 <meta property="og:image:alt" content="Two-storey contemporary house designed by Trilux Design">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preload" href="assets/fonts/playfair-display-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/img/hero.jpg" as="image">
-<link rel="stylesheet" href="assets/css/style.css?v=2">
-<link rel="stylesheet" href="assets/css/cinema.css?v=2">
+<link rel="preload" href="assets/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=3">
+<link rel="stylesheet" href="assets/css/cinema.css?v=3">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "Trilux Design",
-  "image": "https://trilux-design-page.vercel.app/assets/img/hero.jpg",
+  "image": "https://trilux-design-page.vercel.app/assets/img/cover.jpg",
   "telephone": "+62822-8734-8422",
   "email": "triluxdesign@gmail.com",
   "address": { "@type": "PostalAddress", "addressLocality": "Jakarta", "addressCountry": "ID" },
@@ -40,10 +40,18 @@
   <section class="cinema-scroll" id="cinema" aria-label="Trilux Design cinematic scroll story">
     <div class="stage">
       <div class="world">
-        <img class="scene-img sky-img" src="assets/img/hero.jpg" alt="">
-        <div class="sky-scrim" aria-hidden="true"></div>
+        <div class="sky-img" aria-hidden="true"></div>
         <header class="site-header" aria-label="Primary navigation">
-          <a class="cinema-logo" href="#cinema">Trilux Design</a>
+          <a class="cinema-logo" href="#cinema" aria-label="Trilux Design — back to top">
+            <svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <rect class="logo-draw d1" x="6" y="18" width="6" height="16" fill="#c08a3e"/>
+              <rect class="logo-draw d2" x="17" y="6" width="6" height="28" fill="#c08a3e"/>
+              <rect class="logo-draw d3" x="28" y="13" width="6" height="21" fill="#c08a3e"/>
+              <rect class="logo-draw d4" x="4" y="34" width="32" height="1.5" fill="#c08a3e"/>
+              <circle class="logo-pulse" cx="20" cy="20" r="18" stroke="#e4c07a" stroke-width="1" fill="none" opacity="0"/>
+            </svg>
+            <span class="logo-word">Trilux<em>&nbsp;Design</em></span>
+          </a>
           <nav class="cinema-nav" aria-label="Main menu">
             <a href="#cinema">Intro</a>
             <a href="#selected-work">Work</a>
@@ -53,34 +61,37 @@
           <a class="lang-switcher" href="https://wa.me/6282287348422" target="_blank" rel="noopener">WhatsApp <span aria-hidden="true">→</span></a>
         </header>
         <div class="back-stack">
-          <img class="scene-img back-img back-four" src="assets/img/mission.jpg" alt="">
+          <div class="plinth" aria-hidden="true"></div>
+          <div class="tower tower-a" aria-hidden="true"></div>
+          <div class="tower tower-b" aria-hidden="true"></div>
+          <div class="tower tower-c" aria-hidden="true"></div>
           <section class="sights-slider" aria-label="Trilux services slider">
             <div class="sights-track">
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Interior and spatial design card">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Interior and spatial design card" data-href="simulasi">
                 <span class="sight-kicker">Studio Discipline</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Crect x='21' y='21' width='22' height='22' transform='rotate(45 32 32)'/%3E%3C/svg%3E" alt="">
                 <h3>Interior &amp; Spatial Design</h3>
                 <p>Layouts, lighting scenarios, and material stories shaped around how you actually live.</p>
               </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Exterior facades card">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Exterior facades card" data-href="#selected-work">
                 <span class="sight-kicker">Street Presence</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Cpath d='M12 34L32 15l20 19M19 29v20h26V29'/%3E%3C/svg%3E" alt="">
                 <h3>Exterior Facades</h3>
                 <p>Strong lines, stone and timber cladding, and facades that age with dignity.</p>
               </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Architecture and building card">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Architecture and building card" data-href="#selected-work">
                 <span class="sight-kicker">Design &amp; Build</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Crect x='17' y='13' width='30' height='38'/%3E%3Cpath d='M25 22h4m6 0h4M25 31h4m6 0h4M25 40h4m6 0h4'/%3E%3C/svg%3E" alt="">
                 <h3>Architecture &amp; Building</h3>
                 <p>From permit drawings to handover — one team, one contract, one standard.</p>
               </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Renovation and retrofit card">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Renovation and retrofit card" data-href="simulasi">
                 <span class="sight-kicker">Existing Homes</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Ccircle cx='32' cy='32' r='24'/%3E%3Cpath d='M41 23l-5 12-12 5 5-12z' fill='%23c08a3e' stroke='none'/%3E%3C/svg%3E" alt="">
                 <h3>Renovation &amp; Retrofit</h3>
                 <p>Careful surgery for older houses — new light, flow, and services without losing soul.</p>
               </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Consultation and estimation card">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Consultation and estimation card" data-href="simulasi">
                 <span class="sight-kicker">Start Here</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Cpath d='M32 10l6 14 15 1-11 10 3 15-13-8-13 8 3-15-11-10 15-1z'/%3E%3C/svg%3E" alt="">
                 <h3>Consultation &amp; Estimation</h3>
@@ -88,22 +99,20 @@
               </article>
             </div>
           </section>
-          <img class="scene-img back-img back-bazaar" src="assets/img/welcome.jpg" alt="">
         </div>
         <div class="sights-controls" aria-label="Slider controls">
           <button class="sight-nav sight-prev" type="button" aria-label="Previous service">←</button>
           <button class="sight-nav sight-next" type="button" aria-label="Next service">→</button>
         </div>
         <h1 class="hero-title">TRILUX</h1>
-        <img class="scene-img splitframe-img splitframe-left" src="assets/img/cover.jpg" alt="">
-        <img class="scene-img splitframe-img splitframe-right" src="assets/img/cover.jpg" alt="">
-        <img class="scene-img bridge-img" src="assets/img/contact.jpg" alt="">
-        <img class="scene-img frame-two-img" src="assets/img/mission.jpg" alt="">
+        <div class="scene-shape bridge-img" aria-hidden="true"></div>
+        <div class="scene-shape frame-two-img" aria-hidden="true"><div class="arch-ring"></div></div>
+        <div class="scene-shape splitframe-img splitframe-left" aria-hidden="true"></div>
+        <div class="scene-shape splitframe-img splitframe-right" aria-hidden="true"></div>
         <div class="shade"></div>
       </div>
 
       <section class="intro-copy" aria-label="Trilux overview">
-        <div class="panel-scrim" aria-hidden="true"></div>
         <p>An architecture and interior studio shaping calm, precise spaces — from the first sketch to the final brass fitting.</p>
         <div class="hero-tags" aria-label="Trilux highlights">
           <span>Interior</span>
@@ -113,7 +122,6 @@
       </section>
 
       <section class="story-panel story-panel-bridge" aria-label="Studio approach">
-        <div class="panel-scrim" aria-hidden="true"></div>
         <h2>Every project starts with structure.</h2>
         <p>We pair architectural rigour with warm materiality — concrete discipline softened by timber, brass, and natural light.</p>
         <dl class="facts">
@@ -129,7 +137,6 @@
       </section>
 
       <section class="story-panel story-panel-bazaar" aria-label="Featured project teaser">
-        <div class="panel-scrim" aria-hidden="true"></div>
         <h2>Craft stays close to home.</h2>
         <p>Our current featured residence — stone facade, high voids, marble and gold — is one scroll away.</p>
         <button class="note-button" type="button">
@@ -239,9 +246,23 @@
 </main>
 
 <!-- S7 — Footer -->
-<footer class="site-footer panel-ink wrap">
-  <span>© 2026 Trilux Design · Interior · Exterior · Building</span>
-  <a href="#cinema" id="backToTop">Back to top ↑</a>
+<footer class="site-footer panel-ink">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="6" y="18" width="6" height="16" fill="#c08a3e"/>
+        <rect x="17" y="6" width="6" height="28" fill="#c08a3e"/>
+        <rect x="28" y="13" width="6" height="21" fill="#c08a3e"/>
+        <rect x="4" y="34" width="32" height="1.5" fill="#c08a3e"/>
+      </svg>
+      <div>
+        <span class="footer-name">Trilux <em>Design</em></span>
+        <span class="footer-tag">Interior · Exterior · Building — Jakarta</span>
+      </div>
+    </div>
+    <span class="footer-copy">© 2026 Trilux Design</span>
+    <a href="#cinema" id="backToTop">Back to top ↑</a>
+  </div>
 </footer>
 
 <script src="assets/js/track.js" defer></script>

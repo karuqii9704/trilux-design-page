@@ -106,6 +106,7 @@
     setVar("--title-opacity", String(1 - introExit));
 
     setVar("--bridge-x", `calc(-50% + ${mouseX * 18}px)`);
+    setVar("--bridge-fade", String(clamp(1 - frame2.exit * 1.35)));
     setVar("--bridge-y", `${mouseY * 8 + sharedHeroY - frame2.exit * 760}px`);
     setVar("--bridge-bottom", `${5 - frame2.enter * 13}vh`);
     setVar("--bridge-width", `${67.2 + frame2.enter * 37.8}vw`);
@@ -177,6 +178,34 @@
     updateSightSlider();
   }
 
+  // cards navigate: data-href on the original card is cloned with it
+  function bindCardNavigation() {
+    if (!track) return;
+    track.addEventListener("click", (e) => {
+      const card = e.target.closest(".sight-card");
+      if (!card) return;
+      const href = card.dataset.href;
+      if (href) {
+        if (href.startsWith("#")) {
+          document.querySelector(href)?.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth" });
+        } else {
+          window.location.href = href;
+        }
+      }
+    });
+    track.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const card = e.target.closest(".sight-card");
+      if (!card || !card.dataset.href) return;
+      e.preventDefault();
+      if (card.dataset.href.startsWith("#")) {
+        document.querySelector(card.dataset.href)?.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth" });
+      } else {
+        window.location.href = card.dataset.href;
+      }
+    });
+  }
+
   function jumpSightSlider(i) {
     if (!track) return;
     track.classList.add("is-jumping");
@@ -246,5 +275,6 @@
   }
 
   setupSightSlider();
+  bindCardNavigation();
   requestTick();
 })();

@@ -3,25 +3,18 @@
    ========================================================================== */
 
 @font-face {
-  font-family: "Playfair Display";
+  font-family: "Fraunces";
   font-style: normal;
   font-weight: 400 600;
   font-display: swap;
-  src: url("../fonts/playfair-display-400.woff2") format("woff2");
+  src: url("../fonts/fraunces-400.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Playfair Display";
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url("../fonts/playfair-display-400-italic.woff2") format("woff2");
-}
-@font-face {
-  font-family: "JetBrains Mono";
+  font-family: "Archivo";
   font-style: normal;
-  font-weight: 400 600;
+  font-weight: 400 700;
   font-display: swap;
-  src: url("../fonts/jetbrains-mono-400.woff2") format("woff2");
+  src: url("../fonts/archivo-400.woff2") format("woff2");
 }
 
 :root {
@@ -43,9 +36,12 @@
   --danger: #b4453a;
   --success: #4f7a52;
 
-  /* type */
-  --font-display: "Playfair Display", "Times New Roman", Georgia, serif;
-  --font-mono: "JetBrains Mono", "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+  /* type — Playfair/JetBrains retired (too generic); Fraunces carries display,
+     Archivo carries UI/body. --font-mono kept as a token name because ~16
+     rules reference it; it now resolves to Archivo. */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-mono: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --display-xl: clamp(3.25rem, 8vw, 7rem);
   --display-l: clamp(2.25rem, 5vw, 3.5rem);
@@ -660,14 +656,32 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
 .site-footer {
   padding-block: var(--sp-6);
   border-top: 1px solid var(--rule-on-ink);
+  font-size: var(--body-s);
+  color: var(--text-on-ink-muted);
+}
+.footer-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: var(--body-s);
-  color: var(--text-on-ink-muted);
   gap: var(--sp-4);
   flex-wrap: wrap;
 }
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.footer-brand svg { display: block; }
+.footer-brand > div { display: flex; flex-direction: column; gap: 3px; }
+.footer-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--text-on-ink);
+  line-height: 1;
+}
+.footer-name em { font-style: italic; color: var(--brass-300); }
+.footer-tag { font-family: var(--font-sans); font-size: 0.78rem; letter-spacing: 0.05em; }
+.footer-copy { letter-spacing: 0.03em; }
 .site-footer a:hover { color: var(--text-on-ink); }
 
 /* ==========================================================================
@@ -717,5 +731,5 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
 
   .contact-details { grid-template-columns: 1fr; }
 
-  .site-footer { text-align: center; justify-content: center; }
+  .footer-inner { text-align: center; justify-content: center; }
 }
