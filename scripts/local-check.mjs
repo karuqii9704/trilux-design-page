@@ -28,17 +28,21 @@ ok("frame2 bridge panel appears", parseFloat(
   await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--panel2-opacity"))
 ) > 0.3);
 
-// end of rig → brick grid flies in, 5 cards in 2 offset rows
+// end of rig → slider flies in from 420vw, 15 cloned cards (3 sets × 5)
 await page.evaluate(() => window.scrollTo(0, 3800));
 await page.waitForTimeout(1400);
 const enterX = parseFloat(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--sights-enter-x")));
-ok("cards flown in", enterX < 5, `enter-x=${enterX}vw`);
-ok("5 sight cards (brick grid)", await page.locator(".sights-track .sight-card").count() === 5);
-ok("cards entrance live", await page.locator(".sights-track.is-live").count() === 1);
+ok("slider flown in", enterX < 5, `enter-x=${enterX}vw`);
+ok("15 cloned sight cards", await page.locator(".sights-track .sight-card").count() === 15);
 
-// cards navigate: interior card -> simulasi page
-const cardHref = await page.evaluate(() => document.querySelector(".sights-track .sight-card[data-href='simulasi']")?.dataset.href);
-ok("cards carry simulasi link", cardHref === "simulasi");
+// next button advances the track
+await page.evaluate(() => window.scrollTo(0, 4200));
+await page.waitForTimeout(400);
+const before = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--sights-shift"));
+await page.click(".sight-next");
+await page.waitForTimeout(800);
+const after = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--sights-shift"));
+ok("next shifts track", before !== after, `${before.trim()} → ${after.trim()}`);
 
 // note-button scrolls to featured work
 await page.evaluate(() => window.scrollTo(0, 2400));
