@@ -95,6 +95,7 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
     <div class="tabs" role="tablist" aria-label="Panel admin">
       <button class="tab" role="tab" id="tabStats" aria-selected="true" aria-controls="statsPanel">📊 Monitoring</button>
       <button class="tab" role="tab" id="tabCms" aria-selected="false" aria-controls="cmsPanel">✎ Kelola Konten</button>
+      <button class="tab" role="tab" id="tabLeads" aria-selected="false" aria-controls="leadsPanel">✉ Leads</button>
     </div>
 
     <!-- STATS PANEL -->
@@ -154,6 +155,46 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
         </div>
         <p class="refresh-note" style="margin-top:var(--sp-4)">Perubahan tersimpan ke Blob storage dan langsung tayang di halaman utama (hydrate runtime) — tidak perlu redeploy.</p>
       </div>
+
+      <div class="card" style="margin-top:var(--sp-5)">
+        <div class="panel-title">Halaman Proyek (/project) — daftar proyek</div>
+        <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap;margin-bottom:var(--sp-4)" id="projList"></div>
+        <div class="cms-grid">
+          <div><label class="field-l" for="pSlug">Slug (URL, unik)</label><input class="txt" id="pSlug" placeholder="padang-residence-ii"></div>
+          <div><label class="field-l" for="pName">Nama Proyek</label><input class="txt" id="pName"></div>
+          <div><label class="field-l" for="pLoc">Lokasi</label><input class="txt" id="pLoc"></div>
+          <div><label class="field-l" for="pYear">Tahun</label><input class="txt" id="pYear"></div>
+          <div><label class="field-l" for="pType">Project Type</label><input class="txt" id="pType"></div>
+          <div><label class="field-l" for="pClient">Client</label><input class="txt" id="pClient"></div>
+          <div><label class="field-l" for="pCover">Cover Path (assets/img/…)</label><input class="txt" id="pCover"></div>
+          <div><label class="field-l" for="pAlt">Cover Alt</label><input class="txt" id="pAlt"></div>
+          <div class="full"><label class="field-l" for="pDesc">Deskripsi</label><textarea class="txt" id="pDesc"></textarea></div>
+          <div class="full"><label class="field-l" for="pHigh">Highlights (satu per baris)</label><textarea class="txt" id="pHigh" style="min-height:70px"></textarea></div>
+          <div class="full"><label class="field-l" for="pGal">Gallery (JSON array: [{"thumb":"assets/img/x.jpg","label":"…"}])</label><textarea class="txt" id="pGal" style="min-height:80px;font-size:var(--body-s)"></textarea></div>
+        </div>
+        <div class="save-row">
+          <button class="btn btn-sm" id="projAdd" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff">Tambah Proyek Baru</button>
+          <button class="btn btn-sm" id="projUpdate">Update Terpilih</button>
+          <button class="btn btn-sm" id="projDelete" style="border-color:#e08a80;color:#e08a80">Hapus Terpilih</button>
+          <span class="status" id="projStatus" role="status"></span>
+        </div>
+        <p class="refresh-note" style="margin-top:var(--sp-4)">Proyek tayang di <strong>/project</strong> (index + halaman detail per slug). Simpan juga men-trigger update halaman utama bila dijadikan featured.</p>
+      </div>
+    </section>
+
+    <!-- LEADS PANEL -->
+    <section id="leadsPanel" role="tabpanel" aria-labelledby="tabLeads" class="hidden">
+      <div class="card">
+        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Potential Leads — dari WhatsApp &amp; simulasi</span>
+          <button class="btn btn-sm" id="leadsRefresh" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff">Refresh</button>
+        </div>
+        <table class="data">
+          <thead><tr><th>Tanggal</th><th>Kontak</th><th>Lingkup</th><th class="num">Luas</th><th>Estimasi</th></tr></thead>
+          <tbody id="tblLeads"></tbody>
+        </table>
+        <p class="refresh-note" style="margin-top:var(--sp-4)" id="leadsNote"></p>
+      </div>
     </section>
   </div>
 </div>
@@ -164,6 +205,7 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
   "use strict";
   const $ = (id) => document.getElementById(id);
   const fmt = (n) => Number(n || 0).toLocaleString("id-ID");
+  const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
   /* ---- auth ---- */
   let token = sessionStorage.getItem("trilux_admin_token") || "";
@@ -200,14 +242,17 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
 
   /* ---- tabs ---- */
   function tab(name) {
-    $("tabStats").setAttribute("aria-selected", String(name === "stats"));
-    $("tabCms").setAttribute("aria-selected", String(name === "cms"));
+    ["stats", "cms", "leads"].forEach((n) => {
+      $("tab" + n[0].toUpperCase() + n.slice(1)).setAttribute("aria-selected", String(name === n));
+    });
     $("statsPanel").classList.toggle("hidden", name !== "stats");
     $("cmsPanel").classList.toggle("hidden", name !== "cms");
+    $("leadsPanel").classList.toggle("hidden", name !== "leads");
     history.replaceState(null, "", "#" + name);
   }
   $("tabStats").addEventListener("click", () => tab("stats"));
   $("tabCms").addEventListener("click", () => tab("cms"));
+  $("tabLeads").addEventListener("click", () => { tab("leads"); loadLeads(); });
 
   /* ---- stats ---- */
   async function loadStats() {
@@ -297,8 +342,115 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
     }
   });
 
+  /* ---- projects manager (/project page data) ---- */
+  let selectedSlug = null;
+  const P = (id) => $(id);
+  function renderProjList() {
+    const list = Array.isArray(projects.projects) ? projects.projects : [];
+    P("projList").innerHTML = list.length ? list.map((p) =>
+      `<button class="tab" type="button" data-slug="${esc(p.slug)}" ${p.slug === selectedSlug ? 'aria-selected="true" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff"' : ""}>${esc(p.name)}</button>`
+    ).join("") : `<span class="refresh-note">Belum ada proyek.</span>`;
+  }
+  function fillProjForm(p) {
+    P("pSlug").value = p.slug || ""; P("pName").value = p.name || "";
+    P("pLoc").value = p.location || ""; P("pYear").value = p.year || "";
+    P("pType").value = p.type || ""; P("pClient").value = p.client || "";
+    P("pCover").value = p.cover || ""; P("pAlt").value = p.coverAlt || "";
+    P("pDesc").value = p.description || "";
+    P("pHigh").value = (p.highlights || []).join("\n");
+    P("pGal").value = JSON.stringify(p.gallery || [], null, 2);
+  }
+  function readProjForm() {
+    let gallery;
+    try { gallery = JSON.parse(P("pGal").value || "[]"); }
+    catch (_) { P("projStatus").textContent = "⚠ Gallery JSON tidak valid."; return null; }
+    return {
+      slug: P("pSlug").value.trim(), name: P("pName").value.trim(),
+      location: P("pLoc").value.trim(), year: P("pYear").value.trim(),
+      type: P("pType").value.trim(), client: P("pClient").value.trim(),
+      cover: P("pCover").value.trim(), coverAlt: P("pAlt").value.trim(),
+      description: P("pDesc").value.trim(),
+      highlights: P("pHigh").value.split("\n").map((s) => s.trim()).filter(Boolean),
+      gallery
+    };
+  }
+  P("projList").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-slug]");
+    if (!btn) return;
+    selectedSlug = btn.dataset.slug;
+    const p = (projects.projects || []).find((x) => x.slug === selectedSlug);
+    if (p) fillProjForm(p);
+    renderProjList();
+  });
+  async function saveProjects(statusEl) {
+    statusEl.textContent = "Menyimpan…";
+    try {
+      const r = await fetch("/api/admin", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({ projects })
+      });
+      const j = await r.json();
+      statusEl.textContent = r.ok && j.ok
+        ? (j.saved === "blob" ? "✅ Tersimpan & live." : "⚠ Tersimpan sementara (" + j.saved + ") — set BLOB_READ_WRITE_TOKEN.")
+        : "⚠ Gagal: " + (j.error || r.status);
+    } catch (_) { statusEl.textContent = "⚠ Error jaringan."; }
+  }
+  P("projAdd").addEventListener("click", async () => {
+    const p = readProjForm();
+    if (!p) return;
+    if (!p.slug || !p.name) { P("projStatus").textContent = "⚠ Slug & nama wajib."; return; }
+    projects.projects = projects.projects || [];
+    if (projects.projects.some((x) => x.slug === p.slug)) { P("projStatus").textContent = "⚠ Slug sudah dipakai."; return; }
+    projects.projects.push(p);
+    selectedSlug = p.slug;
+    renderProjList();
+    await saveProjects(P("projStatus"));
+  });
+  P("projUpdate").addEventListener("click", async () => {
+    const p = readProjForm();
+    if (!p) return;
+    const i = (projects.projects || []).findIndex((x) => x.slug === selectedSlug);
+    if (i === -1) { P("projStatus").textContent = "⚠ Pilih proyek dulu di daftar."; return; }
+    if (p.slug !== selectedSlug) { P("projStatus").textContent = "⚠ Slug tidak boleh diubah (hapus + tambah baru)."; return; }
+    projects.projects[i] = p;
+    renderProjList();
+    await saveProjects(P("projStatus"));
+  });
+  P("projDelete").addEventListener("click", async () => {
+    if (!selectedSlug) { P("projStatus").textContent = "⚠ Pilih proyek dulu."; return; }
+    projects.projects = (projects.projects || []).filter((x) => x.slug !== selectedSlug);
+    selectedSlug = null;
+    renderProjList();
+    await saveProjects(P("projStatus"));
+  });
+
+  /* ---- leads inbox ---- */
+  async function loadLeads() {
+    const tbl = $("tblLeads");
+    tbl.innerHTML = `<tr><td>Memuat…</td></tr>`;
+    try {
+      const r = await fetch("/api/admin?leads=1", { headers: { Authorization: "Bearer " + token } });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || r.status);
+      const leads = j.leads || [];
+      tbl.innerHTML = leads.length ? leads.map((l) => `
+        <tr>
+          <td>${esc((l.ts || "").replace("T", " ").slice(0, 16))}</td>
+          <td>${esc(l.contact)}${l.name ? " · " + esc(l.name) : ""}</td>
+          <td>${esc(l.scope || "—")}</td>
+          <td class="num">${l.area ? esc(String(l.area)) + " m²" : "—"}</td>
+          <td>${esc(l.total || "—")}${l.config ? `<div style="font-size:var(--label);color:var(--text-on-ink-muted)">${esc(l.config).slice(0, 90)}…</div>` : ""}</td>
+        </tr>`).join("") : `<tr><td colspan="5">Belum ada lead masuk. Lead terkirim saat pengunjung mengirim hasil simulasi / menghubungi via form.</td></tr>`;
+      $("leadsNote").textContent = `Total ${j.total || leads.length} lead (maks 200 terbaru ditampilkan).`;
+    } catch (e) {
+      tbl.innerHTML = `<tr><td>Gagal memuat leads: ${esc(String(e.message || e))}</td></tr>`;
+    }
+  }
+  $("leadsRefresh").addEventListener("click", loadLeads);
+
   async function boot() {
-    try { await Promise.all([loadStats(), loadCms()]); }
+    try { await Promise.all([loadStats(), loadCms()]); renderProjList(); }
     catch (e) { $("loginErr").textContent = "Gagal memuat data: " + e.message; setAuthed(false); }
   }
 

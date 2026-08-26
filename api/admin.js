@@ -105,6 +105,25 @@ export default async function handler(req, res) {
     return;
   }
 
+  /* ---- leads inbox ---- */
+  if (req.method === "GET" && (req.query.leads === "1" || req.query.leads === "true")) {
+    try {
+      let text = "";
+      if (process.env.BLOB_READ_WRITE_TOKEN) {
+        text = await readBlobText("cms/leads.jsonl");
+      } else {
+        try { text = fs.readFileSync("/tmp/leads.jsonl", "utf8"); } catch (_) { text = ""; }
+      }
+      const leads = text.trim() ? text.trim().split("\n").map((l) => { try { return JSON.parse(l); } catch (_) { return null; } }).filter(Boolean) : [];
+      leads.reverse(); // newest first
+      res.setHeader("Cache-Control", "no-store");
+      res.status(200).json({ leads: leads.slice(0, 200), total: leads.length });
+    } catch (e) {
+      res.status(500).json({ error: "leads read failed", detail: String(e && e.message) });
+    }
+    return;
+  }
+
   /* ---- CMS read ---- */
   if (req.method === "GET") {
     try {
@@ -130,8 +149,10 @@ export default async function handler(req, res) {
       body = raw === null ? b : JSON.parse(raw);
     } catch (_) { res.status(400).json({ error: "bad json" }); return; }
     const projects = body.projects;
-    if (!projects || typeof projects !== "object" || !projects.featured) {
-      res.status(422).json({ error: "payload must be {projects:{featured:{...}}}" });
+    const valid = projects && typeof projects === "object"
+      && (projects.featured || Array.isArray(projects.projects));
+    if (!valid) {
+      res.status(422).json({ error: "payload must be {projects:{featured|projects[]}}" });
       return;
     }
     try {

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyek — Trilux Design</title>
+<meta name="description" content="Portofolio proyek Trilux Design — interior, eksterior, dan arsitektur.">
+<link rel="canonical" href="https://trilux-design-page.vercel.app/project">
+<link rel="icon" type="image/svg+xml" href="../assets/img/logo-mark.svg">
+<meta property="og:title" content="Proyek — Trilux Design">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/css/style.css?v=3">
+<style>
+.proj-hero { padding-block: var(--sp-8) var(--sp-6); }
+.proj-hero h1 { font-size: var(--display-l); margin-bottom: var(--sp-3); }
+.proj-meta { display: flex; gap: var(--sp-5); flex-wrap: wrap; color: var(--text-on-ink-muted); font-size: var(--body-s); letter-spacing: 0.06em; text-transform: uppercase; }
+.proj-cover { width: 100%; border: 1px solid var(--rule-on-bone); }
+.proj-body { display: grid; grid-template-columns: minmax(0,7fr) minmax(0,5fr); gap: var(--sp-7); margin-top: var(--sp-6); }
+@media (max-width: 1023px) { .proj-body { grid-template-columns: 1fr; } }
+.proj-desc { font-size: var(--body-l); line-height: 1.75; color: var(--text-on-bone); }
+.proj-highlights { border: 1px solid var(--rule-on-bone); padding: var(--sp-5); }
+.proj-highlights h2 { font-size: var(--title-s); margin-bottom: var(--sp-4); }
+.proj-highlights li { position: relative; padding-left: 24px; margin-bottom: var(--sp-3); font-size: var(--body-s); line-height: 1.6; }
+.proj-highlights li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 12px; height: 2px; background: var(--brass-500); }
+.gal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); margin-top: var(--sp-5); }
+@media (max-width: 767px) { .gal-grid { grid-template-columns: 1fr; } }
+.gal-grid button { border: 1px solid var(--rule-on-bone); padding: 0; cursor: pointer; background: none; }
+.gal-grid img { width: 100%; height: 180px; object-fit: cover; display: block; }
+.proj-ctas { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-6); }
+.idx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-5); }
+@media (max-width: 1023px) { .idx-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .idx-grid { grid-template-columns: 1fr; } }
+.idx-card { border: 1px solid var(--rule-on-bone); display: block; color: inherit; text-decoration: none; transition: border-color var(--dur-fast) var(--ease-out); }
+.idx-card:hover { border-color: var(--brass-700); }
+.idx-card img { width: 100%; height: 220px; object-fit: cover; display: block; }
+.idx-card .idx-body { padding: var(--sp-4); }
+.idx-card h2 { font-size: var(--title-s); }
+.idx-card p { font-size: var(--body-s); color: var(--text-on-bone-muted); margin-top: var(--sp-1); }
+.badge { display: inline-block; padding: 2px 10px; border: 1px solid var(--brass-500); color: var(--brass-700); font-size: var(--label); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: var(--sp-2); }
+.proj-err { padding: var(--sp-7) 0; color: var(--text-on-bone-muted); }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="nav is-scrolled">
+  <div class="nav__inner">
+    <nav class="nav__list" aria-label="Primary">
+      <a class="nav__link" href="../#welcome">Story</a>
+      <a class="nav__link" href="../#selected-work">Portfolio</a>
+    </nav>
+    <a class="nav__logo" href="../" aria-label="Trilux Design — home">
+      <img class="nav__logo-mark" src="../assets/img/logo-mark.svg" alt="" width="22" height="22">
+      Trilux Design
+      <span class="nav__logo-sub">Interior · Exterior · Building</span>
+    </a>
+    <nav class="nav__list nav__list--right" aria-label="Secondary">
+      <a class="nav__link" href="../#contact">Services</a>
+      <a class="nav__link" href="../simulasi">Simulasi</a>
+      <a class="nav__link" href="../#contact">Contact</a>
+    </nav>
+    <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navOverlay" aria-label="Open menu">
+      <span class="nav__toggle-bars"><span></span><span></span><span></span></span>
+    </button>
+  </div>
+  <div class="nav__overlay" id="navOverlay">
+    <a href="../#welcome">Story</a>
+    <a href="../#selected-work">Portfolio</a>
+    <a href="../#contact">Services</a>
+    <a href="../simulasi">Simulasi</a>
+    <a href="../#contact">Contact</a>
+    <a class="btn btn-on-ink" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="panel-bone" style="min-height:60vh">
+    <div class="wrap" id="projRoot">
+      <p class="proj-err">Memuat proyek…</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer panel-ink wrap">
+  <span>© 2026 Trilux Design · Interior · Exterior · Building</span>
+  <a href="../#top" id="backToTop">Back to top ↑</a>
+</footer>
+
+<script src="../assets/js/track.js" defer></script>
+<script src="app.js"></script>
+</body>
+</html>
