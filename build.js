@@ -37,10 +37,10 @@ const block = `<!-- CMS:PROJECT:START — rendered by build.js from data/project
       <div class="work__head reveal">
         <div>
           <div class="work__title-row">
-            <span class="work__index">${attr(p.index)}</span>
-            <h2 class="work__name">${esc(p.name)}</h2>
+            <span class="work__index" id="workIndex">${attr(p.index)}</span>
+            <h2 class="work__name" id="workName">${esc(p.name)}</h2>
           </div>
-          <p class="work__location">${attr(p.location)} <span class="work__year">— ${attr(p.year)}</span></p>
+          <p class="work__location"><span id="workLocation">${attr(p.location)}</span> <span class="work__year" id="workYear">— ${attr(p.year)}</span></p>
         </div>
         <div class="pagination" role="group" aria-label="Featured projects">
           <button class="pagination__dot" type="button" aria-current="true" aria-label="Lihat proyek 1"><span>1</span></button>
@@ -53,15 +53,15 @@ const block = `<!-- CMS:PROJECT:START — rendered by build.js from data/project
       <dl class="meta-row reveal">
         <div>
           <dt>Project Specifics</dt>
-          <dd>${attr(p.specifics)}</dd>
+          <dd id="workSpecs">${attr(p.specifics)}</dd>
         </div>
         <div>
           <dt>Project Type</dt>
-          <dd>${attr(p.type)}</dd>
+          <dd id="workType">${attr(p.type)}</dd>
         </div>
         <div>
           <dt>Client Description</dt>
-          <dd>${attr(p.client)}</dd>
+          <dd id="workClient">${attr(p.client)}</dd>
         </div>
       </dl>
 
@@ -71,7 +71,7 @@ const block = `<!-- CMS:PROJECT:START — rendered by build.js from data/project
       </div>
 
       <div class="work__bottom reveal">
-        <p class="work__desc">${esc(p.description)}</p>
+        <p class="work__desc" id="workDesc">${esc(p.description)}</p>
         <div class="thumb-grid" id="thumbGrid" role="group" aria-label="Project gallery">
 ${gallery}
         </div>
