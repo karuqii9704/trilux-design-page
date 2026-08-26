@@ -17,7 +17,9 @@ section.cinema-scroll {
   position: sticky;
   top: 0;
   height: 100vh;
-  min-height: 640px;
+  /* 640px floor for content breathing room, but never taller than the
+     viewport itself (short windows / heavy browser zoom clipped the bottom) */
+  min-height: min(640px, 100vh);
   overflow: hidden;
   isolation: isolate;
   background: var(--ink-900);
@@ -651,6 +653,15 @@ section.cinema-scroll {
 .note-button span:first-child { font-size: 1.15rem; line-height: 1; }
 
 /* ---------- media queries ---------- */
+@media (max-width: 900px) {
+  /* 220px side columns + centered nav overflow 768px viewboards — relax */
+  .site-header {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    padding-inline: 20px;
+  }
+}
+
 @media (max-width: 1100px) {
   .bridge-img { width: 150vw; }
   .facts { gap: 34px; margin-top: 44px; }
@@ -661,7 +672,7 @@ section.cinema-scroll {
 }
 
 @media (max-width: 640px) {
-  .stage { min-height: 640px; }
+  .stage { min-height: min(560px, 100vh); }
   .site-header {
     grid-template-columns: 1fr auto;
     gap: 12px;
