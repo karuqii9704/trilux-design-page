@@ -15,17 +15,12 @@
   const controls = document.querySelector(".sights-controls");
   const prevBtn = document.querySelector(".sight-prev");
   const nextBtn = document.querySelector(".sight-next");
-  const originals = Array.from(document.querySelectorAll(".sight-card"));
 
   let targetMouseX = 0, targetMouseY = 0;
   let mouseX = 0, mouseY = 0;
   let targetScroll = 0, smoothScroll = 0;
   let initialized = false;
   let rafPending = false;
-
-  let sightCards = [];
-  const originalSightCount = originals.length;
-  let activeSight = originalSightCount;
 
   /* ---------- helpers ---------- */
   const clamp = (v, min = 0, max = 1) => Math.min(max, Math.max(min, v));
@@ -134,6 +129,7 @@
     setVar("--sights-opacity", String(sightsEnter));
     setVar("--split-fade", String(1 - sightsEnter));
     setVar("--sights-controls-opacity", String(sightsControlsEnter));
+    if (track) track.classList.toggle("is-live", sightsEnter > 0.02);
     if (controls) controls.classList.toggle("is-ready", sightsControlsEnter > 0.98);
     setVar("--sights-visibility", sightsEnter > 0.01 ? "visible" : "hidden");
     setVar("--sights-y", "0px");
@@ -155,27 +151,6 @@
     if (rafPending) return;
     rafPending = true;
     requestAnimationFrame(update);
-  }
-
-  /* ---------- infinite sights slider (exact reference behavior) ---------- */
-  function updateSightSlider() {
-    if (!track || !sightCards.length) return;
-    const cardWidth = sightCards[0].offsetWidth;
-    const gap = parseFloat(getComputedStyle(track).columnGap || "0");
-    setVar("--sights-shift", `${-(cardWidth + gap) * activeSight}px`);
-    sightCards.forEach((card, i) => card.classList.toggle("is-active", i === activeSight));
-  }
-
-  function moveSightSlider(dir) {
-    activeSight += dir;
-    updateSightSlider();
-  }
-
-  function selectSightCard(card) {
-    const idx = Number(card.dataset.sightIndex);
-    if (!Number.isFinite(idx)) return;
-    activeSight = idx;
-    updateSightSlider();
   }
 
   // cards navigate: data-href on the original card is cloned with it
@@ -206,53 +181,12 @@
     });
   }
 
-  function jumpSightSlider(i) {
-    if (!track) return;
-    track.classList.add("is-jumping");
-    activeSight = i;
-    updateSightSlider();
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => track.classList.remove("is-jumping"))
-    );
-  }
 
-  function normalizeSightSlider() {
-    if (activeSight >= originalSightCount * 2) jumpSightSlider(activeSight - originalSightCount);
-    else if (activeSight < originalSightCount) jumpSightSlider(activeSight + originalSightCount);
-  }
 
-  function setupSightSlider() {
-    if (!track) return;
-    track.replaceChildren();
-    for (let setIndex = 0; setIndex < 3; setIndex++) {
-      originals.forEach((card, cardIndex) => {
-        const clone = card.cloneNode(true);
-        clone.dataset.sightIndex = String(setIndex * originalSightCount + cardIndex);
-        track.appendChild(clone);
-      });
-    }
-    sightCards = Array.from(track.querySelectorAll(".sight-card"));
-    activeSight = originalSightCount;
-
-    sightCards.forEach((card) => {
-      card.addEventListener("click", () => selectSightCard(card));
-      card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          selectSightCard(card);
-        }
-      });
-    });
-    track.addEventListener("transitionend", normalizeSightSlider);
-    updateSightSlider();
-  }
 
   /* ---------- listeners ---------- */
   window.addEventListener("scroll", requestTick, { passive: true });
-  window.addEventListener("resize", () => {
-    updateSightSlider();
-    requestTick();
-  });
+  window.addEventListener("resize", requestTick, { passive: true });
   window.addEventListener(
     "pointermove",
     (e) => {
@@ -274,7 +208,6 @@
     });
   }
 
-  setupSightSlider();
   bindCardNavigation();
   requestTick();
 })();

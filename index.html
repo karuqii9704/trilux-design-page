@@ -55,7 +55,7 @@
 <link rel="preload" href="assets/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/style.css?v=3">
-<link rel="stylesheet" href="assets/css/cinema.css?v=4">
+<link rel="stylesheet" href="assets/css/cinema.css?v=5">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -174,17 +174,20 @@
             </div>
           </section>
         </div>
-        <div class="sights-controls" aria-label="Slider controls">
-          <button class="sight-nav sight-prev" type="button" aria-label="Previous service">←</button>
-          <button class="sight-nav sight-next" type="button" aria-label="Next service">→</button>
-        </div>
-        <h1 class="hero-title">TRILUX</h1>
+        <h1 class="hero-title" aria-label="TRILUX"><span aria-hidden="true">T</span><span aria-hidden="true">R</span><span aria-hidden="true">I</span><span aria-hidden="true">L</span><span aria-hidden="true">U</span><span aria-hidden="true">X</span></h1>
         <div class="scene-shape bridge-img" aria-hidden="true"></div>
         <div class="scene-shape frame-two-img" aria-hidden="true"><div class="arch-ring"></div></div>
         <div class="scene-shape splitframe-img splitframe-left" aria-hidden="true"></div>
         <div class="scene-shape splitframe-img splitframe-right" aria-hidden="true"></div>
         <div class="shade"></div>
       </div>
+
+      <aside class="sim-cta-card" aria-label="Buka simulasi biaya">
+        <p class="sim-cta-kicker">Start Here</p>
+        <h2 class="sim-cta-title">Hitung estimasi biaya Anda</h2>
+        <p class="sim-cta-sub">Lingkup, luas, kelas material — angka kasar dalam 2 menit.</p>
+        <a class="sim-cta-btn" href="simulasi">Buka Simulasi <span aria-hidden="true">→</span></a>
+      </aside>
 
       <section class="intro-copy" aria-label="Trilux overview">
         <p>An architecture and interior studio shaping calm, precise spaces — from the first sketch to the final brass fitting.</p>
@@ -280,6 +283,31 @@
     </div>
   </section>
 
+  <!-- S5.5 — Simulasi pitch -->
+  <section class="sim-pitch panel-ink" id="simulasi-pitch" aria-label="Simulasi biaya">
+    <div class="wrap sim-pitch__grid">
+      <div class="reveal">
+        <p class="eyebrow">Sebelum komitmen</p>
+        <h2 class="section-title">Budget clarity, before anything else.</h2>
+        <p class="sim-pitch__sub">Simulasi online kami menghitung estimasi biaya per pekerjaan — struktur, plafond, lantai, hingga finishing — berdasarkan harga pokok Jabodetabek. Transparan, tanpa biaya tersembunyi, hasilnya langsung bisa dikirim ke tim kami.</p>
+        <div class="sim-pitch__ctas">
+          <a class="btn btn-brass" href="simulasi">Coba Simulasi Biaya <span aria-hidden="true">→</span></a>
+          <a class="btn btn-on-ink js-wa" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20konsultasi%20estimasi%20proyek." target="_blank" rel="noopener">Konsultasi via WhatsApp →</a>
+        </div>
+      </div>
+      <div class="sim-pitch__card reveal" aria-hidden="true">
+        <p class="sim-pitch__card-kicker">05 menit · gratis</p>
+        <ul class="sim-pitch__list">
+          <li>Pilih lingkup — interior, renovasi, atau bangun baru</li>
+          <li>Atur luas area &amp; kelas material per pekerjaan</li>
+          <li>Kondisi khusus: cluster, akses, tanah, high ceiling</li>
+          <li>Dapat rentang estimasi + share biaya per pekerjaan</li>
+          <li>Kirim hasil ke WhatsApp — tim buka rincian RAB</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- S6 — Contact -->
   <section class="contact panel-ink" id="contact">
     <div class="wrap contact__grid">
@@ -323,11 +351,11 @@
 <footer class="site-footer panel-ink">
   <div class="wrap footer-inner">
     <div class="footer-brand">
-      <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <rect x="6" y="18" width="6" height="16" fill="#c08a3e"/>
-        <rect x="17" y="6" width="6" height="28" fill="#c08a3e"/>
-        <rect x="28" y="13" width="6" height="21" fill="#c08a3e"/>
-        <rect x="4" y="34" width="32" height="1.5" fill="#c08a3e"/>
+      <svg class="logo-live" width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect class="logo-draw d1" x="6" y="18" width="6" height="16" fill="#c08a3e"/>
+        <rect class="logo-draw d2" x="17" y="6" width="6" height="28" fill="#c08a3e"/>
+        <rect class="logo-draw d3" x="28" y="13" width="6" height="21" fill="#c08a3e"/>
+        <rect class="logo-draw d4" x="4" y="34" width="32" height="1.5" fill="#c08a3e"/>
       </svg>
       <div>
         <span class="footer-name">Trilux <em>Design</em></span>
@@ -375,6 +403,6 @@
 })();
 </script>
 <script src="assets/js/main.js?v=2"></script>
-<script src="assets/js/cinema.js" defer></script>
+<script src="assets/js/cinema.js?v=5" defer></script>
 </body>
 </html>
