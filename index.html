@@ -52,12 +52,10 @@
 <meta property="og:image" content="https://trilux-design-page.vercel.app/assets/img/cover.jpg">
 <meta property="og:image:alt" content="Two-storey contemporary house designed by Trilux Design">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preload" as="image" href="assets/img/cinema/sky.jpg?v=5" fetchpriority="high">
-<link rel="preload" as="image" href="assets/img/cinema/bridge.jpg?v=2">
 <link rel="preload" href="assets/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/style.css?v=4">
-<link rel="stylesheet" href="assets/css/cinema.css?v=7">
+<link rel="stylesheet" href="assets/css/cinema.css?v=8">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -116,7 +114,7 @@
   <section class="cinema-scroll" id="cinema" aria-label="Trilux Design cinematic scroll story">
     <div class="stage">
       <div class="world">
-        <img class="scene-img sky-img" src="assets/img/cinema/sky.jpg?v=5" alt="" draggable="false">
+        <div class="sky-img" aria-hidden="true"></div>
         <header class="site-header" aria-label="Primary navigation">
           <a class="cinema-logo" href="#cinema" aria-label="Trilux Design — back to top">
             <svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
@@ -137,8 +135,11 @@
           <a class="lang-switcher" href="https://wa.me/6282287348422" target="_blank" rel="noopener">WhatsApp <span aria-hidden="true">→</span></a>
         </header>
         <div class="back-stack">
-          <img class="scene-img back-img back-four" src="assets/img/cinema/back-four.jpg?v=4" alt="" draggable="false">
-        <section class="sights-slider" aria-label="Trilux services slider">
+          <div class="plinth" aria-hidden="true"></div>
+          <div class="tower tower-a" aria-hidden="true"></div>
+          <div class="tower tower-b" aria-hidden="true"></div>
+          <div class="tower tower-c" aria-hidden="true"></div>
+          <section class="sights-slider" aria-label="Trilux services slider">
             <div class="sights-track">
               <article class="sight-card" tabindex="0" role="button" aria-label="Open Interior and spatial design card" data-href="simulasi">
                 <span class="sight-kicker">Studio Discipline</span>
@@ -172,17 +173,12 @@
               </article>
             </div>
           </section>
-          <img class="scene-img back-img back-bazaar" src="assets/img/cinema/back-bazaar.jpg?v=2" alt="" draggable="false">
         </div>
-        <div class="sights-controls" aria-label="Slider controls">
-          <button class="sight-nav sight-prev" type="button" aria-label="Previous sight">←</button>
-          <button class="sight-nav sight-next" type="button" aria-label="Next sight">→</button>
-        </div>
-                <h1 class="hero-title" aria-label="TRILUX"><span aria-hidden="true">T</span><span aria-hidden="true">R</span><span aria-hidden="true">I</span><span aria-hidden="true">L</span><span aria-hidden="true">U</span><span aria-hidden="true">X</span></h1>
-        <img class="scene-img splitframe-img splitframe-left" src="assets/img/cinema/split-left.jpg?v=2" alt="" draggable="false">
-        <img class="scene-img splitframe-img splitframe-right" src="assets/img/cinema/split-right.jpg?v=2" alt="" draggable="false">
-        <img class="scene-img bridge-img" src="assets/img/cinema/bridge.jpg?v=2" alt="" draggable="false">
-        <img class="scene-img frame-two-img" src="assets/img/cinema/frame-two.jpg?v=2" alt="" draggable="false">
+        <h1 class="hero-title" aria-label="TRILUX"><span aria-hidden="true">T</span><span aria-hidden="true">R</span><span aria-hidden="true">I</span><span aria-hidden="true">L</span><span aria-hidden="true">U</span><span aria-hidden="true">X</span></h1>
+        <div class="scene-shape bridge-img" aria-hidden="true"></div>
+        <div class="scene-shape frame-two-img" aria-hidden="true"><div class="arch-ring"></div></div>
+        <div class="scene-shape splitframe-img splitframe-left" aria-hidden="true"></div>
+        <div class="scene-shape splitframe-img splitframe-right" aria-hidden="true"></div>
         <div class="shade"></div>
       </div>
 
@@ -407,6 +403,6 @@
 })();
 </script>
 <script src="assets/js/main.js?v=2"></script>
-<script src="assets/js/cinema.js?v=7" defer></script>
+<script src="assets/js/cinema.js?v=8" defer></script>
 </body>
 </html>
