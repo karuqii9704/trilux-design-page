@@ -4,6 +4,48 @@
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const fineHover = window.matchMedia("(hover: hover) and (pointer: fine)");
 
+  // M3 scroll progress bar
+  const progress = document.createElement("div");
+  progress.className = "scroll-progress";
+  document.body.appendChild(progress);
+  const onProgress = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+  };
+  addEventListener("scroll", onProgress, { passive: true });
+  onProgress();
+
+  // Hero parallax + slow zoom (rAF-throttled; none on reduced motion)
+  const heroBg = document.querySelector(".hero__bg");
+  if (heroBg && !reducedMotion.matches) {
+    let ticking = false;
+    const parallax = () => {
+      const y = Math.min(scrollY, innerHeight);
+      heroBg.style.transform = `translateY(${y * 0.25}px) scale(${1 + y * 0.0004})`;
+      ticking = false;
+    };
+    addEventListener("scroll", () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(parallax); }
+    }, { passive: true });
+  }
+
+  // Spotlight lens on the featured-project media (fine pointers only)
+  if (fineHover.matches) {
+    document.querySelectorAll(".work__media").forEach((media) => {
+      if (!media.querySelector(".lens")) {
+        const lens = document.createElement("span");
+        lens.className = "lens";
+        lens.setAttribute("aria-hidden", "true");
+        media.appendChild(lens);
+      }
+      media.addEventListener("pointermove", (e) => {
+        const r = media.getBoundingClientRect();
+        media.style.setProperty("--lens-x", `${((e.clientX - r.left) / r.width) * 100}%`);
+        media.style.setProperty("--lens-y", `${((e.clientY - r.top) / r.height) * 100}%`);
+      });
+    });
+  }
+
   // Hero entrance stagger — see .js-anim rules in style.css
   // rAF is throttled/paused on background tabs, so pair it with a timeout
   // safety net — classList.add is idempotent, calling it twice is harmless.
@@ -130,7 +172,7 @@
   }
 
   // Scrollspy — highlight the nav link of the section in view
-  const spySections = ["welcome", "mission", "selected-work", "contact"]
+  const spySections = ["welcome", "mission", "simulator", "selected-work", "contact"]
     .map((id) => document.getElementById(id))
     .filter(Boolean);
   const spyLinks = [...document.querySelectorAll('.nav__link[href^="#"]')];
@@ -175,5 +217,118 @@
     });
   }
 
+  // Design Simulator — live estimate, WA deep-link, /api/lead submit, snackbar
+  const segScope = document.getElementById("segScope");
+  if (segScope) {
+    const RATES = {
+      interior: { lo: 3.5, hi: 6, label: "Interior" },
+      exterior: { lo: 4.5, hi: 8, label: "Eksterior" },
+      architecture: { lo: 6.5, hi: 12, label: "Arsitektur" },
+    };
+    const PKG_LABEL = { "0.85": "Essential", "1": "Premium", "1.3": "Luxury" };
+
+    const areaRange = document.getElementById("areaRange");
+    const areaOut = document.getElementById("areaOut");
+    const estOut = document.getElementById("estOut");
+    const rateOut = document.getElementById("rateOut");
+    const waBtn = document.getElementById("waBtn");
+    const quoteBtn = document.getElementById("quoteBtn");
+    const quoteForm = document.getElementById("quoteForm");
+    const quoteSend = document.getElementById("quoteSend");
+
+    const state = { scope: "interior", area: 120, mult: 1 };
+
+    const estimate = () => {
+      const r = RATES[state.scope];
+      const lo = state.area * r.lo * state.mult;
+      const hi = state.area * r.hi * state.mult;
+      const fm = (x) =>
+        x >= 1000
+          ? `Rp ${(x / 1000).toFixed(x / 1000 >= 10 ? 0 : 1)} miliar`
+          : `Rp ${x.toFixed(0)} juta`;
+      return { lo, hi, text: `${fm(lo)} – ${fm(hi)}` };
+    };
+    const render = () => {
+      areaOut.textContent = `${state.area} m²`;
+      areaRange.style.setProperty(
+        "--m3-fill",
+        `${((state.area - areaRange.min) / (areaRange.max - areaRange.min)) * 100}%`
+      );
+      const est = estimate();
+      estOut.textContent = est.text;
+      const r = RATES[state.scope];
+      rateOut.textContent = `${r.label} · Rp ${r.lo * state.mult}–${r.hi * state.mult} juta/m² · ${PKG_LABEL[String(state.mult)]}`;
+      const msg = `Halo Trilux Design! Saya tertarik ${r.label} — ${state.area} m², paket ${PKG_LABEL[String(state.mult)]}. Estimasi di web: ${est.text}. Boleh diskusi lanjut?`;
+      waBtn.href = `https://wa.me/6282287348422?text=${encodeURIComponent(msg)}`;
+    };
+
+    segScope.addEventListener("click", (e) => {
+      const b = e.target.closest(".seg__btn");
+      if (!b) return;
+      segScope.querySelectorAll(".seg__btn").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      state.scope = b.dataset.scope;
+      render();
+    });
+    document.getElementById("pkgChips").addEventListener("click", (e) => {
+      const b = e.target.closest(".fchip");
+      if (!b) return;
+      document.querySelectorAll(".fchip").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      state.mult = parseFloat(b.dataset.mult);
+      render();
+    });
+    areaRange.addEventListener("input", () => {
+      state.area = parseInt(areaRange.value, 10);
+      render();
+    });
+
+    // snackbar
+    const snack = document.createElement("div");
+    snack.className = "snackbar";
+    snack.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">check_circle</span><span id="snackMsg"></span>';
+    document.body.appendChild(snack);
+    let snackTimer = null;
+    const showSnack = (msg) => {
+      snack.querySelector("#snackMsg").textContent = msg;
+      snack.classList.add("is-open");
+      clearTimeout(snackTimer);
+      snackTimer = setTimeout(() => snack.classList.remove("is-open"), 4200);
+    };
+
+    quoteBtn.addEventListener("click", () => {
+      quoteForm.hidden = !quoteForm.hidden;
+      if (!quoteForm.hidden) document.getElementById("quoteContact").focus();
+    });
+    quoteForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const contact = document.getElementById("quoteContact").value.trim();
+      if (!contact) return;
+      quoteSend.disabled = true;
+      try {
+        const r = RATES[state.scope];
+        const est = estimate();
+        const res = await fetch("/api/lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contact,
+            scope: r.label,
+            area: state.area,
+            total: est.text,
+            config: `Simulator · ${PKG_LABEL[String(state.mult)]} · ${new Date().toISOString()}`,
+          }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        quoteForm.hidden = true;
+        document.getElementById("quoteContact").value = "";
+        showSnack("Terkirim! Tim Trilux akan menghubungi kamu soon. ✓");
+      } catch (err) {
+        showSnack("Gagal kirim — coba lagi atau chat WhatsApp ya.");
+      } finally {
+        quoteSend.disabled = false;
+      }
+    });
+
+    render();
+  }
 })();
 

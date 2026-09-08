@@ -386,6 +386,284 @@ h1, h2, h3 {
 .nav__link.is-scrolled-active { color: var(--md-primary); }
 
 /* ==========================================================================
+   M3 scroll progress bar
+   ========================================================================== */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: var(--md-primary);
+  z-index: 101;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+/* ==========================================================================
+   Hero parallax + zoom on scroll (JS-driven, gated by reduced-motion)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero__bg { will-change: transform; }
+}
+
+/* ==========================================================================
+   S4.5 — Design Simulator (M3 segmented button / slider / filter chips / card)
+   ========================================================================== */
+
+.sim__sub {
+  font-size: var(--md-body-medium);
+  color: var(--md-on-surface-variant);
+  max-width: 60ch;
+  margin-top: var(--sp-2);
+  margin-bottom: 0;
+}
+.sim__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-9);
+  align-items: start;
+}
+.sim__controls { display: flex; flex-direction: column; gap: var(--sp-7); }
+.sim__label {
+  font-size: var(--md-label-large);
+  font-weight: 500;
+  color: var(--md-on-surface);
+  margin-bottom: var(--sp-3);
+}
+.sim__label output { color: var(--md-primary); font-variant-numeric: tabular-nums; }
+
+/* M3 segmented button */
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-shape-full);
+  overflow: hidden;
+  width: fit-content;
+}
+.seg__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding: var(--sp-2) var(--sp-5);
+  min-height: 40px;
+  background: none;
+  border: none;
+  border-left: 1px solid var(--md-outline);
+  font-size: var(--md-label-large);
+  font-weight: 500;
+  color: var(--md-on-surface);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.seg__btn:first-child { border-left: none; }
+.seg__btn[aria-pressed="true"] {
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+/* M3 slider */
+.m3-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  cursor: pointer;
+}
+.m3-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    var(--md-primary) var(--m3-fill, 20%),
+    var(--md-surface-variant) var(--m3-fill, 20%)
+  );
+}
+.m3-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--md-primary);
+  border: 2px solid var(--md-surface);
+  box-shadow: var(--md-elevation-1);
+  margin-top: -8px;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.m3-slider:hover::-webkit-slider-thumb,
+.m3-slider:active::-webkit-slider-thumb { transform: scale(1.15); }
+.m3-slider:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--md-primary); outline-offset: 2px; }
+.m3-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--md-surface-variant);
+}
+.m3-slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--md-primary);
+}
+.m3-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--md-primary);
+  border: 2px solid var(--md-surface);
+  box-shadow: var(--md-elevation-1);
+}
+.sim__minmax {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--md-label-small);
+  color: var(--md-on-surface-variant);
+  margin-top: calc(-1 * var(--sp-2));
+}
+
+/* M3 filter chips */
+.fchips { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.fchip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 32px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-shape-sm);
+  background: none;
+  font-size: var(--md-label-large);
+  font-weight: 500;
+  color: var(--md-on-surface);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.fchip[aria-pressed="true"] {
+  background: var(--md-secondary-container, #e4c07a);
+  border-color: transparent;
+  color: var(--md-on-secondary-container, #2c1e00);
+}
+.fchip[aria-pressed="true"]::before {
+  content: "✓";
+  font-size: var(--md-label-small);
+  color: inherit;
+}
+.fchip:hover { background: color-mix(in srgb, currentColor 8%, transparent); }
+.fchip[aria-pressed="true"]:hover { background: #dcc07e; }
+
+/* M3 elevated card — estimate */
+.sim__card {
+  background: var(--md-surface-container, #efe9dc);
+  border-radius: var(--md-shape-xl);
+  box-shadow: var(--md-elevation-1);
+  padding: var(--sp-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.sim__card-label {
+  font-size: var(--md-label-medium);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant);
+}
+.sim__est {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--md-on-surface);
+  font-variant-numeric: tabular-nums;
+  min-height: 1.2em;
+}
+.sim__note {
+  font-size: var(--md-body-small);
+  color: var(--md-primary);
+  font-weight: 500;
+}
+.sim__fine {
+  font-size: var(--md-body-small);
+  color: var(--md-on-surface-variant);
+}
+.sim__ctas { display: flex; gap: var(--sp-4); flex-wrap: wrap; margin-top: var(--sp-2); }
+.sim__form { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-2); }
+.sim__input {
+  flex: 1;
+  min-width: 220px;
+  height: 40px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-shape-sm);
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  font: inherit;
+  font-size: var(--md-body-medium);
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.sim__input:focus {
+  border-color: var(--md-primary);
+  box-shadow: inset 0 0 0 1px var(--md-primary);
+}
+.sim__input::placeholder { color: var(--md-on-surface-variant); }
+
+/* M3 snackbar */
+.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: var(--sp-5);
+  transform: translate(-50%, 150%);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--md-inverse-surface);
+  color: var(--md-on-inverse-surface);
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--md-shape-xs);
+  box-shadow: var(--md-elevation-3);
+  font-size: var(--md-body-medium);
+  z-index: 120;
+  transition: transform var(--dur-base) var(--ease-out);
+  max-width: min(90vw, 480px);
+}
+.snackbar.is-open { transform: translate(-50%, 0); }
+.snackbar .material-symbols-rounded { color: #7ddf8e; font-size: 20px; }
+@media (max-width: 767px) {
+  .snackbar { bottom: calc(var(--sp-5) + 64px); } /* clear the FAB */
+}
+
+/* spotlight lens — work media hover */
+.work__media .lens {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+  background:
+    radial-gradient(
+      circle 180px at var(--lens-x, 50%) var(--lens-y, 50%),
+      transparent 0%,
+      transparent 55%,
+      rgba(20, 16, 16, 0.25) 100%
+    );
+  z-index: 1;
+}
+.work__media:hover .lens { opacity: 1; }
+
+@media (max-width: 1023px) {
+  .sim__grid { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
    NavBar — M3 top app bar
    ========================================================================== */
 

@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       let prev = "";
       try {
         const h = await head(file);
-        prev = await (await fetch(h.url)).text();
+        prev = await (await fetch(h.url, { cache: "no-store" })).text();
       } catch (_) { /* first write today */ }
       await put(file, prev + line, { access: "public", addRandomSuffix: false, allowOverwrite: true });
     }

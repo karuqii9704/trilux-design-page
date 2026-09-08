@@ -16,7 +16,7 @@ async function readBlobText(file) {
   try {
     const { head } = await import("@vercel/blob");
     const h = await head(file);
-    return await (await fetch(h.url)).text();
+    return await (await fetch(h.url, { cache: "no-store" })).text();
   } catch (_) { return ""; }
 }
 
