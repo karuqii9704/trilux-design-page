@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trilux Studio — Bangun Interior Ruanganmu Sendiri</title>
+<meta name="description" content="Studio desain interior interaktif dari Trilux Design: atur ruang, generate palet warna, drag & drop furnitur, lalu kirim hasilnya ke kami.">
+<link rel="icon" type="image/svg+xml" href="../assets/img/logo-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
+<link rel="stylesheet" href="../assets/css/style.css?v=6">
+<style>
+:root {
+  --studio-bg: #141010;
+  --studio-surface: #1b1512;
+  --studio-container: #241c18;
+  --studio-highest: #3d332d;
+  --studio-on: #f2ede4;
+  --studio-on-var: #a89f92;
+  --studio-primary: #e4c07a;
+  --studio-on-primary: #452f00;
+  --studio-primary-container: #5c4200;
+  --studio-on-primary-container: #ffe9b8;
+  --studio-outline: #93897c;
+  --studio-outline-var: #3d332d;
+  --studio-success: #7ddf8e;
+  --studio-danger: #f2b8b5;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Roboto", system-ui, sans-serif;
+  background: var(--studio-bg);
+  color: var(--studio-on);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal; font-style: normal; line-height: 1;
+  letter-spacing: normal; text-transform: none; display: inline-block;
+  white-space: nowrap; direction: ltr;
+  -webkit-font-feature-settings: "liga"; -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+
+/* ---------- top bar ---------- */
+.studio-bar {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px;
+  background: rgba(20, 16, 16, 0.92);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-bottom: 1px solid var(--studio-outline-var);
+}
+.studio-bar__logo { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.studio-bar__logo img { width: 22px; height: 22px; }
+.studio-bar__logo span { font-size: 0.69rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--studio-on-var); display: block; margin-top: -2px; }
+.studio-bar__spacer { flex: 1; }
+.studio-bar__back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; font-weight: 500; color: var(--studio-on-var);
+  padding: 8px 14px; border-radius: 999px; border: none; background: none; cursor: pointer;
+  transition: color 0.16s, background 0.16s;
+}
+.studio-bar__back:hover { color: var(--studio-on); background: rgba(242,237,228,0.08); }
+
+/* ---------- M3 steps (LMS flow) ---------- */
+.steps {
+  display: flex; align-items: center; gap: 4px;
+  overflow-x: auto; padding: 4px; scrollbar-width: none;
+}
+.steps::-webkit-scrollbar { display: none; }
+.step {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px 6px 8px; border-radius: 999px;
+  font-size: 0.82rem; font-weight: 500; color: var(--studio-on-var);
+  cursor: pointer; border: none; background: none; white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+.step:hover { background: rgba(242,237,228,0.06); }
+.step__dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 500;
+  background: var(--studio-container); color: var(--studio-on-var);
+  border: 1px solid var(--studio-outline-var);
+  transition: all 0.25s;
+}
+.step.is-active { color: var(--studio-on); }
+.step.is-active .step__dot { background: var(--studio-primary); color: var(--studio-on-primary); border-color: transparent; }
+.step.is-done { color: var(--studio-on); }
+.step.is-done .step__dot { background: var(--studio-primary-container); color: var(--studio-on-primary-container); border-color: transparent; }
+.step__check { font-size: 16px; display: none; }
+.step.is-done .step__check { display: inline-block; }
+.step.is-done .step__num { display: none; }
+
+/* ---------- layout ---------- */
+.studio-wrap {
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  gap: 0;
+  min-height: calc(100vh - 57px);
+}
+@media (max-width: 1100px) {
+  .studio-wrap { grid-template-columns: 260px 1fr; }
+  .inspector { position: fixed; inset: auto 0 0 0; z-index: 40; transform: translateY(100%); transition: transform 0.3s; max-height: 70vh; overflow-y: auto; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 30px rgba(0,0,0,0.5); }
+  .inspector.is-open { transform: translateY(0); }
+}
+@media (max-width: 760px) {
+  .studio-wrap { grid-template-columns: 1fr; }
+  .catalog { position: fixed; inset: auto 0 0 0; z-index: 40; transform: translateY(100%); transition: transform 0.3s; max-height: 46vh; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 30px rgba(0,0,0,0.5); }
+  .catalog.is-open { transform: translateY(0); }
+}
+
+/* ---------- panels ---------- */
+.panel-title {
+  font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--studio-on-var); display: flex; align-items: center; gap: 6px;
+  padding: 14px 18px 10px;
+}
+.panel-title .material-symbols-rounded { font-size: 16px; color: var(--studio-primary); }
+
+.catalog {
+  background: var(--studio-surface);
+  border-right: 1px solid var(--studio-outline-var);
+  overflow-y: auto; padding-bottom: 80px;
+}
+.cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 14px 14px; }
+.cat-item {
+  background: var(--studio-container);
+  border: 1px solid var(--studio-outline-var);
+  border-radius: 14px;
+  padding: 10px 6px 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: grab; user-select: none; touch-action: none;
+  transition: border-color 0.16s, transform 0.16s, background 0.16s;
+}
+.cat-item:hover { border-color: var(--studio-primary); transform: translateY(-2px); background: var(--studio-highest); }
+.cat-item:active { cursor: grabbing; }
+.cat-item svg, .cat-item canvas { width: 44px; height: 44px; }
+.cat-item span { font-size: 0.64rem; font-weight: 500; color: var(--studio-on-var); text-align: center; line-height: 1.2; }
+.cat-item.is-locked { opacity: 0.45; cursor: not-allowed; }
+.cat-item.is-locked:hover { border-color: var(--studio-outline-var); transform: none; }
+
+/* ---------- canvas area ---------- */
+.stage { display: flex; flex-direction: column; min-width: 0; }
+.stage-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 18px; border-bottom: 1px solid var(--studio-outline-var);
+  background: var(--studio-surface); flex-wrap: wrap;
+}
+.stage-head__title { font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.chip-lite {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.04em;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--studio-container); color: var(--studio-on-var);
+  border: 1px solid var(--studio-outline-var);
+}
+.chip-lite b { color: var(--studio-primary); font-weight: 500; }
+.canvas-holder { flex: 1; position: relative; min-height: 480px; overflow: hidden; }
+#roomCanvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.hint {
+  position: absolute; left: 50%; top: 14px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(36, 28, 24, 0.92); border: 1px solid var(--studio-outline-var);
+  padding: 8px 16px; border-radius: 999px; font-size: 0.76rem; color: var(--studio-on-var);
+  pointer-events: none; transition: opacity 0.4s; z-index: 5; max-width: 92%; text-align: center;
+}
+.hint.is-hidden { opacity: 0; }
+.hint .material-symbols-rounded { font-size: 16px; color: var(--studio-primary); }
+
+/* item toolbar */
+.item-tools {
+  position: absolute; z-index: 6; display: none;
+  background: var(--studio-highest); border: 1px solid var(--studio-outline-var);
+  border-radius: 999px; padding: 3px; gap: 2px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.item-tools.is-open { display: inline-flex; }
+.item-tools button {
+  width: 34px; height: 34px; border-radius: 50%; border: none; background: none;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  color: var(--studio-on); position: relative; overflow: hidden;
+  transition: background 0.15s;
+}
+.item-tools button:hover { background: rgba(242,237,228,0.12); }
+.item-tools button .material-symbols-rounded { font-size: 18px; }
+.item-tools .danger { color: var(--studio-danger); }
+
+/* ---------- inspector ---------- */
+.inspector {
+  background: var(--studio-surface);
+  border-left: 1px solid var(--studio-outline-var);
+  overflow-y: auto; padding-bottom: 90px;
+}
+.ins-group { padding: 0 18px 18px; display: flex; flex-direction: column; gap: 10px; }
+.ins-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ins-label { font-size: 0.78rem; font-weight: 500; color: var(--studio-on); display: flex; align-items: center; gap: 6px; }
+.ins-label .material-symbols-rounded { font-size: 16px; color: var(--studio-primary); }
+.ins-value { font-size: 0.78rem; color: var(--studio-on-var); font-variant-numeric: tabular-nums; }
+
+/* M3 slider (dark) */
+.sld { -webkit-appearance: none; appearance: none; width: 100%; height: 36px; background: transparent; cursor: pointer; }
+.sld::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--studio-primary) var(--fill, 50%), var(--studio-container) var(--fill, 50%)); }
+.sld::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--studio-primary); border: 2px solid var(--studio-surface); box-shadow: 0 1px 4px rgba(0,0,0,0.4); margin-top: -7px; }
+.sld::-moz-range-track { height: 4px; border-radius: 2px; background: var(--studio-container); }
+.sld::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--studio-primary); }
+.sld::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--studio-primary); border: 2px solid var(--studio-surface); }
+
+/* M3 chips (dark) */
+.chipset { display: flex; gap: 8px; flex-wrap: wrap; }
+.fchip-d {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 14px;
+  border: 1px solid var(--studio-outline); border-radius: 8px; background: none;
+  font-size: 0.78rem; font-weight: 500; color: var(--studio-on); cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: background 0.16s, border-color 0.16s;
+}
+.fchip-d:hover { background: rgba(242,237,228,0.08); }
+.fchip-d[aria-pressed="true"] { background: var(--studio-primary-container); border-color: transparent; color: var(--studio-on-primary-container); }
+.fchip-d[aria-pressed="true"]::before { content: "✓"; font-size: 0.7rem; }
+.fchip-d .sw { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.3); }
+
+/* palette card */
+.palette-card {
+  background: var(--studio-container); border: 1px solid var(--studio-outline-var);
+  border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+}
+.palette-name { font-size: 0.86rem; font-weight: 500; }
+.palette-sw { display: flex; gap: 6px; }
+.palette-sw i { flex: 1; height: 34px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.25); }
+
+/* buttons */
+.btn-d {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 40px; padding: 0 22px; border: none; border-radius: 999px;
+  font-size: 0.84rem; font-weight: 500; letter-spacing: 0.1px;
+  background: var(--studio-primary); color: var(--studio-on-primary);
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: box-shadow 0.16s, transform 0.16s;
+}
+.btn-d:hover { box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+.btn-d:active { transform: scale(0.98); }
+.btn-d:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-d--tonal { background: var(--studio-primary-container); color: var(--studio-on-primary-container); }
+.btn-d--full { width: 100%; }
+.btn-d .material-symbols-rounded { font-size: 18px; }
+
+/* estimate */
+.estimate {
+  background: var(--studio-container); border: 1px solid var(--studio-outline-var);
+  border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 4px;
+}
+.estimate small { font-size: 0.64rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--studio-on-var); }
+.estimate strong { font-size: 1.5rem; font-weight: 300; color: var(--studio-on); font-variant-numeric: tabular-nums; }
+.estimate .meta { font-size: 0.7rem; color: var(--studio-primary); font-weight: 500; }
+
+/* quota */
+.quota { display: flex; align-items: center; gap: 10px; padding: 12px 18px; }
+.quota__bar { flex: 1; height: 4px; border-radius: 2px; background: var(--studio-container); overflow: hidden; }
+.quota__fill { height: 100%; background: var(--studio-primary); border-radius: 2px; transition: width 0.4s; }
+.quota span { font-size: 0.72rem; color: var(--studio-on-var); font-variant-numeric: tabular-nums; }
+.quota.is-max .quota__fill { background: var(--studio-danger); }
+
+/* ---------- dialog ---------- */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 90; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.scrim.is-open { opacity: 1; pointer-events: auto; }
+.dialog {
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -46%) scale(0.96);
+  width: min(92vw, 460px); z-index: 95;
+  background: var(--studio-highest); border: 1px solid var(--studio-outline-var);
+  border-radius: 28px; padding: 28px;
+  display: flex; flex-direction: column; gap: 14px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  max-height: 86vh; overflow-y: auto;
+}
+.dialog.is-open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+.dialog__icon { width: 44px; height: 44px; border-radius: 50%; background: var(--studio-primary-container); color: var(--studio-on-primary-container); display: flex; align-items: center; justify-content: center; }
+.dialog__icon .material-symbols-rounded { font-size: 24px; }
+.dialog h3 { margin: 0; font-size: 1.2rem; font-weight: 500; }
+.dialog p { margin: 0; font-size: 0.84rem; color: var(--studio-on-var); }
+.dialog ul { margin: 0; padding-left: 18px; font-size: 0.8rem; color: var(--studio-on-var); display: flex; flex-direction: column; gap: 4px; }
+.dialog__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.dialog__actions .btn-d { flex: 1; min-width: 140px; }
+.dialog input {
+  flex: 1; min-width: 200px; height: 40px; padding: 0 14px;
+  border: 1px solid var(--studio-outline); border-radius: 8px;
+  background: var(--studio-surface); color: var(--studio-on);
+  font: inherit; font-size: 0.84rem; outline: none;
+}
+.dialog input:focus { border-color: var(--studio-primary); box-shadow: inset 0 0 0 1px var(--studio-primary); }
+
+/* snackbar */
+.snack {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 150%);
+  display: inline-flex; align-items: center; gap: 10px;
+  background: #f2ede4; color: #221c18; padding: 12px 20px; border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5); font-size: 0.84rem; z-index: 120;
+  transition: transform 0.3s; max-width: 90vw;
+}
+.snack.is-open { transform: translate(-50%, 0); }
+.snack .material-symbols-rounded { font-size: 20px; color: #2e7d32; }
+
+/* floating panel toggles (mobile) */
+.panel-fab {
+  position: fixed; right: 16px; z-index: 45;
+  width: 52px; height: 52px; border-radius: 16px; border: none;
+  background: var(--studio-primary); color: var(--studio-on-primary);
+  display: none; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5); cursor: pointer;
+}
+.panel-fab .material-symbols-rounded { font-size: 24px; }
+.fab-catalog { bottom: 84px; }
+.fab-inspector { bottom: 148px; }
+@media (max-width: 1100px) { .fab-inspector { display: inline-flex; } }
+@media (max-width: 760px) { .fab-catalog { display: inline-flex; } }
+
+.empty-note { font-size: 0.72rem; color: var(--studio-on-var); text-align: center; padding: 8px 0; }
+</style>
+</head>
+<body>
+
+<header class="studio-bar">
+  <a class="studio-bar__logo" href="/">
+    <img src="../assets/img/logo-mark.svg" alt="">
+    <span>Trilux Studio</span>
+  </a>
+  <nav class="steps" id="steps" aria-label="Progres desain">
+    <button class="step is-active" data-step="0" type="button"><span class="step__dot"><span class="step__num">1</span><span class="material-symbols-rounded step__check">check</span></span> Ruang</button>
+    <button class="step" data-step="1" type="button"><span class="step__dot"><span class="step__num">2</span><span class="material-symbols-rounded step__check">check</span></span> Palet</button>
+    <button class="step" data-step="2" type="button"><span class="step__dot"><span class="step__num">3</span><span class="material-symbols-rounded step__check">check</span></span> Furnitur</button>
+    <button class="step" data-step="3" type="button"><span class="step__dot"><span class="step__num">4</span><span class="material-symbols-rounded step__check">check</span></span> Finalisasi</button>
+  </nav>
+  <span class="studio-bar__spacer"></span>
+  <a class="studio-bar__back" href="/"><span class="material-symbols-rounded" aria-hidden="true">arrow_back</span> Beranda</a>
+</header>
+
+<div class="studio-wrap">
+
+  <!-- CATALOG -->
+  <aside class="catalog" id="catalog" aria-label="Katalog furnitur">
+    <p class="panel-title"><span class="material-symbols-rounded" aria-hidden="true">chair</span> Katalog Furnitur</p>
+    <div class="cat-grid" id="catGrid"></div>
+    <p class="empty-note" id="catLock"></p>
+    <div class="quota" id="quotaBox">
+      <span id="quotaText">Free 0/8 item</span>
+      <div class="quota__bar"><div class="quota__fill" id="quotaFill" style="width:0%"></div></div>
+    </div>
+  </aside>
+
+  <!-- STAGE -->
+  <main class="stage">
+    <div class="stage-head">
+      <span class="stage-head__title">
+        <span class="material-symbols-rounded" aria-hidden="true" style="color:var(--studio-primary)">dashboard</span>
+        <span id="roomLabel">Ruang 4.0 × 3.0 m · Hardwood</span>
+      </span>
+      <span class="chip-lite"><span class="material-symbols-rounded" aria-hidden="true">palette</span> <b id="paletteLabel">Japandi</b></span>
+      <span class="chip-lite"><span class="material-symbols-rounded" aria-hidden="true">straighten</span> <b id="areaLabel">12 m²</b></span>
+    </div>
+    <div class="canvas-holder" id="holder">
+      <canvas id="roomCanvas"></canvas>
+      <div class="hint" id="hint"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span id="hintText">Mulai: atur ukuran ruang di panel kanan →</span></div>
+      <div class="item-tools" id="itemTools">
+        <button type="button" data-act="rotate" title="Putar 90°"><span class="material-symbols-rounded">rotate_right</span></button>
+        <button type="button" data-act="bigger" title="Perbesar"><span class="material-symbols-rounded">add</span></button>
+        <button type="button" data-act="smaller" title="Perkecil"><span class="material-symbols-rounded">remove</span></button>
+        <button type="button" data-act="delete" class="danger" title="Hapus"><span class="material-symbols-rounded">delete</span></button>
+      </div>
+    </div>
+  </main>
+
+  <!-- INSPECTOR -->
+  <aside class="inspector" id="inspector" aria-label="Pengaturan ruang">
+    <p class="panel-title"><span class="material-symbols-rounded" aria-hidden="true">square_foot</span> 1 · Ruang</p>
+    <div class="ins-group">
+      <div class="ins-row"><span class="ins-label">Lebar</span><span class="ins-value" id="wOut">4.0 m</span></div>
+      <input type="range" class="sld" id="wRange" min="2.5" max="8" step="0.1" value="4" aria-label="Lebar ruang meter">
+      <div class="ins-row"><span class="ins-label">Panjang</span><span class="ins-value" id="lOut">3.0 m</span></div>
+      <input type="range" class="sld" id="lRange" min="2.5" max="8" step="0.1" value="3" aria-label="Panjang ruang meter">
+      <div class="ins-row"><span class="ins-label">Lantai</span></div>
+      <div class="chipset" id="floorChips">
+        <button class="fchip-d" type="button" data-floor="hardwood" aria-pressed="true"><span class="sw" style="background:#8a6642"></span>Hardwood</button>
+        <button class="fchip-d" type="button" data-floor="vinyl" aria-pressed="false"><span class="sw" style="background:#b3a48c"></span>Vinyl</button>
+        <button class="fchip-d" type="button" data-floor="terrazzo" aria-pressed="false"><span class="sw" style="background:#c9c4b8"></span>Terrazzo</button>
+        <button class="fchip-d" type="button" data-floor="cement" aria-pressed="false"><span class="sw" style="background:#9a9a96"></span>Semen</button>
+      </div>
+    </div>
+
+    <p class="panel-title"><span class="material-symbols-rounded" aria-hidden="true">palette</span> 2 · Palet Warna</p>
+    <div class="ins-group">
+      <div class="palette-card">
+        <span class="palette-name" id="palName">Japandi</span>
+        <div class="palette-sw" id="palSw"><i></i><i></i><i></i><i></i></div>
+      </div>
+      <button class="btn-d btn-d--full" id="genPal" type="button"><span class="material-symbols-rounded" aria-hidden="true">shuffle</span> Generate Palet Random</button>
+    </div>
+
+    <p class="panel-title"><span class="material-symbols-rounded" aria-hidden="true">calculate</span> Estimasi</p>
+    <div class="ins-group">
+      <div class="estimate">
+        <small>Estimasi indikatif</small>
+        <strong id="estOut">Rp 48 juta</strong>
+        <span class="meta" id="estMeta">Interior · 12 m² · 0 furnitur</span>
+      </div>
+    </div>
+
+    <p class="panel-title"><span class="material-symbols-rounded" aria-hidden="true">rocket_launch</span> 4 · Finalisasi</p>
+    <div class="ins-group">
+      <button class="btn-d btn-d--full" id="exportBtn" type="button"><span class="material-symbols-rounded" aria-hidden="true">download</span> Simpan PNG</button>
+      <button class="btn-d btn-d--tonal btn-d--full" id="sendBtn" type="button"><span class="material-symbols-rounded" aria-hidden="true">send</span> Kirim ke Trilux</button>
+      <p class="empty-note">Free tier: 3× simpan/kirim. Lalu lanjut bersama tim Trilux ✨</p>
+    </div>
+  </aside>
+</div>
+
+<button class="panel-fab fab-catalog" id="fabCatalog" type="button" aria-label="Buka katalog"><span class="material-symbols-rounded">chair</span></button>
+<button class="panel-fab fab-inspector" id="fabInspector" type="button" aria-label="Buka pengaturan"><span class="material-symbols-rounded">tune</span></button>
+
+<div class="scrim" id="scrim"></div>
+<div class="dialog" id="proDialog" role="dialog" aria-modal="true" aria-labelledby="proTitle">
+  <div class="dialog__icon"><span class="material-symbols-rounded">workspace_premium</span></div>
+  <h3 id="proTitle">Kamu telah mencapai batas Free ✨</h3>
+  <p id="proBody">Studio gratis sudah maksimal. Lanjutkan bareng desainer Trilux: render 3D, revisi tanpa batas, konsultasi material real.</p>
+  <ul>
+    <li><b>Pro:</b> furnitur unlimited, ekspor HD tanpa watermark</li>
+    <li><b>Full Service:</b> desainer Trilux kerjakan sisanya</li>
+  </ul>
+  <div class="dialog__actions">
+    <a class="btn-d" id="proWa" href="https://wa.me/6282287348422" target="_blank" rel="noopener"><span class="material-symbols-rounded">chat</span> Chat WhatsApp</a>
+    <button class="btn-d btn-d--tonal" id="proSend" type="button"><span class="material-symbols-rounded">send</span> Kirim Brief</button>
+    <button class="btn-d btn-d--tonal" id="proClose" type="button">Nanti dulu</button>
+  </div>
+  <form id="proForm" hidden>
+    <input id="proContact" type="text" placeholder="Nomor WA / email kamu" autocomplete="tel email" required>
+    <div class="dialog__actions" style="margin-top:10px">
+      <button class="btn-d" type="submit" id="proFormSend">Kirim ke Trilux</button>
+    </div>
+  </form>
+</div>
+
+<div class="snack" id="snack"><span class="material-symbols-rounded">check_circle</span><span id="snackMsg"></span></div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+
+  /* ============ data ============ */
+  const PALETTES = [
+    { name: "Japandi", wall: "#e8e2d6", floor: "#a98a68", ink: "#4a4238", accent: "#b58e5a" },
+    { name: "Scandinavian", wall: "#f4f1ec", floor: "#cbb292", ink: "#5d564d", accent: "#8fb1c7" },
+    { name: "Industrial Loft", wall: "#b8b4ae", floor: "#6e6a66", ink: "#3c3a37", accent: "#c0762f" },
+    { name: "Bohemian Raya", wall: "#f0e4d0", floor: "#b3784e", ink: "#6b4a34", accent: "#c9552e" },
+    { name: "Art Deco Jakarta", wall: "#e6ddca", floor: "#7a5c3e", ink: "#2f2a22", accent: "#b98a2e" },
+    { name: "Coastal Breeze", wall: "#eef2f2", floor: "#c8b896", ink: "#52616a", accent: "#3f7f96" },
+    { name: "Terracotta Warm", wall: "#f2e3d5", floor: "#a06a4a", ink: "#5c4232", accent: "#c2643f" },
+    { name: "Modern Minimal", wall: "#efefef", floor: "#d8d4cc", ink: "#3a3a3a", accent: "#8f8f8f" },
+    { name: "Sage Sanctuary", wall: "#e4ebe2", floor: "#b0a88c", ink: "#44503f", accent: "#7d9171" },
+    { name: "Midnight Luxe", wall: "#3b3430", floor: "#2a241f", ink: "#1c1714", accent: "#d0a756" },
+  ];
+  const FLOORS = {
+    hardwood: { color: "#8a6642", rate: 3.5 },
+    vinyl: { color: "#b3a48c", rate: 2.2 },
+    terrazzo: { color: "#c9c4b8", rate: 4.2 },
+    cement: { color: "#9a9a96", rate: 2.8 },
+  };
+  const CATALOG = [
+    { t: "sofa2", label: "Sofa 2 Seat", w: 1.8, h: 0.9, cost: 12 },
+    { t: "sofaL", label: "Sofa Sudut", w: 2.6, h: 1.6, cost: 20 },
+    { t: "bed", label: "Kasur Double", w: 1.6, h: 2.0, cost: 15 },
+    { t: "dining", label: "Meja Makan", w: 1.4, h: 0.8, cost: 10 },
+    { t: "coffee", label: "Coffee Table", w: 0.9, h: 0.5, cost: 4 },
+    { t: "desk", label: "Meja Kerja", w: 1.2, h: 0.6, cost: 6 },
+    { t: "wardrobe", label: "Lemari", w: 1.8, h: 0.6, cost: 9 },
+    { t: "shelf", label: "Rak Buku", w: 0.9, h: 0.3, cost: 5 },
+    { t: "plant", label: "Tanaman", w: 0.45, h: 0.45, cost: 1 },
+    { t: "lamp", label: "Lampu", w: 0.4, h: 0.4, cost: 2 },
+    { t: "rug", label: "Karpet", w: 2.4, h: 1.7, cost: 3 },
+    { t: "tv", label: "Konsol TV", w: 1.4, h: 0.4, cost: 7 },
+  ];
+
+  /* ============ state ============ */
+  const state = {
+    W: 4.0, L: 3.0, floor: "hardwood",
+    pal: 0,
+    items: [],            // {id,t,x,y,w,h,rot,scale}
+    sel: null,
+    step: 0, stepsDone: [false, false, false, false],
+    saves: parseInt(localStorage.getItem("tlx_saves") || "3", 10),
+  };
+  const FREE_ITEMS = 8;
+  const uid = () => Math.random().toString(36).slice(2, 8);
+
+  /* ============ canvas setup ============ */
+  const canvas = $("roomCanvas"), ctx = canvas.getContext("2d");
+  const holder = $("holder");
+  let DPR = 1, CW = 0, CH = 0;
+
+  function resize() {
+    DPR = window.devicePixelRatio || 1;
+    CW = holder.clientWidth; CH = holder.clientHeight;
+    canvas.width = CW * DPR; canvas.height = CH * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    draw();
+  }
+  new ResizeObserver(resize).observe(holder);
+
+  /* meters → px */
+  let SCALE = 70, OX = 0, OY = 0; // set in draw
+  const m2p = (m) => m * SCALE;
+
+  /* ============ drawing ============ */
+  function pal() { return PALETTES[state.pal]; }
+
+  function rr(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+  }
+
+  function drawItem(it, P, ghost) {
+    const w = m2p(it.w * it.scale), h = m2p(it.h * it.scale);
+    ctx.save();
+    ctx.translate(OX + m2p(it.x), OY + m2p(it.y));
+    ctx.rotate(it.rot * Math.PI / 2);
+    ctx.translate(-w / 2, -h / 2);
+    ctx.globalAlpha = ghost ? 0.45 : 1;
+    const ink = P.ink, acc = P.accent, light = P.wall;
+    switch (it.t) {
+      case "sofa2":
+        ctx.fillStyle = ink; rr(0, 0, w, h, 12); ctx.fill();
+        ctx.fillStyle = light; ctx.globalAlpha *= 0.25;
+        rr(8, h * 0.42, w - 16, h * 0.45, 8); ctx.fill();
+        ctx.globalAlpha = ghost ? 0.45 : 1;
+        ctx.strokeStyle = acc; ctx.lineWidth = 2;
+        rr(0, 0, w, h, 12); ctx.stroke();
+        break;
+      case "sofaL":
+        ctx.fillStyle = ink; rr(0, 0, w, h, 14); ctx.fill();
+        ctx.fillStyle = light; ctx.globalAlpha *= 0.25;
+        rr(8, 8, w * 0.55, h - 16, 8); ctx.fill();
+        ctx.globalAlpha = ghost ? 0.45 : 1;
+        ctx.strokeStyle = acc; ctx.lineWidth = 2;
+        rr(0, 0, w, h, 14); ctx.stroke();
+        break;
+      case "bed":
+        ctx.fillStyle = light; rr(0, 0, w, h, 10); ctx.fill();
+        ctx.strokeStyle = ink; ctx.lineWidth = 2; rr(0, 0, w, h, 10); ctx.stroke();
+        ctx.fillStyle = ink;
+        rr(6, 6, w * 0.4 - 8, h * 0.14, 4); ctx.fill();
+        rr(w * 0.6 + 2, 6, w * 0.4 - 8, h * 0.14, 4); ctx.fill();
+        ctx.fillStyle = acc; ctx.globalAlpha *= 0.5;
+        rr(4, h * 0.28, w - 8, h * 0.66, 8); ctx.fill();
+        ctx.globalAlpha = ghost ? 0.45 : 1;
+        break;
+      case "dining":
+        ctx.fillStyle = ink; rr(0, h * 0.2, w, h * 0.6, 10); ctx.fill();
+        ctx.fillStyle = acc;
+        for (let i = 0; i < 4; i++) {
+          const cx = i < 2 ? -6 : w + 6, cy = h * (0.28 + (i % 2) * 0.44);
+          ctx.beginPath(); ctx.arc(cx, cy, m2p(0.18), 0, 7); ctx.fill();
+        }
+        break;
+      case "coffee":
+        ctx.fillStyle = ink; rr(0, 0, w, h, 10); ctx.fill();
+        ctx.strokeStyle = acc; ctx.lineWidth = 2; rr(4, 4, w - 8, h - 8, 6); ctx.stroke();
+        break;
+      case "desk":
+        ctx.fillStyle = ink; rr(0, 0, w, h, 6); ctx.fill();
+        ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(w / 2, h + m2p(0.2), m2p(0.18), 0, 7); ctx.fill();
+        break;
+      case "wardrobe":
+        ctx.fillStyle = ink; rr(0, 0, w, h, 4); ctx.fill();
+        ctx.strokeStyle = acc; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(w / 2, 4); ctx.lineTo(w / 2, h - 4); ctx.stroke();
+        break;
+      case "shelf":
+        ctx.fillStyle = ink; rr(0, 0, w, h, 3); ctx.fill();
+        ctx.strokeStyle = acc; ctx.lineWidth = 1;
+        for (let i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo((w / 4) * i, 2); ctx.lineTo((w / 4) * i, h - 2); ctx.stroke(); }
+        break;
+      case "plant":
+        ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(w / 2, h / 2, w / 2, 0, 7); ctx.fill();
+        ctx.fillStyle = ink; ctx.beginPath(); ctx.arc(w / 2, h / 2, w * 0.32, 0, 7); ctx.fill();
+        break;
+      case "lamp":
+        ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(w / 2, h / 2, w / 2, 0, 7); ctx.fill();
+        ctx.strokeStyle = ink; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(w * 0.2, h * 0.2); ctx.lineTo(w * 0.8, h * 0.8); ctx.moveTo(w * 0.8, h * 0.2); ctx.lineTo(w * 0.2, h * 0.8); ctx.stroke();
+        break;
+      case "rug":
+        ctx.fillStyle = acc; ctx.globalAlpha *= 0.35; rr(0, 0, w, h, 14); ctx.fill();
+        ctx.globalAlpha = ghost ? 0.45 : 1;
+        ctx.strokeStyle = acc; ctx.lineWidth = 2; rr(6, 6, w - 12, h - 12, 10); ctx.stroke();
+        break;
+      case "tv":
+        ctx.fillStyle = ink; rr(0, 0, w, h, 4); ctx.fill();
+        ctx.fillStyle = acc; ctx.fillRect(6, h * 0.35, w - 12, h * 0.3);
+        break;
+    }
+    ctx.restore();
+  }
+
+  function draw() {
+    const P = pal(), F = FLOORS[state.floor];
+    ctx.clearRect(0, 0, CW, CH);
+    ctx.fillStyle = "#141010";
+    ctx.fillRect(0, 0, CW, CH);
+
+    // scale & origin: fit room + margin
+    const margin = 60;
+    SCALE = Math.max(30, Math.min((CW - margin * 2) / state.W, (CH - margin * 2) / state.L));
+    OX = (CW - m2p(state.W)) / 2;
+    OY = (CH - m2p(state.L)) / 2;
+
+    // floor
+    ctx.fillStyle = F.color;
+    ctx.fillRect(OX, OY, m2p(state.W), m2p(state.L));
+    // floor planks
+    ctx.strokeStyle = "rgba(0,0,0,0.08)"; ctx.lineWidth = 1;
+    for (let x = 0; x < state.W; x += 0.4) { ctx.beginPath(); ctx.moveTo(OX + m2p(x), OY); ctx.lineTo(OX + m2p(x), OY + m2p(state.L)); ctx.stroke(); }
+    // grid (0.5m)
+    ctx.strokeStyle = "rgba(255,255,255,0.05)";
+    for (let x = 0; x <= state.W + 0.01; x += 0.5) { ctx.beginPath(); ctx.moveTo(OX + m2p(x), OY); ctx.lineTo(OX + m2p(x), OY + m2p(state.L)); ctx.stroke(); }
+    for (let y = 0; y <= state.L + 0.01; y += 0.5) { ctx.beginPath(); ctx.moveTo(OX, OY + m2p(y)); ctx.lineTo(OX + m2p(state.W), OY + m2p(y)); ctx.stroke(); }
+    // walls
+    ctx.strokeStyle = P.wall; ctx.lineWidth = 8;
+    ctx.strokeRect(OX - 4, OY - 4, m2p(state.W) + 8, m2p(state.L) + 8);
+    ctx.strokeStyle = "rgba(0,0,0,0.4)"; ctx.lineWidth = 1;
+    ctx.strokeRect(OX - 8, OY - 8, m2p(state.W) + 16, m2p(state.L) + 16);
+
+    // dimension labels
+    ctx.fillStyle = "#a89f92"; ctx.font = "500 11px Roboto"; ctx.textAlign = "center";
+    ctx.fillText(state.W.toFixed(1) + " m", OX + m2p(state.W) / 2, OY + m2p(state.L) + 26);
+    ctx.save(); ctx.translate(OX - 26, OY + m2p(state.L) / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText(state.L.toFixed(1) + " m", 0, 0); ctx.restore();
+
+    // items (rug first)
+    const rugs = state.items.filter((i) => i.t === "rug"), rest = state.items.filter((i) => i.t !== "rug");
+    for (const it of [...rugs, ...rest]) drawItem(it, P, false);
+    // selection ring
+    if (state.sel) {
+      const it = state.sel, w = m2p(it.w * it.scale), h = m2p(it.h * it.scale);
+      ctx.save();
+      ctx.translate(OX + m2p(it.x), OY + m2p(it.y));
+      ctx.rotate(it.rot * Math.PI / 2);
+      ctx.strokeStyle = pal().accent; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+      ctx.strokeRect(-w / 2 - 6, -h / 2 - 6, w + 12, h + 12);
+      ctx.restore();
+    }
+    // ghost while dragging from catalog
+    if (dragGhost) drawItem(dragGhost, P, true);
+  }
+
+  /* ============ catalog ============ */
+  const catGrid = $("catGrid");
+  function renderCatalog() {
+    catGrid.innerHTML = "";
+    CATALOG.forEach((c) => {
+      const el = document.createElement("div");
+      el.className = "cat-item";
+      el.dataset.t = c.t;
+      el.title = c.label;
+      const cv = document.createElement("canvas");
+      cv.width = 44; cv.height = 44;
+      const c2 = cv.getContext("2d");
+      const r = Math.min(44 / c.w, 44 / c.h) * 0.82;
+      c2.translate(22 - (c.w * r) / 2, 22 - (c.h * r) / 2);
+      c2.fillStyle = "#f2ede4";
+      c2.beginPath(); c2.roundRect(0, 0, c.w * r, c.h * r, 4); c2.fill();
+      c2.strokeStyle = "#e4c07a"; c2.lineWidth = 1.5;
+      c2.strokeRect(0, 0, c.w * r, c.h * r);
+      el.appendChild(cv);
+      const s = document.createElement("span"); s.textContent = c.label; el.appendChild(s);
+      catGrid.appendChild(el);
+    });
+  }
+
+  /* ============ freemium ============ */
+  function itemsFull() { return state.items.length >= FREE_ITEMS; }
+  function savesLeft() { return state.saves > 0; }
+  function useSave() { state.saves--; localStorage.setItem("tlx_saves", String(state.saves)); renderQuota(); }
+  function renderQuota() {
+    $("quotaText").textContent = "Free " + state.items.length + "/" + FREE_ITEMS + " item · simpan ×" + state.saves;
+    $("quotaFill").style.width = Math.min(100, (state.items.length / FREE_ITEMS) * 100) + "%";
+    $("quotaBox").classList.toggle("is-max", !savesLeft());
+    $("catLock").textContent = itemsFull() ? "Item penuh di Free — upgrade untuk furnitur unlimited" : "";
+    document.querySelectorAll(".cat-item").forEach((el) => el.classList.toggle("is-locked", itemsFull()));
+  }
+  const dialog = $("proDialog"), scrim = $("scrim");
+  function openPro() { dialog.classList.add("is-open"); scrim.classList.add("is-open"); }
+  function closePro() { dialog.classList.remove("is-open"); scrim.classList.remove("is-open"); $("proForm").hidden = true; }
+  $("proClose").addEventListener("click", closePro);
+  scrim.addEventListener("click", closePro);
+
+  /* ============ steps (LMS) ============ */
+  const stepBtns = [...document.querySelectorAll(".step")];
+  function renderSteps() {
+    stepBtns.forEach((b, i) => {
+      b.classList.toggle("is-active", i === state.step);
+      b.classList.toggle("is-done", state.stepsDone[i]);
+    });
+  }
+  stepBtns.forEach((b) => b.addEventListener("click", () => { state.step = +b.dataset.step; renderSteps(); hintForStep(); }));
+  function completeStep(i) {
+    if (!state.stepsDone[i]) {
+      state.stepsDone[i] = true;
+      let next = state.stepsDone.findIndex((d, j) => !d && j > i);
+      if (next === -1) next = i;
+      state.step = Math.min(3, next);
+      renderSteps(); hintForStep();
+    }
+  }
+  const HINTS = [
+    "Atur lebar/panjang ruang & pilih material lantai →",
+    "Generate palet warna sampai nemu yang pas →",
+    "Drag furnitur dari katalog ke ruangan (min. 3 item) →",
+    "Simpan PNG atau kirim desainmu ke Trilux 🚀",
+  ];
+  function hintForStep() {
+    $("hintText").textContent = HINTS[state.step];
+    $("hint").classList.remove("is-hidden");
+  }
+
+  /* ============ interactions ============ */
+  let dragGhost = null;   // {t,x,y,w,h,rot,scale} in meters while dragging from catalog
+  let dragging = null;    // {it, offX, offY} while moving placed item
+
+  catGrid.addEventListener("pointerdown", (e) => {
+    const el = e.target.closest(".cat-item");
+    if (!el || itemsFull()) { if (el && itemsFull()) openPro(); return; }
+    e.preventDefault();
+    const c = CATALOG.find((x) => x.t === el.dataset.t);
+    const pt = canvasPoint(e);
+    dragGhost = { id: uid(), t: c.t, x: pt ? pt.x : state.W / 2, y: pt ? pt.y : state.L / 2, w: c.w, h: c.h, rot: 0, scale: 1 };
+    placeGhostAt(e);
+    draw();
+  });
+
+  function canvasPoint(e) {
+    const r = canvas.getBoundingClientRect();
+    const px = e.clientX - r.left, py = e.clientY - r.top;
+    return { x: (px - OX) / SCALE, y: (py - OY) / SCALE };
+  }
+  function placeGhostAt(e) {
+    if (!dragGhost) return;
+    const pt = canvasPoint(e);
+    if (pt) { dragGhost.x = pt.x; dragGhost.y = pt.y; }
+  }
+  function clampItem(it) {
+    const w = it.w * it.scale / 2, h = it.h * it.scale / 2;
+    it.x = Math.min(Math.max(it.x, w), state.W - w);
+    it.y = Math.min(Math.max(it.y, h), state.L - h);
+  }
+
+  window.addEventListener("pointermove", (e) => {
+    if (dragGhost) { placeGhostAt(e); draw(); }
+    if (dragging) {
+      const pt = canvasPoint(e);
+      if (pt) {
+        dragging.it.x = pt.x - dragging.offX;
+        dragging.it.y = pt.y - dragging.offY;
+        clampItem(dragging.it);
+        draw(); positionTools();
+      }
+    }
+  });
+  window.addEventListener("pointerup", (e) => {
+    if (dragGhost) {
+      const r = canvas.getBoundingClientRect();
+      const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (inside) {
+        const it = dragGhost;
+        clampItem(it);
+        state.items.push(it);
+        state.sel = it;
+        completeStep(2);
+        renderQuota(); positionTools(); snackless();
+      }
+      dragGhost = null; draw();
+    }
+    dragging = null;
+  });
+
+  // hit-test placed items (reverse order = topmost)
+  canvas.addEventListener("pointerdown", (e) => {
+    const pt = canvasPoint(e);
+    if (!pt) return;
+    for (let i = state.items.length - 1; i >= 0; i--) {
+      const it = state.items[i];
+      const dx = pt.x - it.x, dy = pt.y - it.y, a = -it.rot * Math.PI / 2;
+      const rx = dx * Math.cos(a) - dy * Math.sin(a), ry = dx * Math.sin(a) + dy * Math.cos(a);
+      if (Math.abs(rx) <= (it.w * it.scale) / 2 && Math.abs(ry) <= (it.h * it.scale) / 2) {
+        state.sel = it;
+        dragging = { it, offX: rx, offY: ry };
+        positionTools(); draw();
+        return;
+      }
+    }
+    state.sel = null; hideTools(); draw();
+  });
+
+  /* item toolbar */
+  const tools = $("itemTools");
+  function positionTools() {
+    if (!state.sel) { tools.classList.remove("is-open"); return; }
+    const it = state.sel;
+    const px = OX + m2p(it.x), py = OY + m2p(it.y) - (m2p(it.h * it.scale) / 2) - 34;
+    tools.style.left = Math.max(8, px - 70) + "px";
+    tools.style.top = Math.max(8, py) + "px";
+    tools.classList.add("is-open");
+  }
+  function hideTools() { tools.classList.remove("is-open"); }
+  tools.addEventListener("pointerdown", (e) => e.stopPropagation());
+  tools.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b || !state.sel) return;
+    const it = state.sel;
+    if (b.dataset.act === "rotate") it.rot = (it.rot + 1) % 4;
+    if (b.dataset.act === "bigger") it.scale = Math.min(2, it.scale * 1.15);
+    if (b.dataset.act === "smaller") it.scale = Math.max(0.5, it.scale / 1.15);
+    if (b.dataset.act === "delete") {
+      state.items = state.items.filter((x) => x !== it);
+      state.sel = null; hideTools(); renderQuota();
+    }
+    clampItem(it); draw(); positionTools();
+  });
+
+  /* ============ room controls ============ */
+  function sld(el, out, key, fmt) {
+    const set = () => {
+      state[key] = parseFloat(el.value);
+      out.textContent = fmt(state[key]);
+      const min = +el.min, max = +el.max;
+      el.style.setProperty("--fill", ((state[key] - min) / (max - min)) * 100 + "%");
+      state.items.forEach(clampItem);
+      updateHeads(); draw(); completeStep(0);
+    };
+    el.addEventListener("input", set); set();
+  }
+  sld($("wRange"), $("wOut"), "W", (v) => v.toFixed(1) + " m");
+  sld($("lRange"), $("lOut"), "L", (v) => v.toFixed(1) + " m");
+
+  $("floorChips").addEventListener("click", (e) => {
+    const b = e.target.closest(".fchip-d"); if (!b) return;
+    document.querySelectorAll("#floorChips .fchip-d").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    state.floor = b.dataset.floor;
+    updateHeads(); draw(); estimate(); completeStep(0);
+  });
+
+  /* ============ palette ============ */
+  function applyPalette(idx) {
+    state.pal = idx;
+    const P = pal();
+    $("palName").textContent = P.name;
+    const sw = $("palSw").children;
+    sw[0].style.background = P.wall; sw[1].style.background = P.floor;
+    sw[2].style.background = P.ink; sw[3].style.background = P.accent;
+    $("paletteLabel").textContent = P.name;
+    draw(); completeStep(1);
+  }
+  $("genPal").addEventListener("click", () => {
+    let next; do { next = Math.floor(Math.random() * PALETTES.length); } while (next === state.pal && PALETTES.length > 1);
+    applyPalette(next);
+    $("snackMsg").textContent = "Palet " + pal().name + " diterapkan 🎨";
+    showSnack();
+  });
+
+  /* ============ estimate ============ */
+  function estimate() {
+    const area = state.W * state.L;
+    const floorRate = FLOORS[state.floor].rate;
+    const furn = state.items.reduce((s, i) => s + (CATALOG.find((c) => c.t === i.t) || { cost: 0 }).cost, 0);
+    const lo = area * floorRate + furn;
+    const hi = lo * 1.6;
+    const fm = (x) => x >= 1000 ? "Rp " + (x / 1000).toFixed(1) + " miliar" : "Rp " + Math.round(x) + " juta";
+    $("estOut").textContent = fm(lo) + " – " + fm(hi).replace("Rp ", "");
+    $("estMeta").textContent = "Interior · " + area.toFixed(1) + " m² · " + state.items.length + " furnitur · " + FLOORS[state.floor].rate.toFixed(1) + "jt/m²";
+    return { lo, hi, area };
+  }
+  function updateHeads() {
+    const area = state.W * state.L;
+    $("areaLabel").textContent = area.toFixed(1) + " m²";
+    $("roomLabel").textContent = "Ruang " + state.W.toFixed(1) + " × " + state.L.toFixed(1) + " m · " +
+      document.querySelector('#floorChips [aria-pressed="true"]').textContent.trim();
+    estimate();
+  }
+
+  /* ============ export / send ============ */
+  $("exportBtn").addEventListener("click", () => {
+    if (!savesLeft()) { openPro(); return; }
+    // watermark
+    const P = pal();
+    ctx.fillStyle = "rgba(242,237,228,0.85)"; ctx.font = "500 12px Roboto"; ctx.textAlign = "right";
+    ctx.fillText("Trilux Studio — free tier", CW - 14, CH - 14);
+    const a = document.createElement("a");
+    a.download = "trilux-studio-" + Date.now() + ".png";
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+    useSave(); completeStep(3);
+    $("snackMsg").textContent = "PNG tersimpan — sisa jatah simpan ×" + state.saves;
+    showSnack(); draw();
+  });
+
+  const designBrief = () => {
+    const est = estimate();
+    const P = pal();
+    return {
+      contact: "",
+      scope: "Studio Interior",
+      area: Math.round(est.area),
+      total: $("estOut").textContent,
+      config: JSON.stringify({
+        ruang: state.W.toFixed(1) + "x" + state.L.toFixed(1) + "m",
+        lantai: state.floor, palet: P.name,
+        furnitur: state.items.map((i) => i.t + "×" + Math.round(i.scale * 100) + "%"),
+        via: "Trilux Studio",
+      }),
+    };
+  };
+
+  $("sendBtn").addEventListener("click", async () => {
+    if (!savesLeft()) { openPro(); return; }
+    const brief = designBrief();
+    brief.contact = "studio-user@" + Date.now().toString(36) + ".local";
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(brief),
+      });
+      if (!res.ok) throw new Error();
+      useSave(); completeStep(3);
+      $("snackMsg").textContent = "Desainmu terkirim ke Trilux! Tim kami akan follow up 🚀";
+      showSnack();
+    } catch { $("snackMsg").textContent = "Gagal kirim — coba lagi ya."; showSnack(); }
+  });
+
+  /* pro dialog CTAs */
+  $("proWa").addEventListener("click", () => {
+    const est = estimate(); const P = pal();
+    const msg = "Halo Trilux! Aka udah bikin konsep interior di Trilux Studio: " + P.name + ", " + (state.W * state.L).toFixed(1) + " m², " + state.items.length + " furnitur, estimasi " + $("estOut").textContent + ". Mau lanjut ke Pro / full service ya!";
+    $("proWa").href = "https://wa.me/6282287348422?text=" + encodeURIComponent(msg);
+  });
+  $("proSend").addEventListener("click", () => { $("proForm").hidden = false; $("proContact").focus(); });
+  $("proForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const contact = $("proContact").value.trim(); if (!contact) return;
+    const brief = designBrief(); brief.contact = contact;
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(brief),
+      });
+      if (!res.ok) throw new Error();
+      closePro(); $("proContact").value = "";
+      $("snackMsg").textContent = "Brief terkirim! Desainer Trilux akan menghubungi kamu ✨";
+      showSnack();
+    } catch { $("snackMsg").textContent = "Gagal kirim — coba lagi ya."; showSnack(); }
+  });
+
+  /* ============ misc ui ============ */
+  let snackT;
+  function showSnack() {
+    $("snack").classList.add("is-open");
+    clearTimeout(snackT);
+    snackT = setTimeout(() => $("snack").classList.remove("is-open"), 3800);
+  }
+  function snackless() { /* placeholder for future per-item toasts */ }
+  $("fabCatalog").addEventListener("click", () => { $("catalog").classList.toggle("is-open"); $("inspector").classList.remove("is-open"); });
+  $("fabInspector").addEventListener("click", () => { $("inspector").classList.toggle("is-open"); $("catalog").classList.remove("is-open"); });
+
+  /* keyboard */
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { state.sel = null; hideTools(); draw(); }
+    if ((e.key === "Delete" || e.key === "Backspace") && state.sel && document.activeElement.tagName !== "INPUT") {
+      state.items = state.items.filter((x) => x !== state.sel);
+      state.sel = null; hideTools(); renderQuota(); draw();
+    }
+    if (e.key.toLowerCase() === "r" && state.sel && document.activeElement.tagName !== "INPUT") {
+      state.sel.rot = (state.sel.rot + 1) % 4; draw(); positionTools();
+    }
+  });
+
+  /* track view */
+  fetch("/api/track", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: "view", path: "/studio" }),
+  }).catch(() => {});
+
+  /* ============ boot ============ */
+  renderCatalog();
+  applyPalette(0);
+  renderQuota();
+  renderSteps();
+  hintForStep();
+  updateHeads();
+  resize();
+})();
+</script>
+</body>
+</html>

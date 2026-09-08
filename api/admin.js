@@ -14,9 +14,10 @@ function checkAuth(req) {
 
 async function readBlobText(file) {
   try {
-    const { head } = await import("@vercel/blob");
+    const { head, getDownloadUrl } = await import("@vercel/blob");
     const h = await head(file);
-    return await (await fetch(h.url, { cache: "no-store" })).text();
+    const dl = await getDownloadUrl(h.url);
+    return await (await fetch(dl + "&cb=" + Date.now(), { cache: "no-store" })).text();
   } catch (_) { return ""; }
 }
 

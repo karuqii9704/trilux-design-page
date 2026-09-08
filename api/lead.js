@@ -35,11 +35,12 @@ export default async function handler(req, res) {
   const line = JSON.stringify(lead) + "\n";
   try {
     if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const { head, put } = await import("@vercel/blob");
+      const { head, put, getDownloadUrl } = await import("@vercel/blob");
       let existing = "";
       try {
         const h = await head("cms/leads.jsonl");
-        existing = await (await fetch(h.url, { cache: "no-store" })).text();
+        const dl = await getDownloadUrl(h.url);
+        existing = await (await fetch(dl + "&cb=" + Date.now(), { cache: "no-store" })).text();
       } catch (_) { existing = ""; } // first lead ever
       await put("cms/leads.jsonl", existing + line, {
         access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: "application/x-ndjson",

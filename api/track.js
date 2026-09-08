@@ -35,11 +35,12 @@ export default async function handler(req, res) {
       globalThis.__hits = globalThis.__hits || [];
       globalThis.__hits.push(line);
     } else {
-      const { put, head } = await import("@vercel/blob");
+      const { put, head, getDownloadUrl } = await import("@vercel/blob");
       let prev = "";
       try {
         const h = await head(file);
-        prev = await (await fetch(h.url, { cache: "no-store" })).text();
+        const dl = await getDownloadUrl(h.url);
+        prev = await (await fetch(dl + "&cb=" + Date.now(), { cache: "no-store" })).text();
       } catch (_) { /* first write today */ }
       await put(file, prev + line, { access: "public", addRandomSuffix: false, allowOverwrite: true });
     }
