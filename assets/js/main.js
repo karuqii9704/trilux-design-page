@@ -138,38 +138,5 @@
     });
   }
 
-  // Count-up for tabular figures (e.g. project budget) — once, on scroll into view
-  const countEls = document.querySelectorAll(".js-count");
-  if (countEls.length) {
-    const formatIDR = (n) => "$ " + n.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const animateCount = (el) => {
-      const target = parseFloat(el.dataset.target);
-      if (reducedMotion.matches || Number.isNaN(target)) return;
-      const start = performance.now();
-      const duration = 900;
-      const tick = (now) => {
-        const p = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = formatIDR(target * eased);
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-    if (!("IntersectionObserver" in window)) {
-      countEls.forEach(animateCount);
-    } else {
-      const countIo = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              animateCount(entry.target);
-              countIo.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.6 }
-      );
-      countEls.forEach((el) => countIo.observe(el));
-    }
-  }
 })();
+
