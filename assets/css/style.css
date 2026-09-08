@@ -274,6 +274,117 @@ h1, h2, h3 {
 /* legacy variants — kept as no-ops so old markup (admin/project) renders */
 .btn-on-ink, .btn-on-bone { /* scheme handles colors */ }
 
+/* M3 tonal (secondary container) button — used for secondary CTAs */
+.btn--tonal {
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+/* icon trailing/leading inside buttons */
+.btn__icon {
+  font-size: 18px;
+  margin-inline-start: var(--sp-1);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.btn:hover .btn__icon { transform: translateX(2px); }
+
+/* M3 standard icon button (footer back-to-top) */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--md-shape-full);
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.icon-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity var(--dur-fast) var(--ease-out);
+  pointer-events: none;
+}
+.icon-btn:hover::after { opacity: 0.08; }
+.icon-btn:hover { color: var(--md-primary); }
+
+/* Material Symbols base */
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+}
+
+/* contact rows with leading icons */
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--md-on-surface);
+}
+.contact-link .material-symbols-rounded { color: var(--md-primary); }
+
+/* M3 ripple — JS appends span.ripple; keyframes below.
+   Targets need clipping for the bounded effect. */
+.pagination__dot,
+.thumb-grid button,
+.nav__link { position: relative; overflow: hidden; }
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple-out 500ms var(--ease-out) forwards;
+  background: currentColor;
+  opacity: 0.16;
+  pointer-events: none;
+}
+@keyframes ripple-out {
+  to { transform: scale(2.6); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ripple { animation: none; opacity: 0; } }
+
+/* M3 FAB — WhatsApp, mobile only */
+.fab-wa {
+  position: fixed;
+  right: var(--sp-4);
+  bottom: var(--sp-4);
+  z-index: 90;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--md-shape-lg);
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  box-shadow: var(--md-elevation-3);
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.fab-wa:hover { transform: scale(1.06); box-shadow: var(--md-elevation-3), 0 0 0 8px color-mix(in srgb, var(--md-primary) 12%, transparent); }
+.fab-wa .material-symbols-rounded { font-size: 26px; }
+@media (max-width: 767px) { .fab-wa { display: inline-flex; } }
+
+/* scrollspy indicator */
+.nav__link.is-scrolled-active { color: var(--md-primary); }
+
 /* ==========================================================================
    NavBar — M3 top app bar
    ========================================================================== */

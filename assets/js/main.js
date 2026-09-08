@@ -112,6 +112,43 @@
     window.scrollTo({ top: 0, behavior: reducedMotion.matches ? "auto" : "smooth" });
   });
 
+  // M3 ripple — bounded, from pointer origin; skip on reduced motion / coarse pointers
+  if (!reducedMotion.matches && matchMedia("(pointer: fine)").matches) {
+    document.addEventListener("pointerdown", (e) => {
+      const target = e.target.closest(".btn, .icon-btn, .pagination__dot, .thumb-grid button, .nav__link");
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      const d = Math.max(rect.width, rect.height);
+      const span = document.createElement("span");
+      span.className = "ripple";
+      span.style.width = span.style.height = `${d}px`;
+      span.style.left = `${e.clientX - rect.left - d / 2}px`;
+      span.style.top = `${e.clientY - rect.top - d / 2}px`;
+      target.appendChild(span);
+      setTimeout(() => span.remove(), 520);
+    });
+  }
+
+  // Scrollspy — highlight the nav link of the section in view
+  const spySections = ["welcome", "mission", "selected-work", "contact"]
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  const spyLinks = [...document.querySelectorAll('.nav__link[href^="#"]')];
+  if (spySections.length && spyLinks.length) {
+    const spyIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          spyLinks.forEach((l) => l.classList.remove("is-scrolled-active"));
+          const match = spyLinks.find((l) => l.getAttribute("href") === `#${entry.target.id}`);
+          if (match) match.classList.add("is-scrolled-active");
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px" }
+    );
+    spySections.forEach((s) => spyIo.observe(s));
+  }
+
   // Magnetic buttons — subtle pointer-follow on fine-pointer devices only
   if (fineHover.matches && !reducedMotion.matches) {
     document.querySelectorAll(".btn").forEach((btn) => {

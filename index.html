@@ -10,12 +10,12 @@
 <meta property="og:title" content="Trilux Design — Interior, Exterior & Architecture">
 <meta property="og:description" content="Spaces built on precision. Finished with warmth. Explore the Trilux Design portfolio.">
 <meta property="og:type" content="website">
-<link rel="preload" href="assets/fonts/playfair-display-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/img/hero.jpg" as="image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap">
-<link rel="stylesheet" href="assets/css/style.css?v=4">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
+<link rel="stylesheet" href="assets/css/style.css?v=5">
 <script>
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     document.documentElement.classList.add("js-anim");
@@ -61,7 +61,7 @@
     <a href="#selected-work">Portfolio</a>
     <a href="#contact">Services</a>
     <a href="#contact">Contact</a>
-    <a class="btn btn-on-ink" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
+    <a class="btn btn-on-ink" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp <span class="material-symbols-rounded btn__icon" aria-hidden="true">arrow_forward</span></a>
   </div>
 </header>
 
@@ -77,7 +77,7 @@
       <p class="hero__sub hero-anim">Spaces built on precision, finished with artistry.</p>
       <div class="hero__row hero-anim">
         <span class="hero__scroll">Scroll to explore <span class="hero__scroll-line" aria-hidden="true"></span></span>
-        <a class="btn btn-on-ink" href="#selected-work">View Project →</a>
+        <a class="btn" href="#selected-work">View Project <span class="material-symbols-rounded btn__icon" aria-hidden="true">arrow_forward</span></a>
       </div>
     </div>
   </section>
@@ -99,7 +99,7 @@
   </section>
 
   <!-- S3 — Mission & Philosophy -->
-  <section class="mission panel-bone">
+  <section class="mission panel-bone" id="mission">
     <div class="wrap mission__grid">
       <div class="mission__media reveal">
         <img src="assets/img/mission.jpg" alt="Lounge with terracotta armchairs, a dark round coffee table and backlit wood-panel wall" loading="lazy" decoding="async">
@@ -187,7 +187,7 @@
 
       <div class="work__media reveal">
         <img id="workMainImage" src="assets/img/cover.jpg" alt="Two-storey contemporary house with a hip roof, stone-clad facade and a red hatchback parked in front" loading="lazy" decoding="async">
-        <span class="cursor-chip" aria-hidden="true">View Project →</span>
+        <span class="cursor-chip" aria-hidden="true"><span class="material-symbols-rounded">arrow_forward</span> View Project</span>
       </div>
 
       <div class="work__bottom reveal">
@@ -220,24 +220,24 @@
         <dl class="contact-details">
           <div>
             <dt>Phone</dt>
-            <dd><a href="tel:+6282287348422">0822 8734 8422</a></dd>
+            <dd><a class="contact-link" href="tel:+6282287348422"><span class="material-symbols-rounded" aria-hidden="true">call</span>0822 8734 8422</a></dd>
           </div>
           <div>
             <dt>Social</dt>
-            <dd><a href="https://instagram.com/trilux_design" target="_blank" rel="noopener">@trilux_design</a></dd>
+            <dd><a class="contact-link" href="https://instagram.com/trilux_design" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">photo_camera</span>@trilux_design</a></dd>
           </div>
           <div>
             <dt>Email</dt>
-            <dd><a href="mailto:triluxdesign@gmail.com">triluxdesign@gmail.com</a></dd>
+            <dd><a class="contact-link" href="mailto:triluxdesign@gmail.com"><span class="material-symbols-rounded" aria-hidden="true">mail</span>triluxdesign@gmail.com</a></dd>
           </div>
           <div>
             <dt>Location</dt>
-            <dd>Jakarta, Indonesia</dd>
+            <dd><span class="contact-link"><span class="material-symbols-rounded" aria-hidden="true">location_on</span>Jakarta, Indonesia</span></dd>
           </div>
         </dl>
         <div class="contact__ctas">
-          <a class="btn btn-on-ink" href="mailto:triluxdesign@gmail.com">Email Us →</a>
-          <a class="btn btn-on-ink" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20menanyakan%20proyek." target="_blank" rel="noopener">Whatsapp →</a>
+          <a class="btn" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20menanyakan%20proyek." target="_blank" rel="noopener">Whatsapp <span class="material-symbols-rounded btn__icon" aria-hidden="true">arrow_forward</span></a>
+          <a class="btn btn--tonal" href="mailto:triluxdesign@gmail.com">Email Us <span class="material-symbols-rounded btn__icon" aria-hidden="true">arrow_forward</span></a>
         </div>
       </div>
     </div>
@@ -248,9 +248,14 @@
 <!-- S7 — Footer -->
 <footer class="site-footer panel-ink wrap">
   <span>© 2026 Trilux Design · Interior · Exterior · Building</span>
-  <a href="#top" id="backToTop">Back to top ↑</a>
+  <a href="#top" id="backToTop" class="icon-btn" aria-label="Back to top"><span class="material-symbols-rounded" aria-hidden="true">arrow_upward</span></a>
 </footer>
 
-<script src="assets/js/main.js"></script>
+<!-- WhatsApp FAB (mobile) -->
+<a class="fab-wa" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20menanyakan%20proyek." target="_blank" rel="noopener" aria-label="Chat Trilux Design di WhatsApp">
+  <span class="material-symbols-rounded" aria-hidden="true">forum</span>
+</a>
+
+<script src="assets/js/main.js?v=2"></script>
 </body>
 </html>
