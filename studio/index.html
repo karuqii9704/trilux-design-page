@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trilux Studio — Bangun Interior Ruanganmu Sendiri</title>
 <meta name="description" content="Studio desain interior interaktif dari Trilux Design: atur ruang, generate palet warna, drag & drop furnitur, lalu kirim hasilnya ke kami.">
+<meta property="og:title" content="Trilux Studio — Desain Interior Ruanganmu">
+<meta property="og:description" content="Atur ukuran ruang, pilih palet warna, susun furnitur dengan drag & drop — lalu kirim desainmu ke Trilux. Gratis, langsung di browser.">
+<meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="../assets/img/logo-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -325,9 +328,61 @@ button { font: inherit; color: inherit; }
 @media (max-width: 760px) { .fab-catalog { display: inline-flex; } }
 
 .empty-note { font-size: 0.72rem; color: var(--studio-on-var); text-align: center; padding: 8px 0; }
+
+/* ---------- stage toolbar (undo/redo/snap/dup/share) ---------- */
+.tool-strip { display: inline-flex; gap: 4px; align-items: center; }
+.mini-btn {
+  width: 34px; height: 34px; border-radius: 50%; border: none; background: none;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  color: var(--studio-on-var); transition: background 0.15s, color 0.15s;
+}
+.mini-btn:hover { background: rgba(242,237,228,0.10); color: var(--studio-on); }
+.mini-btn:disabled { opacity: 0.35; cursor: default; }
+.mini-btn:disabled:hover { background: none; color: var(--studio-on-var); }
+.mini-btn .material-symbols-rounded { font-size: 18px; }
+.mini-btn.tlx-on { color: var(--studio-primary); background: rgba(228,192,122,0.12); }
+
+
+/* ---------- ambient constellation background (ThreeUI-inspired, canvas2d) ---------- */
+.amb { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.amb canvas { width: 100%; height: 100%; display: block; }
+body::before { /* depth vignette over the constellation */
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 40%, transparent 0%, rgba(20,16,16,0.55) 62%, rgba(20,16,16,0.9) 100%);
+}
+.studio-bar, .studio-wrap, .panel-fab { position: relative; z-index: 2; }
+.studio-bar { position: sticky; }
+.dialog, .snack, .scrim { z-index: 95; }
+
+/* ---------- shimmer sweep (palette generate moment) ---------- */
+@keyframes sweep { 0% { transform: translateX(-130%) skewX(-18deg); } 100% { transform: translateX(230%) skewX(-18deg); } }
+.gen-sweep {
+  position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none;
+}
+.gen-sweep::after {
+  content: ""; position: absolute; top: -20%; bottom: -20%; width: 46%;
+  background: linear-gradient(100deg, transparent 20%, rgba(228,192,122,0.28) 50%, transparent 80%);
+  transform: translateX(-130%) skewX(-18deg);
+}
+#genPal.is-sweeping .gen-sweep::after { animation: sweep 0.75s cubic-bezier(.3,0,.2,1) 1; }
+
+/* ---------- stagger entrance (desktop) ---------- */
+@media (min-width: 1101px) {
+  .catalog, .stage, .inspector { opacity: 0; transform: translateY(14px); animation: rise-in 0.55s cubic-bezier(0,0,0.2,1) forwards; }
+  .stage { animation-delay: 0.08s; }
+  .inspector { animation-delay: 0.16s; }
+}
+@keyframes rise-in { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .catalog, .stage, .inspector { animation: none; opacity: 1; transform: none; }
+  #genPal.is-sweeping .gen-sweep::after { animation: none; }
+}
+
 </style>
 </head>
 <body>
+
+<div class="amb" id="amb" aria-hidden="true"><canvas id="ambCanvas"></canvas></div>
 
 <header class="studio-bar">
   <a class="studio-bar__logo" href="/">
@@ -355,6 +410,14 @@ button { font: inherit; color: inherit; }
       <span id="quotaText">Free 0/8 item</span>
       <div class="quota__bar"><div class="quota__fill" id="quotaFill" style="width:0%"></div></div>
     </div>
+    <p class="panel-title" style="margin-top:6px"><span class="material-symbols-rounded" aria-hidden="true">bolt</span> Mulai Cepat</p>
+    <div class="ins-group" style="padding-bottom:16px">
+      <div class="chipset">
+        <button class="fchip-d" id="tplLiving" type="button"><span class="material-symbols-rounded" style="font-size:16px">weekend</span> Ruang Tamu</button>
+        <button class="fchip-d" id="tplBedroom" type="button"><span class="material-symbols-rounded" style="font-size:16px">bed</span> Kamar Tidur</button>
+        <button class="fchip-d" id="tplWork" type="button"><span class="material-symbols-rounded" style="font-size:16px">desk</span> Ruang Kerja</button>
+      </div>
+    </div>
   </aside>
 
   <!-- STAGE -->
@@ -366,6 +429,13 @@ button { font: inherit; color: inherit; }
       </span>
       <span class="chip-lite"><span class="material-symbols-rounded" aria-hidden="true">palette</span> <b id="paletteLabel">Japandi</b></span>
       <span class="chip-lite"><span class="material-symbols-rounded" aria-hidden="true">straighten</span> <b id="areaLabel">12 m²</b></span>
+      <span class="tool-strip">
+        <button class="mini-btn" id="undoBtn" type="button" title="Undo (Ctrl+Z)" disabled><span class="material-symbols-rounded">undo</span></button>
+        <button class="mini-btn" id="redoBtn" type="button" title="Redo (Ctrl+Shift+Z)" disabled><span class="material-symbols-rounded">redo</span></button>
+        <button class="mini-btn tlx-on" id="snapBtn" type="button" aria-pressed="true" title="Snap 25 cm"><span class="material-symbols-rounded">grid_on</span></button>
+        <button class="mini-btn" id="dupBtn" type="button" title="Duplikat item (Ctrl+D)"><span class="material-symbols-rounded">content_copy</span></button>
+        <button class="mini-btn" id="shareBtn" type="button" title="Share link desain"><span class="material-symbols-rounded">share</span></button>
+      </span>
     </div>
     <div class="canvas-holder" id="holder">
       <canvas id="roomCanvas"></canvas>
@@ -402,7 +472,7 @@ button { font: inherit; color: inherit; }
         <span class="palette-name" id="palName">Japandi</span>
         <div class="palette-sw" id="palSw"><i></i><i></i><i></i><i></i></div>
       </div>
-      <button class="btn-d btn-d--full" id="genPal" type="button"><span class="material-symbols-rounded" aria-hidden="true">shuffle</span> Generate Palet Random</button>
+      <button class="btn-d btn-d--full" id="genPal" type="button"><span class="material-symbols-rounded" aria-hidden="true">shuffle</span> Generate Palet Random<span class="gen-sweep"></span></button>
     </div>
 
     <p class="panel-title"><span class="material-symbols-rounded" aria-hidden="true">calculate</span> Estimasi</p>
@@ -411,6 +481,10 @@ button { font: inherit; color: inherit; }
         <small>Estimasi indikatif</small>
         <strong id="estOut">Rp 48 juta</strong>
         <span class="meta" id="estMeta">Interior · 12 m² · 0 furnitur</span>
+        <button class="meta" id="estDetail" type="button" style="background:none;border:none;cursor:pointer;padding:4px 0 0;text-align:left">Lihat rincian ↓</button>
+        <div id="breakBox" hidden>
+          <div id="breakRows" style="display:flex;flex-direction:column;gap:6px;font-size:0.72rem;color:var(--studio-on-var)"></div>
+        </div>
       </div>
     </div>
 
@@ -427,6 +501,18 @@ button { font: inherit; color: inherit; }
 <button class="panel-fab fab-inspector" id="fabInspector" type="button" aria-label="Buka pengaturan"><span class="material-symbols-rounded">tune</span></button>
 
 <div class="scrim" id="scrim"></div>
+<div class="dialog" id="sendDialog" role="dialog" aria-modal="true" aria-labelledby="sendTitle">
+  <div class="dialog__icon"><span class="material-symbols-rounded">send</span></div>
+  <h3 id="sendTitle">Kirim desainmu ke Trilux</h3>
+  <p>Tim desainer kami akan review konsepmu dan follow up dengan estimasi lebih detail.</p>
+  <form id="sendForm">
+    <input id="sendContact" type="text" placeholder="Nomor WA / email kamu" autocomplete="tel email" required>
+    <div class="dialog__actions" style="margin-top:10px">
+      <button class="btn-d" type="submit" id="sendFormSend">Kirim ke Trilux</button>
+      <button class="btn-d btn-d--tonal" type="button" id="sendClose">Nanti dulu</button>
+    </div>
+  </form>
+</div>
 <div class="dialog" id="proDialog" role="dialog" aria-modal="true" aria-labelledby="proTitle">
   <div class="dialog__icon"><span class="material-symbols-rounded">workspace_premium</span></div>
   <h3 id="proTitle">Kamu telah mencapai batas Free ✨</h3>
@@ -775,16 +861,17 @@ button { font: inherit; color: inherit; }
     }
   });
   window.addEventListener("pointerup", (e) => {
+    if (dragging) { maybeSnap(dragging.it); clampItem(dragging.it); pushHistory(); draw(); positionTools(); }
     if (dragGhost) {
       const r = canvas.getBoundingClientRect();
       const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
       if (inside) {
         const it = dragGhost;
-        clampItem(it);
+        clampItem(it); maybeSnap(it); clampItem(it);
         state.items.push(it);
         state.sel = it;
         completeStep(2);
-        renderQuota(); positionTools(); snackless();
+        renderQuota(); positionTools(); snackless(); pushHistory(); autosave();
       }
       dragGhost = null; draw();
     }
@@ -831,7 +918,7 @@ button { font: inherit; color: inherit; }
       state.items = state.items.filter((x) => x !== it);
       state.sel = null; hideTools(); renderQuota();
     }
-    clampItem(it); draw(); positionTools();
+    clampItem(it); draw(); positionTools(); pushHistory();
   });
 
   /* ============ room controls ============ */
@@ -842,7 +929,7 @@ button { font: inherit; color: inherit; }
       const min = +el.min, max = +el.max;
       el.style.setProperty("--fill", ((state[key] - min) / (max - min)) * 100 + "%");
       state.items.forEach(clampItem);
-      updateHeads(); draw(); completeStep(0);
+      updateHeads(); draw(); completeStep(0); pushHistory();
     };
     el.addEventListener("input", set); set();
   }
@@ -853,7 +940,7 @@ button { font: inherit; color: inherit; }
     const b = e.target.closest(".fchip-d"); if (!b) return;
     document.querySelectorAll("#floorChips .fchip-d").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
     state.floor = b.dataset.floor;
-    updateHeads(); draw(); estimate(); completeStep(0);
+    updateHeads(); draw(); estimate(); completeStep(0); pushHistory();
   });
 
   /* ============ palette ============ */
@@ -865,10 +952,14 @@ button { font: inherit; color: inherit; }
     sw[0].style.background = P.wall; sw[1].style.background = P.floor;
     sw[2].style.background = P.ink; sw[3].style.background = P.accent;
     $("paletteLabel").textContent = P.name;
-    draw(); completeStep(1);
+    draw(); completeStep(1); pushHistory();
   }
   $("genPal").addEventListener("click", () => {
     let next; do { next = Math.floor(Math.random() * PALETTES.length); } while (next === state.pal && PALETTES.length > 1);
+    /* shimmer sweep moment */
+    const gp = $("genPal");
+    gp.classList.remove("is-sweeping"); void gp.offsetWidth; gp.classList.add("is-sweeping");
+    setTimeout(() => gp.classList.remove("is-sweeping"), 800);
     applyPalette(next);
     $("snackMsg").textContent = "Palet " + pal().name + " diterapkan 🎨";
     showSnack();
@@ -927,10 +1018,26 @@ button { font: inherit; color: inherit; }
     };
   };
 
-  $("sendBtn").addEventListener("click", async () => {
+  $("sendBtn").addEventListener("click", () => {
     if (!savesLeft()) { openPro(); return; }
-    const brief = designBrief();
-    brief.contact = "studio-user@" + Date.now().toString(36) + ".local";
+    if (!state.items.length) {
+      $("snackMsg").textContent = "Susun dulu furniturnya — tarik dari katalog ke kiri 👆";
+      showSnack(); return;
+    }
+    /* minta kontak nyata supaya lead bisa di-follow-up (bukan email fake) */
+    sendDialogOpen();
+  });
+
+  /* send dialog (kontak nyata sebelum kirim) */
+  const sendDialog = $("sendDialog");
+  function sendDialogOpen() { sendDialog.classList.add("is-open"); scrim.classList.add("is-open"); $("sendContact").focus(); }
+  function sendDialogClose() { sendDialog.classList.remove("is-open"); scrim.classList.remove("is-open"); }
+  $("sendClose").addEventListener("click", sendDialogClose);
+  $("sendForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const contact = $("sendContact").value.trim(); if (!contact) return;
+    const brief = designBrief(); brief.contact = contact;
+    const btn = $("sendFormSend"); btn.disabled = true;
     try {
       const res = await fetch("/api/lead", {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -940,7 +1047,9 @@ button { font: inherit; color: inherit; }
       useSave(); completeStep(3);
       $("snackMsg").textContent = "Desainmu terkirim ke Trilux! Tim kami akan follow up 🚀";
       showSnack();
+      sendDialogClose(); $("sendContact").value = "";
     } catch { $("snackMsg").textContent = "Gagal kirim — coba lagi ya."; showSnack(); }
+    btn.disabled = false;
   });
 
   /* pro dialog CTAs */
@@ -982,10 +1091,10 @@ button { font: inherit; color: inherit; }
     if (e.key === "Escape") { state.sel = null; hideTools(); draw(); }
     if ((e.key === "Delete" || e.key === "Backspace") && state.sel && document.activeElement.tagName !== "INPUT") {
       state.items = state.items.filter((x) => x !== state.sel);
-      state.sel = null; hideTools(); renderQuota(); draw();
+      state.sel = null; hideTools(); renderQuota(); draw(); pushHistory();
     }
     if (e.key.toLowerCase() === "r" && state.sel && document.activeElement.tagName !== "INPUT") {
-      state.sel.rot = (state.sel.rot + 1) % 4; draw(); positionTools();
+      state.sel.rot = (state.sel.rot + 1) % 4; draw(); positionTools(); pushHistory();
     }
   });
 
@@ -995,6 +1104,264 @@ button { font: inherit; color: inherit; }
     body: JSON.stringify({ type: "view", path: "/studio" }),
   }).catch(() => {});
 
+  /* ============ ambient constellation background (adapted from ThreeUI community, MIT) ============ */
+  (() => {
+    const cv = $("ambCanvas"), c2 = cv.getContext("2d");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) { $("amb").style.display = "none"; return; }
+    let W = 0, H = 0, raf = null, running = false;
+    const LINK = 150;
+    const N = window.innerWidth < 768 ? 26 : 55;
+    const ptr = { x: -1e4, y: -1e4 };
+    let nodes = [];
+    function fit() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = Math.max(1, Math.floor(W * dpr)); cv.height = Math.max(1, Math.floor(H * dpr));
+      c2.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function seed() {
+      nodes = [];
+      for (let i = 0; i < N; i++) nodes.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25,
+        r: Math.random() * 1.6 + 1.4,
+      });
+    }
+    window.addEventListener("pointermove", (e) => { ptr.x = e.clientX; ptr.y = e.clientY; }, { passive: true });
+    document.addEventListener("pointerleave", () => { ptr.x = -1e4; ptr.y = -1e4; });
+    function loop() {
+      if (!running) return;
+      c2.clearRect(0, 0, W, H);
+      /* links */
+      c2.strokeStyle = "#e4c07a"; c2.lineWidth = 1;
+      for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j], dx = a.x - b.x, dy = a.y - b.y;
+        const d = Math.hypot(dx, dy);
+        if (d < LINK) {
+          c2.globalAlpha = 0.10 + (1 - d / LINK) * 0.30;
+          c2.beginPath(); c2.moveTo(a.x, a.y); c2.lineTo(b.x, b.y); c2.stroke();
+        }
+      }
+      for (const n of nodes) {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > W) n.vx *= -1;
+        if (n.y < 0 || n.y > H) n.vy *= -1;
+        const pd = Math.hypot(n.x - ptr.x, n.y - ptr.y);
+        if (pd < 200) { n.x -= (n.x - ptr.x) * 0.004; n.y -= (n.y - ptr.y) * 0.004; }
+        const pulse = 0.72 + Math.sin(Date.now() * 0.001 + n.x) * 0.22;
+        c2.fillStyle = "#e4c07a";
+        c2.globalAlpha = pulse * 0.22;
+        c2.beginPath(); c2.arc(n.x, n.y, n.r * 2.3, 0, 7); c2.fill();
+        c2.globalAlpha = pulse * 0.85;
+        c2.beginPath(); c2.arc(n.x, n.y, n.r, 0, 7); c2.fill();
+      }
+      c2.globalAlpha = 1;
+      raf = requestAnimationFrame(loop);
+    }
+    function start() { if (!running) { running = true; raf = requestAnimationFrame(loop); } }
+    function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
+    document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+    window.addEventListener("resize", () => { fit(); seed(); });
+    fit(); seed(); start();
+  })();
+
+  /* ============ history (undo/redo) ============ */
+  var hist = { stack: [null], i: 0 };
+  var histApplying = false; /* guard: slider re-dispatch inside applyHist must not push */
+  function pushHistory() {
+    if (!hist || histApplying) return;
+    const snap = JSON.stringify({ W: state.W, L: state.L, floor: state.floor, pal: state.pal, items: state.items });
+    if (hist.stack[hist.i] === snap) return;
+    hist.stack = hist.stack.slice(0, hist.i + 1);
+    hist.stack.push(snap);
+    if (hist.stack.length > 40) hist.stack.shift();
+    hist.i = hist.stack.length - 1;
+    renderHistBtns();
+  }
+  function applyHist(dir) {
+    const j = hist.i + dir;
+    if (j < 0 || j >= hist.stack.length) return;
+    hist.i = j;
+    const s = JSON.parse(hist.stack[j]);
+    histApplying = true;
+    try {
+      state.W = s.W; state.L = s.L; state.floor = s.floor; state.pal = s.pal;
+      state.items = s.items.map((it) => ({ ...it }));
+      if (state.sel && !state.items.includes(state.sel)) { state.sel = null; hideTools(); }
+      $("wRange").value = state.W; $("lRange").dispatchEvent(new Event("input"));
+      $("lRange").value = state.L; $("lRange").dispatchEvent(new Event("input"));
+      document.querySelectorAll("#floorChips .fchip-d").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.floor === state.floor)));
+      applyPalette(state.pal);
+      renderQuota(); draw(); positionTools();
+    } finally { histApplying = false; }
+    renderHistBtns();
+  }
+  function renderHistBtns() {
+    if (!hist || !$("undoBtn")) return;
+    $("undoBtn").disabled = hist.i <= 0;
+    $("redoBtn").disabled = hist.i >= hist.stack.length - 1;
+  }
+  $("undoBtn").addEventListener("click", () => applyHist(-1));
+  $("redoBtn").addEventListener("click", () => applyHist(1));
+
+  /* ============ snap / duplicate / share / templates ============ */
+  let snapOn = true;
+  $("snapBtn").addEventListener("click", () => {
+    snapOn = !snapOn;
+    $("snapBtn").setAttribute("aria-pressed", String(snapOn));
+    $("snapBtn").classList.toggle("tlx-on", snapOn);
+    $("snackMsg").textContent = snapOn ? "Snap ke grid 25 cm aktif" : "Snap dimatikan — bebas geser";
+    showSnack();
+  });
+  function maybeSnap(it) {
+    if (!snapOn) return it;
+    const q = 0.25;
+    it.x = Math.round(it.x / q) * q; it.y = Math.round(it.y / q) * q;
+    return it;
+  }
+  $("dupBtn").addEventListener("click", () => {
+    if (!state.sel) return;
+    if (itemsFull()) { openPro(); return; }
+    const src = state.sel;
+    const dup = { ...src, id: uid(), x: Math.min(state.W - 0.2, src.x + 0.4), y: Math.min(state.L - 0.2, src.y + 0.4) };
+    clampItem(dup); maybeSnap(dup);
+    state.items.push(dup); state.sel = dup;
+    pushHistory(); renderQuota(); draw(); positionTools();
+  });
+
+  function encodeShare() {
+    const d = { w: state.W, l: state.L, f: state.floor, p: state.pal, i: state.items.map((it) => [it.t, +it.x.toFixed(2), +it.y.toFixed(2), it.rot, +it.scale.toFixed(2)]) };
+    return btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/=+$/, "");
+  }
+  function decodeShare(s) {
+    try {
+      const d = JSON.parse(decodeURIComponent(escape(atob(s))));
+      if (typeof d.w !== "number" || !Array.isArray(d.i)) return null;
+      return d;
+    } catch (_) { return null; }
+  }
+  $("shareBtn").addEventListener("click", async () => {
+    const url = location.origin + location.pathname + "#d=" + encodeShare();
+    try {
+      if (navigator.share) { await navigator.share({ title: "Desain Trilux Studio", url }); return; }
+      await navigator.clipboard.writeText(url);
+      $("snackMsg").textContent = "Link desain dicopy! Tinggal share 📌";
+    } catch (_) {
+      history.replaceState(null, "", "#d=" + encodeShare());
+      $("snackMsg").textContent = "Link desain ada di address bar 📌";
+    }
+    showSnack();
+  });
+  function restoreFromHash() {
+    const m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (!m) return false;
+    const d = decodeShare(m[1]);
+    if (!d) return false;
+    state.W = Math.min(8, Math.max(2.5, d.w)); state.L = Math.min(8, Math.max(2.5, d.l));
+    state.floor = FLOORS[d.f] ? d.f : "hardwood";
+    state.pal = PALETTES[d.p] ? d.p : 0;
+    state.items = [];
+    for (const [t, x, y, rot, scale] of d.i) {
+      const c = CATALOG.find((c) => c.t === t); if (!c) continue;
+      const it = { id: uid(), t, x, y, w: c.w, h: c.h, rot: ((rot % 4) + 4) % 4, scale: Math.min(2, Math.max(0.5, scale || 1)) };
+      clampItem(it); state.items.push(it);
+    }
+    $("wRange").value = state.W; $("lRange").value = state.L;
+    $("wRange").dispatchEvent(new Event("input")); $("lRange").dispatchEvent(new Event("input"));
+    document.querySelectorAll("#floorChips .fchip-d").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.floor === state.floor)));
+    applyPalette(state.pal);
+    state.stepsDone = [true, true, true, false]; state.step = 3;
+    renderSteps(); renderQuota(); updateHeads();
+    $("snackMsg").textContent = "Desain dari link dimuat — lanjutkan kreasimu ✨"; showSnack();
+    return true;
+  }
+
+  const TEMPLATES = {
+    living: { name: "Ruang Tamu", w: 4.5, l: 3.8, f: "hardwood", p: 0, items: [["sofa2", 2.2, 0.75, 0, 1], ["coffee", 2.25, 2.0, 0, 1], ["tv", 2.25, 3.5, 0, 1], ["plant", 0.5, 3.3, 0, 1], ["rug", 2.25, 2.05, 0, 1]] },
+    bedroom: { name: "Kamar Tidur", w: 4, l: 4, f: "vinyl", p: 1, items: [["bed", 2, 1.2, 0, 1], ["wardrobe", 0.95, 3.65, 1, 1], ["rug", 2.9, 2.9, 0, 1], ["plant", 3.6, 0.5, 0, 1], ["lamp", 0.45, 1.9, 0, 1]] },
+    workspace: { name: "Ruang Kerja", w: 3.5, l: 3, f: "cement", p: 8, items: [["desk", 1.75, 0.85, 0, 1], ["shelf", 0.45, 2.8, 1, 1], ["coffee", 1.75, 1.45, 0, 1], ["plant", 3.05, 0.45, 0, 1], ["lamp", 3.05, 2.55, 0, 1]] },
+  };
+  function loadTemplate(key) {
+    const T = TEMPLATES[key]; if (!T) return;
+    state.W = T.w; state.L = T.l; state.floor = T.f; state.pal = T.p;
+    state.items = [];
+    for (const [t, x, y, rot, scale] of T.items) {
+      const c = CATALOG.find((c) => c.t === t); if (!c) continue;
+      const it = { id: uid(), t, x, y, w: c.w, h: c.h, rot: rot || 0, scale: scale || 1 };
+      clampItem(it); state.items.push(it);
+    }
+    $("wRange").value = state.W; $("lRange").value = state.L;
+    $("wRange").dispatchEvent(new Event("input")); $("lRange").dispatchEvent(new Event("input"));
+    document.querySelectorAll("#floorChips .fchip-d").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.floor === state.floor)));
+    applyPalette(state.pal);
+    state.stepsDone = [true, true, true, false]; state.step = 3;
+    renderSteps(); renderQuota(); updateHeads(); pushHistory();
+    $("snackMsg").textContent = "Template " + T.name + " dimuat — modif sesukamu ✨"; showSnack();
+  }
+  $("tplLiving").addEventListener("click", () => loadTemplate("living"));
+  $("tplBedroom").addEventListener("click", () => loadTemplate("bedroom"));
+  $("tplWork").addEventListener("click", () => loadTemplate("workspace"));
+
+  /* ============ autosave / restore (free: last design, localStorage) ============ */
+  const AS_KEY = "tlx_design_v1";
+  let asTimer;
+  function autosave() { clearTimeout(asTimer); asTimer = setTimeout(() => { try { localStorage.setItem(AS_KEY, JSON.stringify({ W: state.W, L: state.L, floor: state.floor, pal: state.pal, items: state.items })); } catch (_) {} }, 400); }
+  function restoreAutosave() {
+    try {
+      const s = JSON.parse(localStorage.getItem(AS_KEY) || "null");
+      if (!s || !Array.isArray(s.items) || !s.items.length) return false;
+      state.W = Math.min(8, Math.max(2.5, s.W)); state.L = Math.min(8, Math.max(2.5, s.L));
+      state.floor = FLOORS[s.floor] ? s.floor : "hardwood"; state.pal = PALETTES[s.pal] ? s.pal : 0;
+      state.items = s.items.filter((it) => CATALOG.find((c) => c.t === it.t)).map((it) => ({ ...it, id: uid() }));
+      state.items.forEach(clampItem);
+      $("wRange").value = state.W; $("lRange").value = state.L;
+      $("wRange").dispatchEvent(new Event("input")); $("lRange").dispatchEvent(new Event("input"));
+      document.querySelectorAll("#floorChips .fchip-d").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.floor === state.floor)));
+      applyPalette(state.pal);
+      const done = state.items.length ? 3 : 2;
+      state.stepsDone = [true, true, state.items.length > 0, false]; state.step = done;
+      renderSteps(); renderQuota(); updateHeads();
+      return true;
+    } catch (_) { return false; }
+  }
+
+  /* ============ estimate breakdown (detail toggle) ============ */
+  function estimateBreakdown() {
+    const area = state.W * state.L;
+    const floorRate = FLOORS[state.floor].rate;
+    const floorCost = area * floorRate;
+    const furn = state.items.reduce((s, i) => s + (CATALOG.find((c) => c.t === i.t) || { cost: 0 }).cost, 0);
+    return { area, floorCost, furn, lo: floorCost + furn, hi: (floorCost + furn) * 1.6 };
+  }
+  const fmtRp = (x) => x >= 1000 ? (x / 1000).toFixed(1) + " miliar" : Math.round(x) + " juta";
+  $("estDetail").addEventListener("click", () => {
+    const b = estimateBreakdown();
+    $("breakRows").innerHTML =
+      "<div class='ins-row'><span>Lantai " + b.area.toFixed(1) + " m²</span><span>Rp " + fmtRp(b.floorCost) + "</span></div>" +
+      "<div class='ins-row'><span>Furnitur ×" + state.items.length + "</span><span>Rp " + fmtRp(b.furn) + "</span></div>";
+    $("estDetail").hidden = true;
+    $("breakBox").hidden = false;
+  });
+
+  /* ============ keyboard: arrows nudge ============ */
+  window.addEventListener("keydown", (e) => {
+    if (!state.sel || document.activeElement.tagName === "INPUT") return;
+    const step = e.shiftKey ? 0.5 : 0.05;
+    let moved = false;
+    if (e.key === "ArrowUp") { state.sel.y -= step; moved = true; }
+    if (e.key === "ArrowDown") { state.sel.y += step; moved = true; }
+    if (e.key === "ArrowLeft") { state.sel.x -= step; moved = true; }
+    if (e.key === "ArrowRight") { state.sel.x += step; moved = true; }
+    if (moved) {
+      e.preventDefault();
+      clampItem(state.sel); maybeSnap(state.sel);
+      draw(); positionTools(); autosave();
+    }
+    if ((e.key === "z" || e.key === "Z") && (e.ctrlKey || e.metaKey)) { e.preventDefault(); applyHist(e.shiftKey ? 1 : -1); }
+    if (e.key === "d" && (e.ctrlKey || e.metaKey) && state.sel) { e.preventDefault(); $("dupBtn").click(); }
+  });
+
   /* ============ boot ============ */
   renderCatalog();
   applyPalette(0);
@@ -1003,6 +1370,14 @@ button { font: inherit; color: inherit; }
   hintForStep();
   updateHeads();
   resize();
+  const fromShare = restoreFromHash();
+  if (!fromShare) restoreAutosave();
+  pushHistory();
+  renderHistBtns();
+  /* persist on every mutation */
+  const _origDraw = draw;
+  draw = function () { _origDraw(); autosave(); };
+  draw();
 })();
 </script>
 </body>
