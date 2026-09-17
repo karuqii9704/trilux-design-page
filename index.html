@@ -10,12 +10,12 @@
 <meta property="og:title" content="Trilux Design — Interior, Exterior & Architecture">
 <meta property="og:description" content="Spaces built on precision. Finished with warmth. Explore the Trilux Design portfolio.">
 <meta property="og:type" content="website">
-<link rel="preload" href="assets/img/hero.jpg" as="image">
+<link rel="preload" href="assets/img/hero.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
-<link rel="stylesheet" href="assets/css/style.css?v=6">
+<link rel="stylesheet" href="assets/css/style.css?v=7">
 <script>
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     document.documentElement.classList.add("js-anim");
@@ -73,7 +73,7 @@
 
   <!-- S1 — Hero -->
   <section class="hero" id="top">
-    <img class="hero__bg" src="assets/img/hero.jpg" alt="Warmly lit living room interior with arched brass floor lamp, grey sofa and floor-to-ceiling windows" fetchpriority="high">
+    <picture><source srcset="assets/img/hero.webp" type="image/webp"><img class="hero__bg" src="assets/img/hero.jpg" alt="Warmly lit living room interior with arched brass floor lamp, grey sofa and floor-to-ceiling windows" fetchpriority="high"></picture>
     <canvas class="hero__fx" id="heroFx" aria-hidden="true"></canvas>
     <div class="hero__scrim" aria-hidden="true"></div>
     <div class="hero__inner">
@@ -97,7 +97,7 @@
         <p class="welcome__body">At Trilux Design, we are dedicated to designing spaces that inspire, elevate, and endure. Explore our portfolio to witness how we merge functionality with artistry, delivering exceptional architectural solutions.</p>
       </div>
       <div class="welcome__media reveal">
-        <img src="assets/img/welcome.jpg" alt="Living room with a circular crystal chandelier, marble feature wall and framed abstract artwork" loading="lazy" decoding="async">
+        <picture><source srcset="assets/img/welcome.webp" type="image/webp"><img src="assets/img/welcome.jpg" alt="Living room with a circular crystal chandelier, marble feature wall and framed abstract artwork" loading="lazy" decoding="async"></picture>
         <span class="chip">Padang — Residence</span>
       </div>
     </div>
@@ -107,7 +107,7 @@
   <section class="mission panel-bone" id="mission">
     <div class="wrap mission__grid">
       <div class="mission__media reveal">
-        <img src="assets/img/mission.jpg" alt="Lounge with terracotta armchairs, a dark round coffee table and backlit wood-panel wall" loading="lazy" decoding="async">
+        <picture><source srcset="assets/img/mission.webp" type="image/webp"><img src="assets/img/mission.jpg" alt="Lounge with terracotta armchairs, a dark round coffee table and backlit wood-panel wall" loading="lazy" decoding="async"></picture>
       </div>
       <div class="reveal">
         <p class="eyebrow">About Us</p>
@@ -266,7 +266,7 @@
   <section class="contact panel-ink" id="contact">
     <div class="wrap contact__grid">
       <div class="contact__media reveal">
-        <img src="assets/img/contact.jpg" alt="Modern two-storey house exterior at dusk with a warmly lit carport and timber slat screen" loading="lazy" decoding="async">
+        <picture><source srcset="assets/img/contact.webp" type="image/webp"><img src="assets/img/contact.jpg" alt="Modern two-storey house exterior at dusk with a warmly lit carport and timber slat screen" loading="lazy" decoding="async"></picture>
       </div>
       <div class="reveal">
         <p class="eyebrow">Contact</p>

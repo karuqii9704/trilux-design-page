@@ -136,6 +136,9 @@ body {
 }
 
 img { max-width: 100%; display: block; }
+/* <picture> is a wrapper only — the <img> inside keeps the place in the
+   layout it had before the WebP fallback was added. */
+picture { display: contents; }
 h1, h2, h3, p { margin: 0; }
 button { font: inherit; color: inherit; }
 a { color: inherit; text-decoration: none; }
