@@ -3,13 +3,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node build.js",
-    "verify": "node build.js && git diff --exit-code -- index.html || echo 'NOTE: index.html differs from committed version after build'"
+    "serve": "python3 -m http.server 8790",
+    "qa:check": "node scripts/local-check.mjs",
+    "qa:matrix": "node scripts/responsive-matrix.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^1.1.1"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
   }
 }
