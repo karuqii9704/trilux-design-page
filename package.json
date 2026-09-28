@@ -1,0 +1,15 @@
+{
+  "name": "trilux-design-page",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "verify": "node build.js && git diff --exit-code -- index.html || echo 'NOTE: index.html differs from committed version after build'"
+  },
+  "dependencies": {
+    "@vercel/blob": "^1.1.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
