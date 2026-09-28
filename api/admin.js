@@ -4,21 +4,13 @@
    POST {projects: {...}}   → save data/projects.json + trigger redeploy */
 import fs from "fs";
 import path from "path";
+import { blobTokenPresent, readBlobText, loadBlob, blobErrorResponse, logBlobFailure } from "./_blob.js";
 
 function checkAuth(req) {
   const hdr = req.headers.authorization || "";
   const token = hdr.startsWith("Bearer ") ? hdr.slice(7) : (req.query.t || "");
   const expected = process.env.ADMIN_TOKEN;
   return expected && token.length > 20 && token === expected;
-}
-
-async function readBlobText(file) {
-  try {
-    const { head, getDownloadUrl } = await import("@vercel/blob");
-    const h = await head(file);
-    const dl = await getDownloadUrl(h.url);
-    return await (await fetch(dl + "&cb=" + Date.now(), { cache: "no-store" })).text();
-  } catch (_) { return ""; }
 }
 
 function aggregate(lines) {
@@ -35,17 +27,25 @@ function aggregate(lines) {
   return { viewsByPath: byPath, uniqueVisitors: ips.size, ips: [...ips], browsers: uas };
 }
 
-/* Read CMS JSON: Blob copy wins; local file is the seed. Shared with build.js logic. */
+/* Read CMS JSON: Blob copy wins; local file is the seed. Shared with build.js logic.
+   Kalau Blob TIDAK BISA DIBACA, jangan diam-diam menyajikan file lokal: owner bisa
+   mengira itu isi terbaru lalu menyimpannya kembali, menimpa CMS yang lebih baru. */
 async function readProjectsJson() {
   const local = path.join(process.cwd(), "data", "projects.json");
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  if (!blobTokenPresent()) {
     return fs.readFileSync(local, "utf8");
   }
+  const remote = await readBlobText("cms/projects.json"); // null = CMS belum pernah diisi
+  if (remote === null) return fs.readFileSync(local, "utf8");
   try {
-    const remote = await readBlobText("cms/projects.json");
-    if (remote) { JSON.parse(remote); return remote; }
-  } catch (_) { /* fall through to local */ }
-  return fs.readFileSync(local, "utf8");
+    JSON.parse(remote);
+  } catch (e) {
+    const err = new Error("cms/projects.json di Blob bukan JSON valid: " + (e && e.message));
+    err.code = "cms_invalid_json";
+    logBlobFailure("admin:parse cms/projects.json", err);
+    throw err;
+  }
+  return remote;
 }
 
 export default async function handler(req, res) {
@@ -71,25 +71,38 @@ export default async function handler(req, res) {
     const out = { rangeDays: days, totalViews: 0, totalClicks: 0, perDay: [], topPaths: {}, topClicks: {}, uniqueVisitors: 0, browsers: {} };
 
     const visitorIps = new Set();
+    // Baca per hari. null = bucket belum ada (normal, hitung 0); error nyata dicatat
+    // sebagai warning supaya dashboard tidak melaporkan 0 seolah-olah benar.
+    const warnings = [];
+    const readDay = async (file) => {
+      try {
+        return await readBlobText(file); // string | null
+      } catch (e) {
+        logBlobFailure("admin:stats " + file, e);
+        warnings.push({ file, code: (e && e.code) || "blob_error" });
+        return undefined; // tidak diketahui
+      }
+    };
+
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date(Date.now() + 7 * 3600e3 - i * 864e5).toISOString().slice(0, 10);
       const rec = { date: d, views: 0, visitors: null };
       if (hasBlob) {
-        const vt = await readBlobText(`analytics/${d}-view.jsonl`);
+        const vt = await readDay(`analytics/${d}-view.jsonl`);
         const lines = vt ? vt.trim().split("\n") : [];
-        rec.views = lines.length;
+        if (vt === undefined) rec.views = null; else rec.views = lines.length;
         const agg = aggregate(lines);
-        rec.visitors = agg.uniqueVisitors;
+        if (vt !== undefined) rec.visitors = agg.uniqueVisitors;
         for (const ip of agg.ips || []) visitorIps.add(ip);
         for (const [p, n] of Object.entries(agg.viewsByPath)) out.topPaths[p] = (out.topPaths[p] || 0) + n;
         for (const [b, n] of Object.entries(agg.browsers)) out.browsers[b] = (out.browsers[b] || 0) + n;
 
-        const ct = await readBlobText(`analytics/${d}-click.jsonl`);
+        const ct = await readDay(`analytics/${d}-click.jsonl`);
         const clines = ct ? ct.trim().split("\n") : [];
         const cagg = aggregate(clines);
-        out.totalClicks += clines.length;
+        if (ct !== undefined) out.totalClicks += clines.length;
         for (const l of clines) { try { const o = JSON.parse(l); if (o.label) out.topClicks[o.label] = (out.topClicks[o.label] || 0) + 1; } catch (_) {} }
-        out.totalViews += rec.views;
+        if (rec.views !== null) out.totalViews += rec.views;
       } else {
         const mem = globalThis.__hits || [];
         rec.views = mem.filter((l) => l.includes(`-${d}`) ).length; // ponytail: rough in-memory fallback only
@@ -101,6 +114,7 @@ export default async function handler(req, res) {
       out.perDay.push(rec);
     }
     out.uniqueVisitors = visitorIps.size;
+    if (warnings.length) { out.degraded = true; out.warnings = warnings.slice(0, 10); }
     res.setHeader("Cache-Control", "no-store");
     res.status(200).json(out);
     return;
@@ -110,8 +124,9 @@ export default async function handler(req, res) {
   if (req.method === "GET" && (req.query.leads === "1" || req.query.leads === "true")) {
     try {
       let text = "";
-      if (process.env.BLOB_READ_WRITE_TOKEN) {
-        text = await readBlobText("cms/leads.jsonl");
+      if (blobTokenPresent()) {
+        // null = belum ada lead; error dilempar supaya tidak dilaporkan sebagai "0 lead".
+        text = (await readBlobText("cms/leads.jsonl")) ?? "";
       } else {
         try { text = fs.readFileSync("/tmp/leads.jsonl", "utf8"); } catch (_) { text = ""; }
       }
@@ -120,7 +135,8 @@ export default async function handler(req, res) {
       res.setHeader("Cache-Control", "no-store");
       res.status(200).json({ leads: leads.slice(0, 200), total: leads.length });
     } catch (e) {
-      res.status(500).json({ error: "leads read failed", detail: String(e && e.message) });
+      logBlobFailure("admin:leads cms/leads.jsonl", e);
+      res.status(503).json({ error: "leads read failed", code: (e && e.code) || "blob_error", detail: String(e && e.message) });
     }
     return;
   }
@@ -161,8 +177,8 @@ export default async function handler(req, res) {
       JSON.stringify(projects); // validate round-trip
 
       let stored = "none";
-      if (process.env.BLOB_READ_WRITE_TOKEN) {
-        const { put } = await import("@vercel/blob");
+      if (blobTokenPresent()) {
+        const { put } = await loadBlob();
         await put("cms/projects.json", content, { access: "public", addRandomSuffix: false, allowOverwrite: true });
         stored = "blob";
       } else {
@@ -182,7 +198,8 @@ export default async function handler(req, res) {
       }
       res.status(200).json({ ok: true, saved: stored, redeploy: deploy });
     } catch (e) {
-      res.status(500).json({ error: "write failed", detail: String(e && e.message) });
+      logBlobFailure("admin:write cms/projects.json", e);
+      res.status(500).json({ error: "write failed", code: (e && e.code) || "blob_put_failed", detail: String(e && e.message) });
     }
     return;
   }

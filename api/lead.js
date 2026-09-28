@@ -2,6 +2,7 @@
    Appends one JSON line to Vercel Blob cms/leads.jsonl (read-modify-write;
    /tmp fallback when no Blob token). No auth: this is the public form endpooint. */
 import fs from "fs";
+import { blobTokenPresent, readBlobText, loadBlob, blobErrorResponse, logBlobFailure } from "./_blob.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") { res.status(405).json({ error: "method" }); return; }
@@ -33,25 +34,32 @@ export default async function handler(req, res) {
   };
 
   const line = JSON.stringify(lead) + "\n";
+
+  if (!blobTokenPresent()) {
+    // ponytail: /tmp fallback is per-instance and lost — set Blob token for durable leads
+    fs.appendFileSync("/tmp/leads.jsonl", line);
+    res.status(200).json({ ok: true, stored: "tmp-ephemeral" });
+    return;
+  }
+
+  // Baca dulu isi lama. Kalau baca GAGAL, berhenti di sini: menulis sekarang akan
+  // menimpa seluruh lead sebelumnya dengan satu baris ini.
+  let existing;
   try {
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const { head, put, getDownloadUrl } = await import("@vercel/blob");
-      let existing = "";
-      try {
-        const h = await head("cms/leads.jsonl");
-        const dl = await getDownloadUrl(h.url);
-        existing = await (await fetch(dl + "&cb=" + Date.now(), { cache: "no-store" })).text();
-      } catch (_) { existing = ""; } // first lead ever
-      await put("cms/leads.jsonl", existing + line, {
-        access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: "application/x-ndjson",
-      });
-      res.status(200).json({ ok: true, stored: "blob" });
-    } else {
-      // ponytail: /tmp fallback is per-instance and lost — set Blob token for durable leads
-      fs.appendFileSync("/tmp/leads.jsonl", line);
-      res.status(200).json({ ok: true, stored: "tmp-ephemeral" });
-    }
+    existing = (await readBlobText("cms/leads.jsonl")) ?? ""; // null = belum ada lead sama sekali
   } catch (e) {
-    res.status(500).json({ error: "store failed", detail: String(e && e.message) });
+    blobErrorResponse(res, "lead:read cms/leads.jsonl", e);
+    return;
+  }
+
+  try {
+    const { put } = await loadBlob();
+    await put("cms/leads.jsonl", existing + line, {
+      access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: "application/x-ndjson",
+    });
+    res.status(200).json({ ok: true, stored: "blob" });
+  } catch (e) {
+    logBlobFailure("lead:put cms/leads.jsonl", e);
+    res.status(500).json({ error: "store failed", code: (e && e.code) || "blob_put_failed" });
   }
 }

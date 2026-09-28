@@ -1,5 +1,7 @@
 /* POST /api/track — privacy-friendly page-view + click events.
    Storage: Vercel Blob (if BLOB_READ_WRITE_TOKEN set) else in-memory. */
+import { blobTokenPresent, readBlobText, loadBlob, logBlobFailure } from "./_blob.js";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") { res.status(405).json({ error: "method" }); return; }
 
@@ -30,22 +32,30 @@ export default async function handler(req, res) {
   const line = JSON.stringify({ t: Date.now(), path, label, ip, ua, ref }) + "\n";
 
   try {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    if (!blobTokenPresent()) {
       // ponytail: in-memory fallback, lost on cold start — set Blob token for durability
       globalThis.__hits = globalThis.__hits || [];
       globalThis.__hits.push(line);
-    } else {
-      const { put, head, getDownloadUrl } = await import("@vercel/blob");
-      let prev = "";
-      try {
-        const h = await head(file);
-        const dl = await getDownloadUrl(h.url);
-        prev = await (await fetch(dl + "&cb=" + Date.now(), { cache: "no-store" })).text();
-      } catch (_) { /* first write today */ }
-      await put(file, prev + line, { access: "public", addRandomSuffix: false, allowOverwrite: true });
+      res.status(204).end();
+      return;
     }
+
+    // Baca bucket hari ini dulu. Baca gagal → jangan put, kalau tidak event
+    // sebelumnya di hari yang sama ikut terhapus.
+    let prev;
+    try {
+      prev = (await readBlobText(file)) ?? ""; // null = bucket hari ini belum ada
+    } catch (e) {
+      logBlobFailure("track:read " + file, e);
+      res.status(503).json({ error: "penyimpanan tidak tersedia", code: (e && e.code) || "blob_error" });
+      return;
+    }
+
+    const { put } = await loadBlob();
+    await put(file, prev + line, { access: "public", addRandomSuffix: false, allowOverwrite: true });
     res.status(204).end();
   } catch (e) {
-    res.status(500).json({ error: "store failed", detail: String(e && e.message) });
+    logBlobFailure("track:put " + file, e);
+    res.status(500).json({ error: "store failed", code: (e && e.code) || "blob_put_failed" });
   }
 }
