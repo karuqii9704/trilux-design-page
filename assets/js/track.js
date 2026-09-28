@@ -20,7 +20,7 @@
     else if (href.startsWith("mailto:")) label = "email";
     else if (href.startsWith("tel:")) label = "phone";
     else if (a.classList.contains("btn") || a.closest(".contact__ctas")) label = "cta:" + (a.textContent.trim().slice(0, 30) || href);
-    else if (href.includes("simulasi")) label = "nav-simulasi";
+    else if (href.indexOf("simulator") !== -1) label = "nav-simulator";
     if (label) send({ type: "click", label, path: location.pathname });
   }, { passive: true });
 })();
