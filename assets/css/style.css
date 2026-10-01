@@ -1143,12 +1143,14 @@ h1, h2, h3 {
 .meta-row dd { margin: 0; font-size: var(--md-body-medium); }
 
 .work__media {
+  display: block;
   position: relative;
   margin-bottom: var(--sp-6);
   overflow: hidden;
   border-radius: var(--md-shape-lg);
   box-shadow: var(--md-elevation-1);
 }
+.work__all { margin-top: var(--sp-6); }
 .work__media img {
   width: 100%;
   aspect-ratio: 3/2;

@@ -11,28 +11,137 @@
      page lives one level deeper, so rebase them */
   const asset = (p) => !p ? p : (p.startsWith("assets/") ? "../" + p : p);
 
+  /* AC-2 — dimensi filter diambil dari field CMS (PRD §12.1): category
+     (fallback ke `type` selama data lama belum punya category), location, year.
+     Satu nilai per dimensi; antar dimensi digabung (AND). */
+  const FACETS = [
+    { key: "cat", label: "Kategori", value: (p) => String(p.category || p.type || "").trim() },
+    { key: "loc", label: "Lokasi", value: (p) => String(p.location || "").trim() },
+    { key: "year", label: "Tahun", value: (p) => (p.year == null ? "" : String(p.year).trim()) },
+  ];
+
+  /* State filter hidup di URL (?cat=&loc=&year=) supaya bisa dibagikan dan
+     tombol back browser bekerja (AC-2). */
+  function readState() {
+    const q = new URLSearchParams(location.search);
+    const s = {};
+    FACETS.forEach((f) => { s[f.key] = q.get(f.key) || ""; });
+    return s;
+  }
+
   function indexView(projects, featuredSlug) {
     if (!projects.length) {
       root.innerHTML = `<p class="proj-err">Belum ada proyek yang dipublikasikan. Cek halaman utama untuk featured project terbaru.</p>`;
       return;
     }
+
+    const facets = FACETS
+      .map((f) => {
+        const values = [...new Set(projects.map(f.value).filter(Boolean))];
+        values.sort((a, b) => (f.key === "year" ? Number(b) - Number(a) : a.localeCompare(b)));
+        return { ...f, values };
+      })
+      .filter((f) => f.values.length);
+
+    const state = readState();
+    const known = (f, v) => Boolean(v) && f.values.includes(v);
+    facets.forEach((f) => { if (!known(f, state[f.key])) state[f.key] = ""; });
+
     root.innerHTML = `
       <section class="proj-hero">
         <p class="eyebrow">Portfolio</p>
         <h1>Proyek Kami</h1>
-        <p style="max-width:60ch;color:var(--text-on-bone-muted)">Setiap proyek adalah kolaborasi — dari konsep, RAB, hingga serah terima kunci.</p>
+        <p class="proj-lead">Setiap proyek adalah kolaborasi — dari konsep, RAB, hingga serah terima kunci.</p>
       </section>
-      <div class="idx-grid" style="padding-bottom:var(--sp-8)">
-        ${projects.map((p) => `
-          <a class="idx-card" href="?s=${esc(p.slug)}">
-            ${p.slug === featuredSlug ? `<span class="badge" style="margin:12px 0 0 12px">Featured</span>` : ""}
-            <img src="${esc(asset(p.cover))}" alt="${esc(p.coverAlt || p.name)}" loading="lazy" decoding="async">
-            <div class="idx-body">
-              <h2>${esc(p.name)}</h2>
-              <p>${esc(p.location)} · ${esc(p.year)}</p>
+      <div class="idx-filters" id="idxFilters">
+        ${facets.map((f) => `
+          <div class="idx-filter">
+            <span class="idx-filter__label" id="facet-${f.key}">${f.label}</span>
+            <div class="fchips" role="group" aria-labelledby="facet-${f.key}" data-facet="${f.key}">
+              ${f.values.map((v) => `<button class="fchip" type="button" data-value="${esc(v)}" aria-pressed="${state[f.key] === v ? "true" : "false"}">${esc(v)}</button>`).join("")}
             </div>
-          </a>`).join("")}
-      </div>`;
+          </div>`).join("")}
+        <button class="btn btn--tonal idx-reset" type="button" id="idxReset" hidden>Reset filter</button>
+      </div>
+      <p class="idx-count" id="idxCount" role="status"></p>
+      <div class="idx-grid" id="idxGrid"></div>`;
+
+    const filtersEl = document.getElementById("idxFilters");
+    const gridEl = document.getElementById("idxGrid");
+    const countEl = document.getElementById("idxCount");
+    const resetEl = document.getElementById("idxReset");
+
+    const card = (p) => `
+      <a class="idx-card" href="?s=${encodeURIComponent(p.slug)}" data-slug="${esc(p.slug)}">
+        ${p.slug === featuredSlug ? `<span class="badge" style="margin:12px 0 0 12px">Featured</span>` : ""}
+        <img src="${esc(asset(p.cover))}" alt="${esc(p.coverAlt || p.name)}" loading="lazy" decoding="async">
+        <div class="idx-body">
+          <h2>${esc(p.name)}</h2>
+          <p>${esc(p.location)} · ${esc(p.year)}</p>
+        </div>
+      </a>`;
+
+    const syncChips = () => {
+      filtersEl.querySelectorAll("[data-facet]").forEach((group) => {
+        const key = group.dataset.facet;
+        group.querySelectorAll(".fchip").forEach((chip) => {
+          chip.setAttribute("aria-pressed", String(chip.dataset.value === state[key]));
+        });
+      });
+    };
+
+    const writeUrl = () => {
+      const q = new URLSearchParams();
+      facets.forEach((f) => { if (state[f.key]) q.set(f.key, state[f.key]); });
+      const search = q.toString();
+      history.pushState(null, "", location.pathname + (search ? "?" + search : ""));
+    };
+
+    const render = () => {
+      const list = projects.filter((p) => facets.every((f) => !state[f.key] || f.value(p) === state[f.key]));
+      const filtering = facets.some((f) => state[f.key]);
+      resetEl.hidden = !filtering;
+      countEl.textContent = filtering ? `${list.length} dari ${projects.length} proyek` : `${projects.length} proyek`;
+      gridEl.classList.toggle("is-empty", list.length === 0);
+      gridEl.innerHTML = list.length
+        ? list.map(card).join("")
+        : `<div class="idx-empty">
+             <p>Tidak ada proyek yang cocok dengan filter ini.</p>
+             <button class="btn btn--tonal" type="button" data-reset>Reset filter</button>
+           </div>`;
+    };
+
+    const reset = () => {
+      facets.forEach((f) => { state[f.key] = ""; });
+      syncChips();
+      writeUrl();
+      render();
+    };
+
+    filtersEl.addEventListener("click", (e) => {
+      const chip = e.target.closest(".fchip");
+      if (chip) {
+        const key = chip.closest("[data-facet]").dataset.facet;
+        state[key] = state[key] === chip.dataset.value ? "" : chip.dataset.value;
+        syncChips();
+        writeUrl();
+        render();
+        return;
+      }
+      if (e.target.closest("#idxReset")) reset();
+    });
+
+    gridEl.addEventListener("click", (e) => { if (e.target.closest("[data-reset]")) reset(); });
+
+    addEventListener("popstate", () => {
+      const next = readState();
+      facets.forEach((f) => { state[f.key] = known(f, next[f.key]) ? next[f.key] : ""; });
+      syncChips();
+      render();
+    });
+
+    syncChips();
+    render();
   }
 
 

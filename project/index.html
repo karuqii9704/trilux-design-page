@@ -27,7 +27,15 @@
 .gal-grid button { border: 1px solid var(--rule-on-bone); padding: 0; cursor: pointer; background: none; }
 .gal-grid img { width: 100%; height: 180px; object-fit: cover; display: block; }
 .proj-ctas { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-6); }
-.idx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-5); }
+.proj-lead { max-width: 60ch; color: var(--text-on-bone-muted); }
+.idx-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--sp-5); padding-bottom: var(--sp-5); }
+.idx-filter { display: flex; flex-direction: column; gap: var(--sp-2); }
+.idx-filter__label { font-size: var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-on-bone-muted); }
+.idx-count { font-size: var(--body-s); color: var(--text-on-bone-muted); margin-bottom: var(--sp-5); }
+.idx-empty { border: 1px dashed var(--rule-on-bone); padding: var(--sp-6); text-align: center; }
+.idx-empty p { margin-bottom: var(--sp-4); color: var(--text-on-bone-muted); }
+.idx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-5); padding-bottom: var(--sp-8); }
+.idx-grid.is-empty { display: block; }
 @media (max-width: 1023px) { .idx-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .idx-grid { grid-template-columns: 1fr; } }
 .idx-card { border: 1px solid var(--rule-on-bone); display: block; color: inherit; text-decoration: none; transition: border-color var(--dur-fast) var(--ease-out); }
