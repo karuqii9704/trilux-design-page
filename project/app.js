@@ -70,7 +70,7 @@
               </ul>
             </div>` : ""}
           <div class="proj-ctas">
-            <a class="btn btn-brass" href="../simulasi">Hitung Estimasi Proyek Serupa →</a>
+            <a class="btn btn-brass" href="../#simulator">Hitung Estimasi Proyek Serupa →</a>
             <a class="btn btn-on-ink" style="color:var(--ink-900);border-color:var(--ink-700)" href="${WA("Halo Trilux Design, saya tertarik dengan proyek " + p.name + ".")}" target="_blank" rel="noopener">Tanya Proyek Ini via WhatsApp →</a>
           </div>
         </aside>
