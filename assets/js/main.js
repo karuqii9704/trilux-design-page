@@ -294,14 +294,31 @@
       snackTimer = setTimeout(() => snack.classList.remove("is-open"), 4200);
     };
 
+    // PRD §18 — event form. Form ini satu-satunya form publik saat ini
+    // (form hybrid AC-4 di /contact & detail proyek belum dibangun).
+    const track = (type, props) => {
+      try { if (window.triluxTrack) window.triluxTrack({ type, props }); } catch (_) {}
+    };
+    let formStarted = false;
+    const noteStart = () => {
+      if (formStarted) return;
+      formStarted = true;
+      track("contact_form_start", { source_page: location.pathname });
+    };
+    const quoteContact = document.getElementById("quoteContact");
+    quoteContact.addEventListener("focus", noteStart, { once: true });
+
     quoteBtn.addEventListener("click", () => {
       quoteForm.hidden = !quoteForm.hidden;
-      if (!quoteForm.hidden) document.getElementById("quoteContact").focus();
+      if (!quoteForm.hidden) { noteStart(); quoteContact.focus(); }
     });
     quoteForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const contact = document.getElementById("quoteContact").value.trim();
-      if (!contact) return;
+      const contact = quoteContact.value.trim();
+      if (!contact) {
+        track("contact_form_error", { field: "contact", error_type: "required" });
+        return;
+      }
       quoteSend.disabled = true;
       try {
         const r = RATES[state.scope];
@@ -318,10 +335,16 @@
           }),
         });
         if (!res.ok) throw new Error(await res.text());
+        track("contact_form_submit", {
+          project_slug: "",
+          budget_range: est.text,
+          channel: contact.includes("@") ? "email" : "whatsapp",
+        });
         quoteForm.hidden = true;
-        document.getElementById("quoteContact").value = "";
+        quoteContact.value = "";
         showSnack("Terkirim! Tim Trilux akan menghubungi kamu soon. ✓");
       } catch (err) {
+        track("contact_form_error", { field: "form", error_type: "network" });
         showSnack("Gagal kirim — coba lagi atau chat WhatsApp ya.");
       } finally {
         quoteSend.disabled = false;

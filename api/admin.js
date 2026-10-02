@@ -95,7 +95,17 @@ export default async function handler(req, res) {
         const et = await readBlobText(`analytics/${d}-event.jsonl`);
         const elines = et ? et.trim().split("\n") : [];
         out.totalEvents += elines.length;
-        for (const l of elines) { try { const o = JSON.parse(l); if (o.e) out.topEvents[o.e] = (out.topEvents[o.e] || 0) + 1; } catch (_) {} }
+        for (const l of elines) {
+          try {
+            const o = JSON.parse(l);
+            if (!o.e) continue;
+            out.topEvents[o.e] = (out.topEvents[o.e] || 0) + 1;
+            /* WhatsApp/email pindah dari stream click ke event §18 — baris lama
+               di tabel "Klik CTA Teratas" tetap terisi dari sini. */
+            if (o.e === "whatsapp_click") out.topClicks.whatsapp = (out.topClicks.whatsapp || 0) + 1;
+            else if (o.e === "email_click") out.topClicks.email = (out.topClicks.email || 0) + 1;
+          } catch (_) {}
+        }
       } else {
         const mem = globalThis.__hits || [];
         rec.views = mem.filter((l) => l.includes(`-${d}`) ).length; // ponytail: rough in-memory fallback only
