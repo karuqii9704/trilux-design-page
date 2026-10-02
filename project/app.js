@@ -6,6 +6,12 @@
   const root = document.getElementById("projRoot");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* PRD §18 — kirim event lewat beacon yang sudah ada di assets/js/track.js.
+     Kalau track.js gagal dimuat, analitik mati tapi halaman tetap jalan. */
+  const track = (type, props) => {
+    try { if (window.triluxTrack) window.triluxTrack({ type, props }); } catch (_) {}
+  };
+
   const WA = (text) => "https://wa.me/6282287348422?text=" + encodeURIComponent(text);
   /* CMS stores paths relative to the site root ("assets/img/x.jpg") — this
      page lives one level deeper, so rebase them */
@@ -72,7 +78,7 @@
     const resetEl = document.getElementById("idxReset");
 
     const card = (p) => `
-      <a class="idx-card" href="?s=${encodeURIComponent(p.slug)}" data-slug="${esc(p.slug)}">
+      <a class="idx-card" href="?s=${encodeURIComponent(p.slug)}&amp;src=grid" data-slug="${esc(p.slug)}">
         ${p.slug === featuredSlug ? `<span class="badge" style="margin:12px 0 0 12px">Featured</span>` : ""}
         <img src="${esc(asset(p.cover))}" alt="${esc(p.coverAlt || p.name)}" loading="lazy" decoding="async">
         <div class="idx-body">
@@ -113,6 +119,7 @@
 
     const reset = () => {
       facets.forEach((f) => { state[f.key] = ""; });
+      track("filter_apply", { filter_type: "reset", value: "all" });
       syncChips();
       writeUrl();
       render();
@@ -123,6 +130,7 @@
       if (chip) {
         const key = chip.closest("[data-facet]").dataset.facet;
         state[key] = state[key] === chip.dataset.value ? "" : chip.dataset.value;
+        track("filter_apply", { filter_type: key, value: state[key] || "all" });
         syncChips();
         writeUrl();
         render();
@@ -145,7 +153,8 @@
   }
 
 
-  function detailView(p) {
+  function detailView(p, source) {
+    track("project_view", { project_slug: p.slug, source: source || "direct" });
     const gallery = Array.isArray(p.gallery) ? p.gallery : [];
     const highlights = Array.isArray(p.highlights) ? p.highlights : [];
     document.title = p.name + " — Trilux Design";
@@ -191,6 +200,7 @@
       grid.addEventListener("click", (e) => {
         const btn = e.target.closest("button[data-full]");
         if (!btn) return;
+        track("gallery_thumb_click", { project_slug: p.slug, index: [...grid.querySelectorAll("button")].indexOf(btn) });
         const cover = document.getElementById("projCover");
         grid.querySelectorAll("button").forEach((b) => b.removeAttribute("aria-current"));
         btn.setAttribute("aria-current", "true");
@@ -206,7 +216,9 @@
   }
 
   async function boot() {
-    const slug = new URLSearchParams(location.search).get("s");
+    const params = new URLSearchParams(location.search);
+    const slug = params.get("s");
+    const source = params.get("src") || "";
     let data;
     try {
       const r = await fetch("/api/admin?cms=1");
@@ -220,7 +232,7 @@
     const featuredSlug = projects[0] && projects[0].slug;
     if (slug) {
       const p = projects.find((x) => x.slug === slug);
-      if (p) { detailView(p); return; }
+      if (p) { detailView(p, source); return; }
       root.innerHTML = `<p class="proj-err">Proyek tidak ditemukan. <a href="/project" style="color:var(--brass-700)">Lihat semua proyek →</a></p>`;
       return;
     }

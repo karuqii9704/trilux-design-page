@@ -8,6 +8,14 @@
     } catch (_) { /* tracking must never break the page */ }
   };
 
+  /* API untuk halaman lain: window.triluxTrack({ type, props }) — dipakai
+     /project/ untuk filter_apply dan project_view (PRD §18). Nama event di
+     luar daftar §18 tetap aman dikirim; server yang memutuskan penyimpanannya. */
+  window.triluxTrack = (payload) => {
+    if (!payload || typeof payload !== "object") return;
+    send({ path: location.pathname, ...payload });
+  };
+
   send({ type: "view", path: location.pathname });
 
   // CTA click attribution

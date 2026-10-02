@@ -68,7 +68,7 @@ export default async function handler(req, res) {
   if (req.method === "GET" && (req.query.stats === "1" || req.query.stats === "true")) {
     const hasBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
     const days = Math.min(parseInt(req.query.days || "30", 10), 90);
-    const out = { rangeDays: days, totalViews: 0, totalClicks: 0, perDay: [], topPaths: {}, topClicks: {}, uniqueVisitors: 0, browsers: {} };
+    const out = { rangeDays: days, totalViews: 0, totalClicks: 0, totalEvents: 0, perDay: [], topPaths: {}, topClicks: {}, topEvents: {}, uniqueVisitors: 0, browsers: {} };
 
     const visitorIps = new Set();
     for (let i = days - 1; i >= 0; i--) {
@@ -90,6 +90,12 @@ export default async function handler(req, res) {
         out.totalClicks += clines.length;
         for (const l of clines) { try { const o = JSON.parse(l); if (o.label) out.topClicks[o.label] = (out.topClicks[o.label] || 0) + 1; } catch (_) {} }
         out.totalViews += rec.views;
+
+        /* PRD §18 — event terstruktur (filter_apply, project_view, dst) */
+        const et = await readBlobText(`analytics/${d}-event.jsonl`);
+        const elines = et ? et.trim().split("\n") : [];
+        out.totalEvents += elines.length;
+        for (const l of elines) { try { const o = JSON.parse(l); if (o.e) out.topEvents[o.e] = (out.topEvents[o.e] || 0) + 1; } catch (_) {} }
       } else {
         const mem = globalThis.__hits || [];
         rec.views = mem.filter((l) => l.includes(`-${d}`) ).length; // ponytail: rough in-memory fallback only

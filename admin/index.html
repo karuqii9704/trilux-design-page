@@ -129,6 +129,11 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
         <div class="panel-title">Klik CTA Teratas (WhatsApp / Email / Simulasi)</div>
         <table class="data"><tbody id="tblClicks"></tbody></table>
       </div>
+
+      <div class="card" style="margin-top:var(--sp-4)">
+        <div class="panel-title">Peristiwa Teratas (filter, lihat proyek, galeri)</div>
+        <table class="data"><tbody id="tblEvents"></tbody></table>
+      </div>
       <p class="refresh-note" style="margin-top:var(--sp-4)">Data refresh tiap kali halaman dibuka. Analytics tanpa cookie — tidak menyimpan data pribadi pengunjung.</p>
     </section>
 
@@ -291,6 +296,11 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
     $("tblClicks").innerHTML = Object.entries(s.topClicks).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([l, n]) =>
       `<tr><td>${l}</td><td class="num">${fmt(n)}</td></tr>`
     ).join("") || `<tr><td>Belum ada klik CTA tercatat.</td></tr>`;
+
+    // events (§18)
+    $("tblEvents").innerHTML = Object.entries(s.topEvents || {}).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([e, n]) =>
+      `<tr><td>${e}</td><td class="num">${fmt(n)}</td></tr>`
+    ).join("") || `<tr><td>Belum ada event tercatat.</td></tr>`;
   }
 
   /* ---- cms ---- */
