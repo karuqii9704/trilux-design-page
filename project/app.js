@@ -17,13 +17,53 @@
      page lives one level deeper, so rebase them */
   const asset = (p) => !p ? p : (p.startsWith("assets/") ? "../" + p : p);
 
-  /* AC-2 — dimensi filter diambil dari field CMS (PRD §12.1): category
-     (fallback ke `type` selama data lama belum punya category), location, year.
-     Satu nilai per dimensi; antar dimensi digabung (AND). */
+  /* Bentuk data CMS punya dua generasi: v2 (lihat data/PROJECTS-SCHEMA.md) dan
+     v1 lama. Salinan v1 masih mungkin menang di produksi, karena
+     `readProjectsJson()` memprioritaskan `cms/projects.json` di Blob di atas
+     file lokal — jadi halaman ini wajib toleran terhadap keduanya. */
+  function normalize(p) {
+    const loc = p.location;
+    const parts = typeof loc === "string" ? loc.split(",") : [];
+    const city = typeof loc === "string" ? (parts[0] || "").trim() : String((loc && loc.city) || "").trim();
+    const province = typeof loc === "string" ? (parts[1] || "").trim() : String((loc && loc.province) || "").trim();
+    const seo = p.seo || {};
+    return {
+      slug: String(p.slug || "").trim(),
+      name: p.name || "",
+      status: String(p.status || "published").trim(),
+      order: Number.isFinite(Number(p.display_order)) ? Number(p.display_order) : 0,
+      category: String(p.category || "").trim(),
+      type: String(p.type || "").trim(),
+      city,
+      province,
+      year: p.year == null ? "" : String(p.year).trim(),
+      specification: String(p.specification || p.specifics || "").trim(),
+      budget: String(p.budget_range || "").trim(),
+      client: String(p.client_description || p.client || "").trim(),
+      cover: p.cover || "",
+      coverAlt: p.coverAlt || p.name || "",
+      description: p.description || "",
+      highlights: Array.isArray(p.highlights) ? p.highlights.filter(Boolean) : [],
+      gallery: (Array.isArray(p.gallery) ? p.gallery : [])
+        .map((g) => (typeof g === "string" ? { thumb: g } : g))
+        .filter((g) => g && g.thumb)
+        .map((g) => ({
+          thumb: g.thumb,
+          label: String(g.label || g.alt || "").trim(),
+          alt: String(g.alt || g.label || "").trim(),
+        })),
+      seoTitle: String(seo.title || p.seo_title || "").trim(),
+      seoDescription: String(seo.description || p.seo_description || "").trim(),
+    };
+  }
+
+  /* AC-2 — dimensi filter (PRD §12.1): category (fallback ke `type` selama
+     proyek belum dikategorikan), kota, tahun. Satu nilai per dimensi; antar
+     dimensi digabung (AND). */
   const FACETS = [
-    { key: "cat", label: "Kategori", value: (p) => String(p.category || p.type || "").trim() },
-    { key: "loc", label: "Lokasi", value: (p) => String(p.location || "").trim() },
-    { key: "year", label: "Tahun", value: (p) => (p.year == null ? "" : String(p.year).trim()) },
+    { key: "cat", label: "Kategori", value: (p) => p.category || p.type },
+    { key: "loc", label: "Lokasi", value: (p) => p.city },
+    { key: "year", label: "Tahun", value: (p) => p.year },
   ];
 
   /* State filter hidup di URL (?cat=&loc=&year=) supaya bisa dibagikan dan
@@ -83,7 +123,7 @@
         <img src="${esc(asset(p.cover))}" alt="${esc(p.coverAlt || p.name)}" loading="lazy" decoding="async">
         <div class="idx-body">
           <h2>${esc(p.name)}</h2>
-          <p>${esc(p.location)} · ${esc(p.year)}</p>
+          <p>${esc([p.city, p.year].filter(Boolean).join(" · "))}</p>
         </div>
       </a>`;
 
@@ -153,33 +193,99 @@
   }
 
 
+  /* AC-3 — meta yang bisa diisi Admin (PRD §15): title/meta description dari
+     field seo*, fallback ke deskripsi proyek. Alt galeri wajib diisi (§12.3). */
   function detailView(p, source) {
     track("project_view", { project_slug: p.slug, source: source || "direct" });
-    const gallery = Array.isArray(p.gallery) ? p.gallery : [];
-    const highlights = Array.isArray(p.highlights) ? p.highlights : [];
-    document.title = p.name + " — Trilux Design";
+    const gallery = p.gallery;
+    const highlights = p.highlights;
+    const place = [p.city, p.province].filter(Boolean).join(", ");
+    const description = p.seoDescription || String(p.description || "").slice(0, 158);
+    document.title = (p.seoTitle || `${p.name} — Trilux Design`).slice(0, 60);
+
+    const setMeta = (name, content) => {
+      if (!content) return;
+      let el = document.querySelector(`meta[name="${name}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute("name", name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+    setMeta("description", description);
+
+    /* Canonical halaman detail: URL-nya sebenarnya sama dengan index, hanya
+       dibedakan `?s=<slug>`. Dibiarkan apa adanya, canonical bawaan
+       ("/project/") memberi tahu crawler bahwa halaman ini duplikat daftar.
+       Ditulis relatif — domain kanonik masih keputusan owner. */
+    const canon = document.querySelector('link[rel="canonical"]');
+    if (canon) canon.setAttribute("href", `${location.pathname}?s=${encodeURIComponent(p.slug)}`);
+
+    /* §15 — JSON-LD CreativeWork + BreadcrumbList untuk halaman detail. Path
+       gambar ditulis relatif; domain kanonik masih keputusan owner, jadi URL
+       absolut tidak dikarang di sini. */
+    const facts = [
+      ["Kategori", p.category],
+      ["Lingkup", p.type],
+      ["Spesifikasi", p.specification],
+      ["Kisaran Budget", p.budget],
+      ["Klien", p.client],
+    ].filter(([, v]) => v);
+
+    const ld = {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      name: p.name,
+      description: p.description,
+      image: p.cover ? [p.cover] : undefined,
+      dateCreated: p.year || undefined,
+      locationCreated: place ? { "@type": "Place", name: place } : undefined,
+      creator: { "@type": "LocalBusiness", name: "Trilux Design" },
+    };
+    const crumbs = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Beranda", item: "/" },
+        { "@type": "ListItem", position: 2, name: "Proyek", item: "/project" },
+        { "@type": "ListItem", position: 3, name: p.name },
+      ],
+    };
+
     root.innerHTML = `
+      <nav class="proj-crumbs" aria-label="Breadcrumb">
+        <a href="../">Beranda</a> <span aria-hidden="true">/</span>
+        <a href="./">Proyek</a> <span aria-hidden="true">/</span>
+        <span aria-current="page">${esc(p.name)}</span>
+      </nav>
       <section class="proj-hero">
-        <p class="eyebrow">Portfolio</p>
+        <p class="eyebrow">${esc(p.category || "Portfolio")}</p>
         <h1>${esc(p.name)}</h1>
         <div class="proj-meta">
-          <span>${esc(p.location)}</span><span>${esc(p.year)}</span>
-          <span>${esc(p.type || "")}</span><span>${esc(p.client || "")}</span>
+          ${[place, p.year, p.type].filter(Boolean).map((v) => `<span>${esc(v)}</span>`).join("")}
         </div>
       </section>
-      <img class="proj-cover" id="projCover" src="${esc(asset(p.cover))}" alt="${esc(p.coverAlt || p.name)}">
+      <img class="proj-cover" id="projCover" src="${esc(asset(p.cover))}" alt="${esc(p.coverAlt)}">
       <div class="proj-body">
         <div>
           <p class="proj-desc">${esc(p.description)}</p>
           ${gallery.length ? `
             <div class="gal-grid" id="galGrid">
               ${gallery.map((g, i) => `
-                <button type="button" data-full="${esc(asset(g.thumb))}" aria-label="Tampilkan ${esc(g.label)}" ${i === 0 ? 'aria-current="true"' : ""}>
-                  <img src="${esc(asset(g.thumb))}" alt="" loading="lazy" decoding="async">
+                <button type="button" data-full="${esc(asset(g.thumb))}" aria-label="Tampilkan ${esc(g.label || g.alt || "foto proyek")}" ${i === 0 ? 'aria-current="true"' : ""}>
+                  <img src="${esc(asset(g.thumb))}" alt="${esc(g.alt)}" loading="lazy" decoding="async">
                 </button>`).join("")}
             </div>` : ""}
         </div>
         <aside>
+          ${facts.length ? `
+            <div class="proj-facts">
+              <h2>Detail Proyek</h2>
+              <dl>
+                ${facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}
+              </dl>
+            </div>` : ""}
           ${highlights.length ? `
             <div class="proj-highlights">
               <h2>Sorotan Proyek</h2>
@@ -193,6 +299,15 @@
           </div>
         </aside>
       </div>`;
+
+    /* JSON-LD disisipkan lewat DOM, bukan innerHTML — blok data begini dibaca
+       crawler setelah render, dan cara ini tidak bergantung pada parsing HTML. */
+    [ld, crumbs].forEach((block) => {
+      const s = document.createElement("script");
+      s.type = "application/ld+json";
+      s.textContent = JSON.stringify(block);
+      document.head.appendChild(s);
+    });
 
     // gallery thumb -> main cover swap
     const grid = document.getElementById("galGrid");
@@ -228,8 +343,20 @@
       root.innerHTML = `<p class="proj-err">Gagal memuat data proyek. Coba muat ulang halaman.</p>`;
       return;
     }
-    const projects = Array.isArray(data.projects) ? data.projects : [];
-    const featuredSlug = projects[0] && projects[0].slug;
+    /* AC-2 — hanya proyek terpublikasi yang tampil, urut `display_order`. */
+    const projects = (Array.isArray(data.projects) ? data.projects : [])
+      .map(normalize)
+      .filter((p) => p.slug && p.status !== "draft" && p.status !== "archived")
+      .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+
+    /* `featured` di skema v2 adalah slug; di v1 sebuah objek proyek. Slug yang
+       menunjuk proyek tak ada (sudah dihapus / ber-status draft) diabaikan —
+       lebih baik jatuh ke proyek pertama daripada index tanpa badge Featured. */
+    const f = data.featured;
+    const declaredFeatured = typeof f === "string" ? f : (f && f.slug) || "";
+    const featuredSlug = projects.some((p) => p.slug === declaredFeatured)
+      ? declaredFeatured
+      : (projects[0] && projects[0].slug) || "";
     if (slug) {
       const p = projects.find((x) => x.slug === slug);
       if (p) { detailView(p, source); return; }
