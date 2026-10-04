@@ -140,25 +140,18 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
     <!-- CMS PANEL -->
     <section id="cmsPanel" role="tabpanel" aria-labelledby="tabCms" class="hidden">
       <div class="card">
-        <div class="panel-title">Proyek Featured — Selected Work</div>
+        <div class="panel-title">Proyek Featured — Selected Work (landing)</div>
         <div class="cms-grid">
-          <div><label class="field-l" for="fName">Nama Proyek</label><input class="txt" id="fName"></div>
-          <div><label class="field-l" for="fIndex">Index</label><input class="txt" id="fIndex"></div>
-          <div><label class="field-l" for="fLoc">Lokasi</label><input class="txt" id="fLoc"></div>
-          <div><label class="field-l" for="fYear">Tahun</label><input class="txt" id="fYear"></div>
-          <div><label class="field-l" for="fSpec">Project Specifics</label><input class="txt" id="fSpec"></div>
-          <div><label class="field-l" for="fType">Project Type</label><input class="txt" id="fType"></div>
-          <div><label class="field-l" for="fClient">Client Description</label><input class="txt" id="fClient"></div>
-          <div><label class="field-l" for="fCover">Cover Image Path</label><input class="txt" id="fCover"></div>
-          <div class="full"><label class="field-l" for="fAlt">Cover Alt Text</label><input class="txt" id="fAlt"></div>
-          <div class="full"><label class="field-l" for="fDesc">Deskripsi Proyek</label><textarea class="txt" id="fDesc"></textarea></div>
-          <div class="full"><label class="field-l" for="fGallery">Gallery (JSON array)</label><textarea class="txt" id="fGallery" style="min-height:90px;font-size:var(--body-s)"></textarea></div>
+          <div class="full">
+            <label class="field-l" for="fSlug">Proyek yang tampil sebagai featured di halaman utama</label>
+            <select class="txt" id="fSlug"></select>
+          </div>
         </div>
         <div class="save-row">
           <button class="btn btn-sm" id="saveBtn" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff;">Simpan</button>
           <span class="status" id="saveStatus" role="status"></span>
         </div>
-        <p class="refresh-note" style="margin-top:var(--sp-4)">Perubahan tersimpan ke Blob storage dan langsung tayang di halaman utama (hydrate runtime) — tidak perlu redeploy.</p>
+        <p class="refresh-note" style="margin-top:var(--sp-4)">Isi proyek (nama, lokasi, cover, galeri) diatur di kartu "Halaman Proyek" di bawah. Form ini dulu menyimpan salinan kedua yang bisa berbeda dari daftar — sekarang hanya menunjuk satu slug.</p>
       </div>
 
       <div class="card" style="margin-top:var(--sp-5)">
@@ -167,15 +160,23 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
         <div class="cms-grid">
           <div><label class="field-l" for="pSlug">Slug (URL, unik)</label><input class="txt" id="pSlug" placeholder="padang-residence-ii"></div>
           <div><label class="field-l" for="pName">Nama Proyek</label><input class="txt" id="pName"></div>
-          <div><label class="field-l" for="pLoc">Lokasi</label><input class="txt" id="pLoc"></div>
+          <div><label class="field-l" for="pCategory">Kategori (Interior / Eksterior / Arsitektur)</label><input class="txt" id="pCategory" placeholder="kosongkan bila belum dipastikan"></div>
+          <div><label class="field-l" for="pType">Project Type / Lingkup</label><input class="txt" id="pType"></div>
+          <div><label class="field-l" for="pCity">Kota</label><input class="txt" id="pCity"></div>
+          <div><label class="field-l" for="pProvince">Provinsi</label><input class="txt" id="pProvince"></div>
           <div><label class="field-l" for="pYear">Tahun</label><input class="txt" id="pYear"></div>
-          <div><label class="field-l" for="pType">Project Type</label><input class="txt" id="pType"></div>
-          <div><label class="field-l" for="pClient">Client</label><input class="txt" id="pClient"></div>
+          <div><label class="field-l" for="pSpec">Spesifikasi</label><input class="txt" id="pSpec"></div>
+          <div><label class="field-l" for="pBudget">Kisaran Budget (kosongkan bila belum boleh tampil)</label><input class="txt" id="pBudget"></div>
+          <div><label class="field-l" for="pClient">Klien</label><input class="txt" id="pClient"></div>
+          <div><label class="field-l" for="pStatus">Status</label><select class="txt" id="pStatus"><option value="published">published</option><option value="draft">draft</option></select></div>
+          <div><label class="field-l" for="pOrder">Urutan tampil (angka kecil lebih dulu)</label><input class="txt" id="pOrder" type="number" min="0" step="1"></div>
           <div><label class="field-l" for="pCover">Cover Path (assets/img/…)</label><input class="txt" id="pCover"></div>
-          <div><label class="field-l" for="pAlt">Cover Alt</label><input class="txt" id="pAlt"></div>
+          <div><label class="field-l" for="pAlt">Cover Alt (deskriptif, untuk aksesibilitas)</label><input class="txt" id="pAlt"></div>
+          <div><label class="field-l" for="pSeoTitle">SEO Title (maks 60)</label><input class="txt" id="pSeoTitle" maxlength="60"></div>
+          <div><label class="field-l" for="pSeoDesc">SEO Description (150–160)</label><input class="txt" id="pSeoDesc" maxlength="160"></div>
           <div class="full"><label class="field-l" for="pDesc">Deskripsi</label><textarea class="txt" id="pDesc"></textarea></div>
           <div class="full"><label class="field-l" for="pHigh">Highlights (satu per baris)</label><textarea class="txt" id="pHigh" style="min-height:70px"></textarea></div>
-          <div class="full"><label class="field-l" for="pGal">Gallery (JSON array: [{"thumb":"assets/img/x.jpg","label":"…"}])</label><textarea class="txt" id="pGal" style="min-height:80px;font-size:var(--body-s)"></textarea></div>
+          <div class="full"><label class="field-l" for="pGal">Gallery (JSON array: [{"thumb":"assets/img/x.jpg","label":"…","alt":"…"}]) — alt wajib</label><textarea class="txt" id="pGal" style="min-height:80px;font-size:var(--body-s)"></textarea></div>
         </div>
         <div class="save-row">
           <button class="btn btn-sm" id="projAdd" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff">Tambah Proyek Baru</button>
@@ -183,7 +184,7 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
           <button class="btn btn-sm" id="projDelete" style="border-color:#e08a80;color:#e08a80">Hapus Terpilih</button>
           <span class="status" id="projStatus" role="status"></span>
         </div>
-        <p class="refresh-note" style="margin-top:var(--sp-4)">Proyek tayang di <strong>/project</strong> (index + halaman detail per slug). Simpan juga men-trigger update halaman utama bila dijadikan featured.</p>
+        <p class="refresh-note" style="margin-top:var(--sp-4)">Skema field: <code>data/PROJECTS-SCHEMA.md</code>. Proyek tayang di <strong>/project</strong> (index + detail per slug); proyek ber-status <strong>draft</strong> disembunyikan. Landing masih memuat featured secara hardcoded — memilih featured di sini <em>belum</em> mengubah halaman utama.</p>
       </div>
     </section>
 
@@ -305,33 +306,35 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
 
   /* ---- cms ---- */
   let projects = null;
+  /* Skema v2: `featured` adalah slug. Salinan v1 (objek proyek) masih mungkin
+     menang di produksi karena Blob diprioritaskan di atas seed lokal, jadi
+     pembacaan tetap toleran; penulisan selalu slug. */
+  const featuredSlugOf = (data) => {
+    const f = data.featured;
+    const slug = typeof f === "string" ? f : (f && f.slug) || "";
+    const list = Array.isArray(data.projects) ? data.projects : [];
+    // slug yang menunjuk proyek tak ada/hapus = yatim: jatuh ke proyek pertama
+    return list.some((p) => p.slug === slug) ? slug : ((list[0] || {}).slug || "");
+  };
+  function renderFeaturedOptions() {
+    const list = Array.isArray(projects.projects) ? projects.projects : [];
+    const sel = $("fSlug");
+    sel.innerHTML = list.length
+      ? list.map((p) => `<option value="${esc(p.slug)}">${esc(p.name || p.slug)}</option>`).join("")
+      : `<option value="">(belum ada proyek)</option>`;
+    sel.value = featuredSlugOf(projects);
+  }
   async function loadCms() {
     const r = await fetch("/api/admin", { headers: { Authorization: "Bearer " + token } });
     if (!r.ok) throw new Error("cms read failed");
     projects = await r.json();
-    const f = projects.featured;
-    $("fName").value = f.name || ""; $("fIndex").value = f.index || "";
-    $("fLoc").value = f.location || ""; $("fYear").value = f.year || "";
-    $("fSpec").value = f.specifics || ""; $("fType").value = f.type || "";
-    $("fClient").value = f.client || ""; $("fCover").value = f.cover || "";
-    $("fAlt").value = f.coverAlt || ""; $("fDesc").value = f.description || "";
-    $("fGallery").value = JSON.stringify(f.gallery || [], null, 2);
+    renderFeaturedOptions();
   }
 
   $("saveBtn").addEventListener("click", async () => {
     const st = $("saveStatus");
-    let gallery;
-    try { gallery = JSON.parse($("fGallery").value); }
-    catch (_) { st.textContent = "⚠ Gallery JSON tidak valid."; return; }
-    projects.featured = {
-      ...projects.featured,
-      name: $("fName").value, index: $("fIndex").value,
-      location: $("fLoc").value, year: $("fYear").value,
-      specifics: $("fSpec").value, type: $("fType").value,
-      client: $("fClient").value, cover: $("fCover").value,
-      coverAlt: $("fAlt").value, description: $("fDesc").value,
-      gallery
-    };
+    projects.schema = 2;
+    projects.featured = $("fSlug").value;
     st.textContent = "Menyimpan…";
     try {
       const r = await fetch("/api/admin", {
@@ -362,26 +365,50 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
     ).join("") : `<span class="refresh-note">Belum ada proyek.</span>`;
   }
   function fillProjForm(p) {
+    const loc = p.location;
+    const city = typeof loc === "string" ? (loc.split(",")[0] || "").trim() : String((loc && loc.city) || "");
+    const province = typeof loc === "string" ? (loc.split(",")[1] || "").trim() : String((loc && loc.province) || "");
+    const seo = p.seo || {};
     P("pSlug").value = p.slug || ""; P("pName").value = p.name || "";
-    P("pLoc").value = p.location || ""; P("pYear").value = p.year || "";
-    P("pType").value = p.type || ""; P("pClient").value = p.client || "";
+    P("pCategory").value = p.category || ""; P("pType").value = p.type || "";
+    P("pCity").value = city; P("pProvince").value = province;
+    P("pYear").value = p.year == null ? "" : p.year;
+    P("pSpec").value = p.specification || p.specifics || "";
+    P("pBudget").value = p.budget_range || "";
+    P("pClient").value = p.client_description || p.client || "";
+    P("pStatus").value = p.status === "draft" ? "draft" : "published";
+    P("pOrder").value = p.display_order == null ? "" : p.display_order;
     P("pCover").value = p.cover || ""; P("pAlt").value = p.coverAlt || "";
+    P("pSeoTitle").value = seo.title || p.seo_title || "";
+    P("pSeoDesc").value = seo.description || p.seo_description || "";
     P("pDesc").value = p.description || "";
     P("pHigh").value = (p.highlights || []).join("\n");
     P("pGal").value = JSON.stringify(p.gallery || [], null, 2);
   }
+  /* Menulis skema v2 saja: field v1 (location string, type, client, specifics,
+     seo_*) sengaja tidak disalin, jadi menyimpan satu proyek sekaligus
+     memigrasikannya. */
   function readProjForm() {
     let gallery;
     try { gallery = JSON.parse(P("pGal").value || "[]"); }
     catch (_) { P("projStatus").textContent = "⚠ Gallery JSON tidak valid."; return null; }
+    const raw = String(P("pOrder").value).trim();
     return {
       slug: P("pSlug").value.trim(), name: P("pName").value.trim(),
-      location: P("pLoc").value.trim(), year: P("pYear").value.trim(),
-      type: P("pType").value.trim(), client: P("pClient").value.trim(),
+      status: P("pStatus").value === "draft" ? "draft" : "published",
+      display_order: raw === "" ? 0 : Number(raw) || 0,
+      category: P("pCategory").value.trim() || null,
+      type: P("pType").value.trim(),
+      location: { city: P("pCity").value.trim(), province: P("pProvince").value.trim() },
+      year: P("pYear").value.trim(),
+      specification: P("pSpec").value.trim(),
+      budget_range: P("pBudget").value.trim() || null,
+      client_description: P("pClient").value.trim(),
       cover: P("pCover").value.trim(), coverAlt: P("pAlt").value.trim(),
       description: P("pDesc").value.trim(),
       highlights: P("pHigh").value.split("\n").map((s) => s.trim()).filter(Boolean),
-      gallery
+      gallery,
+      seo: { title: P("pSeoTitle").value.trim() || null, description: P("pSeoDesc").value.trim() || null }
     };
   }
   P("projList").addEventListener("click", (e) => {
@@ -415,6 +442,7 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
     projects.projects.push(p);
     selectedSlug = p.slug;
     renderProjList();
+    renderFeaturedOptions();
     await saveProjects(P("projStatus"));
   });
   P("projUpdate").addEventListener("click", async () => {
@@ -425,13 +453,16 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
     if (p.slug !== selectedSlug) { P("projStatus").textContent = "⚠ Slug tidak boleh diubah (hapus + tambah baru)."; return; }
     projects.projects[i] = p;
     renderProjList();
+    renderFeaturedOptions();
     await saveProjects(P("projStatus"));
   });
   P("projDelete").addEventListener("click", async () => {
     if (!selectedSlug) { P("projStatus").textContent = "⚠ Pilih proyek dulu."; return; }
     projects.projects = (projects.projects || []).filter((x) => x.slug !== selectedSlug);
     selectedSlug = null;
+    projects.featured = featuredSlugOf(projects); // jangan tinggalkan featured yatim
     renderProjList();
+    renderFeaturedOptions();
     await saveProjects(P("projStatus"));
   });
 
