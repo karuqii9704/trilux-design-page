@@ -23,6 +23,7 @@
   --md-inverse-surface: #2a211d;
   --md-on-inverse-surface: #f2ede4;
   --md-scrim: rgba(20, 16, 16, 0.55);
+  --md-error: #b3261e;
 
   /* ---- M3 shape scale ---- */
   --md-shape-xs: 4px;
@@ -618,6 +619,51 @@ h1, h2, h3 {
   box-shadow: inset 0 0 0 1px var(--md-primary);
 }
 .sim__input::placeholder { color: var(--md-on-surface-variant); }
+.sim__select { min-width: 180px; cursor: pointer; }
+
+/* §13.4 lapis 1 — honeypot: tetap "terlihat" bagi bot pembaca DOM, tapi di luar
+   layar dan di luar urutan tab bagi manusia (aria-hidden + tabindex="-1" di HTML). */
+.sim__hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* §17.2 — persetujuan data: tidak pernah tercentang sendiri. */
+.sim__consent {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  font-size: var(--md-body-small);
+  color: var(--md-on-surface-variant);
+  line-height: 1.45;
+  cursor: pointer;
+}
+.sim__consent input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--md-primary);
+  cursor: pointer;
+}
+.sim__consent input:focus-visible { outline: 2px solid var(--md-primary); outline-offset: 2px; }
+
+/* §13.3 — pesan error inline, menyebutkan cara memperbaiki. */
+.sim__formerr {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: var(--md-body-small);
+  color: var(--md-error);
+}
+
+/* `hidden` kalah dari deklarasi display author (.sim__form { display: flex }),
+   jadi dua elemen ini perlu penegasan eksplisit. */
+.sim__form[hidden],
+.sim__formerr[hidden] { display: none; }
 
 /* M3 snackbar */
 .snackbar {

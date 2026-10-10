@@ -235,6 +235,28 @@
     const quoteBtn = document.getElementById("quoteBtn");
     const quoteForm = document.getElementById("quoteForm");
     const quoteSend = document.getElementById("quoteSend");
+    const quoteContact = document.getElementById("quoteContact");
+    const quoteCompany = document.getElementById("quoteCompany");
+    const quoteBudget = document.getElementById("quoteBudget");
+    const quoteConsent = document.getElementById("quoteConsent");
+    const quoteError = document.getElementById("quoteError");
+
+    /* §13.4 lapis 2 — baseline time-trap: sejak form TAMPIL, bukan sejak halaman
+       dimuat, supaya manusia yang mengirim cepat tidak ikut tertandai. */
+    let formShownAt = 0;
+
+    /* §12.3 enum kategori, dipetakan dari pilihan simulator. */
+    const CATEGORY = { interior: "Interior", exterior: "Exterior", architecture: "Building" };
+
+    /* §12.1 utm_* — dibaca sekali saat halaman dimuat. */
+    const UTM = {};
+    try {
+      const q = new URLSearchParams(location.search);
+      for (const k of ["utm_source", "utm_medium", "utm_campaign"]) {
+        const v = q.get(k);
+        if (v) UTM[k] = v.slice(0, 80);
+      }
+    } catch (_) {}
 
     const state = { scope: "interior", area: 120, mult: 1 };
 
@@ -305,49 +327,114 @@
       formStarted = true;
       track("contact_form_start", { source_page: location.pathname });
     };
-    const quoteContact = document.getElementById("quoteContact");
     quoteContact.addEventListener("focus", noteStart, { once: true });
+
+    /* §13.3 — validasi inline, pesan menyebutkan cara memperbaiki (§14). */
+    const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
+    const isPhoneID = (s) => /^(?:\+62|62|0)8[1-9][0-9]{6,11}$/.test(s.replace(/[\s().-]/g, ""));
+    const contactProblem = (s) =>
+      !s ? "Isi nomor WhatsApp atau email supaya kami bisa membalas."
+        : isEmail(s) || isPhoneID(s) ? ""
+        : "Nomor WhatsApp-nya belum benar. Contoh: 0812 3456 7890 atau +62 812 3456 7890 — atau isi email.";
+    const showError = (msg) => {
+      quoteError.textContent = msg || "";
+      quoteError.hidden = !msg;
+      quoteContact.setAttribute("aria-invalid", msg ? "true" : "false");
+    };
+
+    /* §17.2 / AC-4 — tombol kirim baru aktif setelah kotak persetujuan dicentang. */
+    quoteSend.disabled = !quoteConsent.checked;
+    quoteConsent.addEventListener("change", () => { quoteSend.disabled = !quoteConsent.checked; });
+    quoteContact.addEventListener("blur", () => {
+      const v = quoteContact.value.trim();
+      if (v) showError(contactProblem(v));
+    });
 
     quoteBtn.addEventListener("click", () => {
       quoteForm.hidden = !quoteForm.hidden;
-      if (!quoteForm.hidden) { noteStart(); quoteContact.focus(); }
+      if (!quoteForm.hidden) {
+        noteStart();
+        formShownAt = Date.now();
+        quoteContact.focus();
+      }
     });
     quoteForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const contact = quoteContact.value.trim();
-      if (!contact) {
-        track("contact_form_error", { field: "contact", error_type: "required" });
+
+      const problem = contactProblem(contact);
+      if (problem) {
+        showError(problem);
+        track("contact_form_error", { field: "contact", error_type: "invalid" });
+        quoteContact.focus();
         return;
       }
+      if (!quoteConsent.checked) { // jaring kedua; server juga menolak tanpa consent
+        showError("Centang persetujuan penggunaan data dulu sebelum kirim.");
+        track("contact_form_error", { field: "consent", error_type: "required" });
+        return;
+      }
+      showError("");
       quoteSend.disabled = true;
       try {
         const r = RATES[state.scope];
         const est = estimate();
+        const pkg = PKG_LABEL[String(state.mult)];
         const res = await fetch("/api/lead", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contact,
+            project_type: CATEGORY[state.scope],
+            budget_range: quoteBudget.value,
+            location: "",
+            message: `Halo Trilux Design! Saya tertarik ${r.label} — ${state.area} m², paket ${pkg}. Estimasi di web: ${est.text}. Boleh diskusi lanjut?`,
+            source: "simulator",
+            consent: true,
+            elapsed_ms: formShownAt ? Date.now() - formShownAt : -1, // -1 = tak diketahui, bukan <3 dtk
+            company: quoteCompany.value, // §13.4 lapis 1 — honeypot, manusia tidak pernah mengisi
             scope: r.label,
             area: state.area,
             total: est.text,
-            config: `Simulator · ${PKG_LABEL[String(state.mult)]} · ${new Date().toISOString()}`,
+            config: `Simulator · ${pkg} · ${new Date().toISOString()}`,
+            ...UTM,
           }),
         });
-        if (!res.ok) throw new Error(await res.text());
+        if (!res.ok) {
+          /* §13.3 — error jaringan/server tidak menghapus isian pengguna. */
+          let msg = "Gagal kirim — coba lagi atau chat WhatsApp ya.";
+          try {
+            const j = await res.json();
+            if (j && j.error) msg = j.error;
+          } catch (_) {}
+          showError(msg);
+          track("contact_form_error", {
+            field: "form",
+            error_type: res.status === 429 ? "rate_limited" : "server",
+          });
+          return;
+        }
+        const j = await res.json().catch(() => ({}));
         track("contact_form_submit", {
           project_slug: "",
-          budget_range: est.text,
+          budget_range: quoteBudget.value || est.text,
           channel: contact.includes("@") ? "email" : "whatsapp",
         });
+        /* §13.2.3 — opsi lanjutan WhatsApp dengan pesan pre-filled (ID lead). */
+        if (j && j.id) {
+          waBtn.href = "https://wa.me/6282287348422?text=" + encodeURIComponent(
+            `Halo Trilux Design! Saya baru kirim permintaan quote (ID ${String(j.id).slice(0, 8)}) — ${r.label} ${state.area} m², paket ${pkg}.`
+          );
+        }
         quoteForm.hidden = true;
         quoteContact.value = "";
+        quoteConsent.checked = false;
         showSnack("Terkirim! Tim Trilux akan menghubungi kamu soon. ✓");
       } catch (err) {
+        showError("Koneksi gagal — isian kamu masih aman, coba kirim lagi.");
         track("contact_form_error", { field: "form", error_type: "network" });
-        showSnack("Gagal kirim — coba lagi atau chat WhatsApp ya.");
       } finally {
-        quoteSend.disabled = false;
+        quoteSend.disabled = !quoteConsent.checked;
       }
     });
 

@@ -477,11 +477,11 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
       const leads = j.leads || [];
       tbl.innerHTML = leads.length ? leads.map((l) => `
         <tr>
-          <td>${esc((l.ts || "").replace("T", " ").slice(0, 16))}</td>
+          <td>${esc((l.ts || "").replace("T", " ").slice(0, 16))}${l.status === "spam" ? `<div style="font-size:var(--label);color:#b3261e">⚠ Spam${l.spam_score ? " · skor " + esc(String(l.spam_score)) : ""}</div>` : ""}</td>
           <td>${esc(l.contact)}${l.name ? " · " + esc(l.name) : ""}</td>
-          <td>${esc(l.scope || "—")}</td>
+          <td>${esc(l.project_type || l.scope || "—")}</td>
           <td class="num">${l.area ? esc(String(l.area)) + " m²" : "—"}</td>
-          <td>${esc(l.total || "—")}${l.config ? `<div style="font-size:var(--label);color:var(--text-on-ink-muted)">${esc(l.config).slice(0, 90)}…</div>` : ""}</td>
+          <td>${esc(l.budget_range || l.total || "—")}${l.config ? `<div style="font-size:var(--label);color:var(--text-on-ink-muted)">${esc(l.config).slice(0, 90)}…</div>` : ""}</td>
         </tr>`).join("") : `<tr><td colspan="5">Belum ada lead masuk. Lead terkirim saat pengunjung mengirim hasil simulasi / menghubungi via form.</td></tr>`;
       $("leadsNote").textContent = `Total ${j.total || leads.length} lead (maks 200 terbaru ditampilkan).`;
     } catch (e) {
