@@ -1,47 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trilux Design — Interior, Exterior & Architecture</title>
-<style>
-/* intro loader — inline so it paints before any external css arrives */
-#intro-loader {
-  position: fixed; inset: 0; z-index: 9999;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 26px; background: #141010;
-  transition: opacity 520ms ease, visibility 520ms ease;
-}
-#intro-loader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
-#intro-loader .intro-mark { display: block; }
-#intro-loader .intro-mark rect { transform-origin: 20px 34px; animation: introRise 820ms cubic-bezier(0.22,1,0.36,1) backwards; }
-#intro-loader .intro-mark .b2 { animation-delay: 130ms; }
-#intro-loader .intro-mark .b1 { animation-delay: 260ms; }
-#intro-loader .intro-mark .b3 { animation-delay: 390ms; }
-#intro-loader .intro-mark .b4 { animation-delay: 520ms; }
-@keyframes introRise { from { transform: translateY(14px) scaleY(0.25); opacity: 0; } to { transform: none; opacity: 1; } }
-#intro-loader .intro-word {
-  font-family: Georgia, "Times New Roman", serif; font-size: 19px; letter-spacing: 0.02em;
-  color: #efe9dc; opacity: 0; animation: introWord 700ms ease 480ms forwards;
-}
-#intro-loader .intro-word em { font-style: italic; color: #e4c07a; }
-@keyframes introWord { to { opacity: 1; } }
-#intro-loader .intro-bar {
-  width: 148px; height: 2px; border-radius: 2px; overflow: hidden;
-  background: rgba(239, 233, 220, 0.14);
-}
-#intro-loader .intro-bar-fill {
-  display: block; width: 0; height: 100%; background: linear-gradient(90deg, #c08a3e, #e4c07a);
-  animation: introFill 1.9s cubic-bezier(0.3, 0.8, 0.4, 1) forwards;
-}
-@keyframes introFill { 0% { width: 0; } 62% { width: 74%; } 100% { width: 100%; } }
-@media (prefers-reduced-motion: reduce) {
-  #intro-loader .intro-mark rect, #intro-loader .intro-word, #intro-loader .intro-bar-fill { animation: none; }
-  #intro-loader .intro-word { opacity: 1; }
-  #intro-loader .intro-bar-fill { width: 100%; }
-}
-</style>
-<noscript><style>#intro-loader { display: none; }</style></noscript>
 <meta name="description" content="A cinematic scroll through Trilux Design — a Jakarta-based studio for interior, exterior and architectural design. Explore our portfolio and request a quotation.">
 <link rel="canonical" href="https://trilux-design-page.vercel.app/">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo-mark.svg">
@@ -54,8 +16,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=4">
+<link rel="stylesheet" href="assets/css/style.css?v=6">
 <link rel="stylesheet" href="assets/css/cinema.css?v=8">
+<link rel="stylesheet" href="assets/css/sections.css?v=2">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -110,7 +73,7 @@
 
 <main id="main">
 
-  <!-- S1 — Cinematic scroll stage -->
+  <!-- S1 — Cinematic scroll stage (shapes-based; NO photo layers — brand rule) -->
   <section class="cinema-scroll" id="cinema" aria-label="Trilux Design cinematic scroll story">
     <div class="stage">
       <div class="world">
@@ -127,12 +90,36 @@
             <span class="logo-word">Trilux<em>&nbsp;Design</em></span>
           </a>
           <nav class="cinema-nav" aria-label="Main menu">
-            <a href="#cinema">Intro</a>
-            <a href="#selected-work">Work</a>
-            <a href="simulasi">Simulasi</a>
-            <a href="#contact">Contact</a>
+<!-- CMS:NAV:START -->
+<a href="/about">About</a>
+            <a href="/project">Portfolio</a>
+            <a href="/services">Services</a>
+            <a href="/gallery">Gallery</a>
+            <a href="/clients">Clients</a>
+            <a href="/news">News</a>
+            <a href="/simulasi">Simulator</a>
+            <a href="/studio">Studio</a>
+            <a href="/#contact">Contact</a><!-- /CMS:NAV:END -->
           </nav>
+          <button class="cinema-nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navOverlay" aria-label="Open menu">
+            <span class="nav__toggle-bars"><span></span><span></span><span></span></span>
+          </button>
           <a class="lang-switcher" href="https://wa.me/6282287348422" target="_blank" rel="noopener">WhatsApp <span aria-hidden="true">→</span></a>
+          <div class="nav-overlay" id="navOverlay" aria-hidden="true">
+            <nav class="nav-overlay__list" aria-label="Mobile menu">
+<!-- CMS:NAV:MOBILE:START -->
+<a href="/about">About</a>
+            <a href="/project">Portfolio</a>
+            <a href="/services">Services</a>
+            <a href="/gallery">Gallery</a>
+            <a href="/clients">Clients</a>
+            <a href="/news">News</a>
+            <a href="/simulasi">Simulator</a>
+            <a href="/studio">Studio</a>
+            <a href="/#contact">Contact</a><!-- /CMS:NAV:MOBILE:END -->
+            </nav>
+            <a class="btn btn-on-ink" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
+          </div>
         </header>
         <div class="back-stack">
           <div class="plinth" aria-hidden="true"></div>
@@ -141,35 +128,35 @@
           <div class="tower tower-c" aria-hidden="true"></div>
           <section class="sights-slider" aria-label="Trilux services slider">
             <div class="sights-track">
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Interior and spatial design card" data-href="simulasi">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Interior and spatial design card" data-href="services">
                 <span class="sight-kicker">Studio Discipline</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Crect x='21' y='21' width='22' height='22' transform='rotate(45 32 32)'/%3E%3C/svg%3E" alt="">
                 <h3>Interior &amp; Spatial Design</h3>
                 <p>Layouts, lighting scenarios, and material stories shaped around how you actually live.</p>
               </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Exterior facades card" data-href="#selected-work">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Exterior facades card" data-href="services">
                 <span class="sight-kicker">Street Presence</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Cpath d='M12 34L32 15l20 19M19 29v20h26V29'/%3E%3C/svg%3E" alt="">
                 <h3>Exterior Facades</h3>
                 <p>Strong lines, stone and timber cladding, and facades that age with dignity.</p>
               </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Architecture and building card" data-href="#selected-work">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Architecture and building card" data-href="services">
                 <span class="sight-kicker">Design &amp; Build</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Crect x='17' y='13' width='30' height='38'/%3E%3Cpath d='M25 22h4m6 0h4M25 31h4m6 0h4M25 40h4m6 0h4'/%3E%3C/svg%3E" alt="">
                 <h3>Architecture &amp; Building</h3>
                 <p>From permit drawings to handover — one team, one contract, one standard.</p>
               </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Renovation and retrofit card" data-href="simulasi">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Renovation and retrofit card" data-href="studio">
                 <span class="sight-kicker">Existing Homes</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Ccircle cx='32' cy='32' r='24'/%3E%3Cpath d='M41 23l-5 12-12 5 5-12z' fill='%23c08a3e' stroke='none'/%3E%3C/svg%3E" alt="">
                 <h3>Renovation &amp; Retrofit</h3>
                 <p>Careful surgery for older houses — new light, flow, and services without losing soul.</p>
               </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Consultation and estimation card" data-href="simulasi">
+              <article class="sight-card" tabindex="0" role="button" aria-label="Open Consultation and estimation card" data-href="#contact">
                 <span class="sight-kicker">Start Here</span>
                 <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Cpath d='M32 10l6 14 15 1-11 10 3 15-13-8-13 8 3-15-11-10 15-1z'/%3E%3C/svg%3E" alt="">
                 <h3>Consultation &amp; Estimation</h3>
-                <p>Budget clarity before commitment — try the online simulation or talk to us directly.</p>
+                <p>Budget clarity before commitment — explore the Studio planner or talk to us directly.</p>
               </article>
             </div>
           </section>
@@ -182,11 +169,11 @@
         <div class="shade"></div>
       </div>
 
-      <aside class="sim-cta-card" aria-label="Buka simulasi biaya">
+      <aside class="sim-cta-card" aria-label="Buka studio planner">
         <p class="sim-cta-kicker">Start Here</p>
-        <h2 class="sim-cta-title">Hitung estimasi biaya Anda</h2>
-        <p class="sim-cta-sub">Lingkup, luas, kelas material — angka kasar dalam 2 menit.</p>
-        <a class="sim-cta-btn" href="simulasi">Buka Simulasi <span aria-hidden="true">→</span></a>
+        <h2 class="sim-cta-title">Jelajahi ruang Anda</h2>
+        <p class="sim-cta-sub">Atur partisi dan furnitur dalam satuan cm — eksplorasi awal sebelum survei.</p>
+        <a class="sim-cta-btn" href="studio">Buka Studio Planner <span aria-hidden="true">→</span></a>
       </aside>
 
       <section class="intro-copy" aria-label="Trilux overview">
@@ -221,6 +208,230 @@
           <span>See the featured project</span>
         </button>
       </section>
+    </div>
+  </section>
+
+  <!-- S1.5 — About / Visi & Misi (brief v0) -->
+  <section class="sec panel-bone" id="about" aria-label="About Trilux">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">About us</p>
+        <h2 class="section-title">Experiencing Luxury, Before It's Built</h2>
+      </div>
+      <div id="aboutBlock">
+<!-- CMS:ABOUT:START -->
+
+      <div class="about-grid reveal">
+        <div>
+          <p class="about-lede">Experiencing Luxury, Before It's Built</p>
+          <p class="about-body">Trilux Design adalah studio desain interior dan arsitektur premium yang membuktikan kualitasnya lewat visualisasi imersif — klien melihat, merasakan, dan menguji setiap detail ruang sebelum satu pun material dipasang.</p>
+        </div>
+        <div>
+          <div class="vision-block">
+            <p class="vision-label">Visi</p>
+            <p class="vision-text">Menjadi studio desain interior dan arsitektur premium terdepan yang mendefinisikan ulang standar kemewahan masa depan melalui sinergi estetika minimalis dan teknologi pemodelan imersif.</p>
+          </div>
+          <ul class="mission-list">
+      <li>
+      <span class="m-num">01</span>
+      <div>
+        <h3>Experiential Design</h3>
+        <p>Menghadirkan Pengalaman Desain Imersif — memungkinkan klien melihat, merasakan, dan menguji setiap detail ruang secara presisi melalui teknologi visualisasi berbasis virtual sebelum tahap konstruksi dimulai.</p>
+      </div>
+    </li>
+      <li>
+      <span class="m-num">02</span>
+      <div>
+        <h3>Refined Luxury</h3>
+        <p>Mewujudkan Estetika Minimalis &amp; Kemewahan Abadi — menciptakan karya arsitektur dan interior yang elegan, fungsional, dan bernilai tinggi dengan pendekatan desain minimalis serta pemilihan material berkualitas mutakhir.</p>
+      </div>
+    </li>
+      <li>
+      <span class="m-num">03</span>
+      <div>
+        <h3>Built Perfection</h3>
+        <p>Menjamin Presisi dan Efisiensi Konstruksi — eksekusi lapangan menyeluruh dengan pengawasan teknis ketat untuk memastikan hasil akhir identik dengan desain digital.</p>
+      </div>
+    </li>
+          </ul>
+        </div>
+      </div><!-- /CMS:ABOUT:END -->
+    </div>
+    </div>
+  </section>
+
+  <!-- S1.6 — Our Expertise (brief v0: 4 disciplines) -->
+  <section class="sec panel-ink" id="expertise" aria-label="Our expertise">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Capabilities</p>
+        <h2 class="section-title">Our Expertise</h2>
+      </div>
+      <div class="expertise-grid reveal" id="expertiseGrid">
+<!-- CMS:EXPERTISE:START -->
+
+      <div class="expertise-cell">
+        <span class="e-num">01</span>
+        <h3>Virtual Experience &amp; 3D Walkthrough</h3>
+        <p>Eksplorasi dan rasakan skala ruang, tata cahaya, serta detail material secara imersif sebelum konstruksi dimulai.</p>
+      </div>
+      <div class="expertise-cell">
+        <span class="e-num">02</span>
+        <h3>Luxury Interior &amp; Spatial Design</h3>
+        <p>Perancangan interior minimalis kelas atas dengan proporsi presisi, pencahayaan terintegrasi, dan kurasi material premium.</p>
+      </div>
+      <div class="expertise-cell">
+        <span class="e-num">03</span>
+        <h3>Modern Architectural Planning</h3>
+        <p>Arsitektur bernilai estetika tinggi yang berfokus pada garis desain bersih, fungsi optimal, dan efisiensi struktur.</p>
+      </div>
+      <div class="expertise-cell">
+        <span class="e-num">04</span>
+        <h3>Management</h3>
+        <p>Eksekusi lapangan menyeluruh dengan pengawasan teknis ketat untuk memastikan hasil akhir identik dengan desain digital.</p>
+      </div>
+    <!-- /CMS:EXPERTISE:END -->
+    </div>
+    </div>
+  </section>
+
+  <!-- S1.7 — Services teaser (brief v0: 4 services, modern & minimal) -->
+  <section class="sec panel-bone" id="services" aria-label="Services">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">What we do</p>
+        <h2 class="section-title">Services</h2>
+        <p class="sec-sub">Interior, exterior, building systems, and manufacturing — satu tanggung jawab dari sketsa hingga serah terima.</p>
+      </div>
+      <div class="services-grid reveal" id="servicesGrid">
+<!-- CMS:SERVICES:START -->
+
+      <article class="service-card">
+        <span class="s-tag">01 — Spatial</span>
+        <h3>Interior</h3>
+        <p class="s-desc">Perancangan interior minimalis kelas atas: layout, lighting scenario, kurasi material, dan furnishing detail — dari konsep hingga specifikasi produksi.</p>
+        <ul>
+          <li>Space planning &amp; layout</li>
+          <li>Lighting &amp; material curation</li>
+          <li>Custom furniture &amp; millwork</li>
+          <li>Styling &amp; handover</li>
+        </ul>
+      </article>
+      <article class="service-card">
+        <span class="s-tag">02 — Facade</span>
+        <h3>Exterior</h3>
+        <p class="s-desc">Fasad berkarakter: komposisi material stone, timber, dan kaca yang age with dignity — kuat secara bentuk, tepat secara struktur.</p>
+        <ul>
+          <li>Facade composition</li>
+          <li>Cladding &amp; material spec</li>
+          <li>Landscape interface</li>
+          <li>Night lighting concept</li>
+        </ul>
+      </article>
+      <article class="service-card">
+        <span class="s-tag">03 — Systems</span>
+        <h3>Mechanical, Electrical, Plumbing</h3>
+        <p class="s-desc">Sistem bangunan yang bekerja diam-diam: MEP terintegrasi dengan desain, presisi spesifikasi, dan koordinasi lapangan ketat.</p>
+        <ul>
+          <li>MEP coordination</li>
+          <li>HVAC &amp; electrical layout</li>
+          <li>Plumbing &amp; drainage</li>
+          <li>Smart home readiness</li>
+        </ul>
+      </article>
+      <article class="service-card">
+        <span class="s-tag">04 — Craft</span>
+        <h3>Manufacturing</h3>
+        <p class="s-desc">Produksi elemen kustom: millwork, railing, kanopi, dan finishing brass — dikontrol dari gambar kerja hingga instalasi.</p>
+        <ul>
+          <li>Custom millwork</li>
+          <li>Metal &amp; brass works</li>
+          <li>Workshop drawings</li>
+          <li>Installation oversight</li>
+        </ul>
+      </article>
+    <!-- /CMS:SERVICES:END -->
+      <p class="sec-more reveal"><a href="/services">Semua layanan →</a></p>
+    </div>
+    </div>
+  </section>
+
+  <!-- S1.8 — Clients rail (dummy per brief) -->
+  <section class="sec panel-ink" id="clients" aria-label="Our clients">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Trusted by</p>
+        <h2 class="section-title">Our Clients</h2>
+      </div>
+      <div class="client-rail reveal" id="clientRail" aria-label="Client logo carousel">
+<!-- CMS:CLIENTS:START -->
+
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">R</span>
+        <span class="c-name">Residential — B</span>
+        <span class="c-type">Private Residence</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">R</span>
+        <span class="c-name">Residential — R</span>
+        <span class="c-type">Private Residence</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">O</span>
+        <span class="c-name">Office — J</span>
+        <span class="c-type">Corporate Office</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">R</span>
+        <span class="c-name">Retail — K</span>
+        <span class="c-type">Retail Space</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">H</span>
+        <span class="c-name">Hospitality — S</span>
+        <span class="c-type">Boutique Hotel</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">R</span>
+        <span class="c-name">Residential — M</span>
+        <span class="c-type">Private Residence</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">R</span>
+        <span class="c-name">Residential — B</span>
+        <span class="c-type">Private Residence</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">R</span>
+        <span class="c-name">Residential — R</span>
+        <span class="c-type">Private Residence</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">O</span>
+        <span class="c-name">Office — J</span>
+        <span class="c-type">Corporate Office</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">R</span>
+        <span class="c-name">Retail — K</span>
+        <span class="c-type">Retail Space</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">H</span>
+        <span class="c-name">Hospitality — S</span>
+        <span class="c-type">Boutique Hotel</span>
+      </div>
+      <div class="client-item">
+        <span class="c-mark" aria-hidden="true">R</span>
+        <span class="c-name">Residential — M</span>
+        <span class="c-type">Private Residence</span>
+      </div>
+    <!-- /CMS:CLIENTS:END -->
+      <p class="gallery-hint reveal" id="clientNote" style="margin-top:var(--sp-4)">
+<!-- CMS:CLIENTS:NOTE:START -->
+Publikasi logo klien menunggu persetujuan tertulis. Placeholder di bawah akan diganti begitu izin terbit.<!-- /CMS:CLIENTS:NOTE:END -->
+</p>
+    </div>
     </div>
   </section>
 
@@ -283,28 +494,41 @@
     </div>
   </section>
 
-  <!-- S5.5 — Simulasi pitch -->
-  <section class="sim-pitch panel-ink" id="simulasi-pitch" aria-label="Simulasi biaya">
-    <div class="wrap sim-pitch__grid">
-      <div class="reveal">
-        <p class="eyebrow">Sebelum komitmen</p>
-        <h2 class="section-title">Budget clarity, before anything else.</h2>
-        <p class="sim-pitch__sub">Simulasi online kami menghitung estimasi biaya per pekerjaan — struktur, plafond, lantai, hingga finishing — berdasarkan harga pokok Jabodetabek. Transparan, tanpa biaya tersembunyi, hasilnya langsung bisa dikirim ke tim kami.</p>
-        <div class="sim-pitch__ctas">
-          <a class="btn btn-brass" href="simulasi">Coba Simulasi Biaya <span aria-hidden="true">→</span></a>
-          <a class="btn btn-on-ink js-wa" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20konsultasi%20estimasi%20proyek." target="_blank" rel="noopener">Konsultasi via WhatsApp →</a>
-        </div>
+  <!-- S5.5 — News teaser (brief v0: artikel inspirasi desain — dummy) -->
+  <section class="sec panel-ink" id="news" aria-label="News and articles">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Journal</p>
+        <h2 class="section-title">News &amp; Articles</h2>
+        <p class="sec-sub">Artikel inspirasi desain dari tim kami — terbit di blog dan kanal sosial Trilux.</p>
       </div>
-      <div class="sim-pitch__card reveal" aria-hidden="true">
-        <p class="sim-pitch__card-kicker">05 menit · gratis</p>
-        <ul class="sim-pitch__list">
-          <li>Pilih lingkup — interior, renovasi, atau bangun baru</li>
-          <li>Atur luas area &amp; kelas material per pekerjaan</li>
-          <li>Kondisi khusus: cluster, akses, tanah, high ceiling</li>
-          <li>Dapat rentang estimasi + share biaya per pekerjaan</li>
-          <li>Kirim hasil ke WhatsApp — tim buka rincian RAB</li>
-        </ul>
-      </div>
+      <div class="news-grid reveal" id="newsGrid">
+<!-- CMS:NEWS:START -->
+
+      <article class="news-card" id="lighting-warmth-minimal">
+        <span class="n-cat">Interior</span>
+        <h3>Pencahayaan Tak Langsung: Rahasia Ruang Minimalis Terasa Hangat</h3>
+        <p>Mengapa satu garis cove lighting mengubah persepsi ruang lebih dari sekadar lampu hias — prinsip layering cahaya yang kami pakai di setiap proyek.</p>
+        <div class="n-meta"><span>2026-11-01</span><span>4 min</span></div>
+        <a class="n-link" href="/news#lighting-warmth-minimal">Baca selengkapnya <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="news-card" id="material-honesty">
+        <span class="n-cat">Material</span>
+        <h3>Material Jujur: Stone, Timber, dan Brass yang Age with Dignity</h3>
+        <p>Memilih material bukan dari tren, tapi dari bagaimana ia menua. Catatan singkat soal patina, perawatan, dan karakter ruang jangka panjang.</p>
+        <div class="n-meta"><span>2026-11-01</span><span>5 min</span></div>
+        <a class="n-link" href="/news#material-honesty">Baca selengkapnya <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="news-card" id="walkthrough-before-build">
+        <span class="n-cat">Technology</span>
+        <h3>Menguji Ruang Sebelum Dibangun</h3>
+        <p>Bagaimana walkthrough virtual menemukan masalah skala dan peredaman sejak fase desain — dan mengapa itu lebih murah daripada koreksi di lapangan.</p>
+        <div class="n-meta"><span>2026-11-01</span><span>6 min</span></div>
+        <a class="n-link" href="/news#walkthrough-before-build">Baca selengkapnya <span aria-hidden="true">→</span></a>
+      </article>
+    <!-- /CMS:NEWS:END -->
+      <p class="sec-more reveal"><a href="/news">Semua artikel →</a></p>
+    </div>
     </div>
   </section>
 
@@ -337,7 +561,7 @@
           </div>
         </dl>
         <div class="contact__ctas">
-          <a class="btn btn-on-ink" href="simulasi">Hitung Estimasi →</a>
+          <a class="btn btn-on-ink" href="/studio">Studio Planner →</a>
           <a class="btn btn-on-ink" href="mailto:triluxdesign@gmail.com">Email Us →</a>
           <a class="btn btn-on-ink js-wa" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20menanyakan%20proyek." target="_blank" rel="noopener">Whatsapp →</a>
         </div>
@@ -368,6 +592,7 @@
 </footer>
 
 <script src="assets/js/track.js" defer></script>
+<script src="assets/js/sections.js?v=2" defer></script>
 <script>
 /* CMS runtime hydration — admin edits go live without redeploy.
    Static markup above is the build-time seed; this fetch overrides it. */
@@ -402,7 +627,7 @@
     .catch(() => { /* static seed already rendered — hydration is best-effort */ });
 })();
 </script>
-<script src="assets/js/main.js?v=2"></script>
+<script src="assets/js/main.js?v=3" defer></script>
 <script src="assets/js/cinema.js?v=8" defer></script>
 </body>
 </html>

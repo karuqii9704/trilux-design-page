@@ -1,0 +1,32 @@
+[
+  {
+    "route": "/about",
+    "file": "about/index.html",
+    "title": "About — Visi & Misi"
+  },
+  {
+    "route": "/services",
+    "file": "services/index.html",
+    "title": "Services"
+  },
+  {
+    "route": "/gallery",
+    "file": "gallery/index.html",
+    "title": "Gallery — Tampak 3D"
+  },
+  {
+    "route": "/clients",
+    "file": "clients/index.html",
+    "title": "Our Clients"
+  },
+  {
+    "route": "/news",
+    "file": "news/index.html",
+    "title": "News & Articles"
+  },
+  {
+    "route": "/studio",
+    "file": "studio/index.html",
+    "title": "Studio — Floorplan Planner"
+  }
+]

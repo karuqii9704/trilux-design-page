@@ -1,0 +1,163 @@
+{
+  "nav": [
+    { "label": "About", "href": "/about" },
+    { "label": "Portfolio", "href": "/project" },
+    { "label": "Services", "href": "/services" },
+    { "label": "Gallery", "href": "/gallery" },
+    { "label": "Clients", "href": "/clients" },
+    { "label": "News", "href": "/news" },
+    { "label": "Simulator", "href": "/simulasi" },
+    { "label": "Studio", "href": "/studio" },
+    { "label": "Contact", "href": "/#contact" }
+  ],
+  "about": {
+    "eyebrow": "About us",
+    "title": "Experiencing Luxury, Before It's Built",
+    "intro": "Trilux Design adalah studio desain interior dan arsitektur premium yang membuktikan kualitasnya lewat visualisasi imersif — klien melihat, merasakan, dan menguji setiap detail ruang sebelum satu pun material dipasang.",
+    "vision": {
+      "label": "Visi",
+      "text": "Menjadi studio desain interior dan arsitektur premium terdepan yang mendefinisikan ulang standar kemewahan masa depan melalui sinergi estetika minimalis dan teknologi pemodelan imersif."
+    },
+    "missions": [
+      {
+        "title": "Experiential Design",
+        "text": "Menghadirkan Pengalaman Desain Imersif — memungkinkan klien melihat, merasakan, dan menguji setiap detail ruang secara presisi melalui teknologi visualisasi berbasis virtual sebelum tahap konstruksi dimulai."
+      },
+      {
+        "title": "Refined Luxury",
+        "text": "Mewujudkan Estetika Minimalis & Kemewahan Abadi — menciptakan karya arsitektur dan interior yang elegan, fungsional, dan bernilai tinggi dengan pendekatan desain minimalis serta pemilihan material berkualitas mutakhir."
+      },
+      {
+        "title": "Built Perfection",
+        "text": "Menjamin Presisi dan Efisiensi Konstruksi — eksekusi lapangan menyeluruh dengan pengawasan teknis ketat untuk memastikan hasil akhir identik dengan desain digital."
+      }
+    ],
+    "company": {
+      "label": "Sekilas Perusahaan",
+      "title": "About Trilux",
+      "text": "Berbasis di Jakarta, Trilux Design bergerak dari konsep hingga serah terima kunci: perencanaan arsitektur, perancangan interior, visualisasi 3D, hingga manajemen proyek. Kami merancang ruang yang tenang, presisi, dan tahan lama — tanpa janji berlebihan."
+    }
+  },
+  "expertise": [
+    {
+      "num": "01",
+      "title": "Virtual Experience & 3D Walkthrough",
+      "text": "Eksplorasi dan rasakan skala ruang, tata cahaya, serta detail material secara imersif sebelum konstruksi dimulai."
+    },
+    {
+      "num": "02",
+      "title": "Luxury Interior & Spatial Design",
+      "text": "Perancangan interior minimalis kelas atas dengan proporsi presisi, pencahayaan terintegrasi, dan kurasi material premium."
+    },
+    {
+      "num": "03",
+      "title": "Modern Architectural Planning",
+      "text": "Arsitektur bernilai estetika tinggi yang berfokus pada garis desain bersih, fungsi optimal, dan efisiensi struktur."
+    },
+    {
+      "num": "04",
+      "title": "Management",
+      "text": "Eksekusi lapangan menyeluruh dengan pengawasan teknis ketat untuk memastikan hasil akhir identik dengan desain digital."
+    }
+  ],
+  "services": [
+    {
+      "name": "Interior",
+      "tag": "01 — Spatial",
+      "desc": "Perancangan interior minimalis kelas atas: layout, lighting scenario, kurasi material, dan furnishing detail — dari konsep hingga specifikasi produksi.",
+      "points": ["Space planning & layout", "Lighting & material curation", "Custom furniture & millwork", "Styling & handover"]
+    },
+    {
+      "name": "Exterior",
+      "tag": "02 — Facade",
+      "desc": "Fasad berkarakter: komposisi material stone, timber, dan kaca yang age with dignity — kuat secara bentuk, tepat secara struktur.",
+      "points": ["Facade composition", "Cladding & material spec", "Landscape interface", "Night lighting concept"]
+    },
+    {
+      "name": "Mechanical, Electrical, Plumbing",
+      "tag": "03 — Systems",
+      "desc": "Sistem bangunan yang bekerja diam-diam: MEP terintegrasi dengan desain, presisi spesifikasi, dan koordinasi lapangan ketat.",
+      "points": ["MEP coordination", "HVAC & electrical layout", "Plumbing & drainage", "Smart home readiness"]
+    },
+    {
+      "name": "Manufacturing",
+      "tag": "04 — Craft",
+      "desc": "Produksi elemen kustom: millwork, railing, kanopi, dan finishing brass — dikontrol dari gambar kerja hingga instalasi.",
+      "points": ["Custom millwork", "Metal & brass works", "Workshop drawings", "Installation oversight"]
+    }
+  ],
+  "gallery": {
+    "note": "Katalog tampak 3D proyek — tanpa detail ukuran, material, maupun spesifikasi lain. Swipe untuk menjelajah, zoom untuk detail.",
+    "items": [
+      { "src": "assets/img/gallery/g-01.svg", "alt": "Tampak 3D eksterior rumah dua lantai fasad batu", "caption": "Exterior — Stone Facade", "kind": "3D View" },
+      { "src": "assets/img/gallery/g-02.svg", "alt": "Tampak 3D ruang tamu double height", "caption": "Interior — Double-Height Living", "kind": "3D View" },
+      { "src": "assets/img/gallery/g-03.svg", "alt": "Tampak 3D dapur dengan island dan lighting tersembunyi", "caption": "Interior — Kitchen Island", "kind": "3D View" },
+      { "src": "assets/img/gallery/g-04.svg", "alt": "Tampak 3D kamar utama dengan wardrobe custom", "caption": "Interior — Primary Suite", "kind": "3D View" },
+      { "src": "assets/img/gallery/g-05.svg", "alt": "Tampak 3D fasad malam dengan lighting warm", "caption": "Exterior — Night Facade", "kind": "3D View" },
+      { "src": "assets/img/gallery/g-06.svg", "alt": "Tampak 3D ruang makan dengan cermin dan brass", "caption": "Interior — Dining", "kind": "3D View" },
+      { "src": "assets/img/gallery/g-07.svg", "alt": "Tampak 3D kamar mandi dengan stone vanity", "caption": "Interior — Bath", "kind": "3D View" },
+      { "src": "assets/img/gallery/g-08.svg", "alt": "Tampak 3D tangga dan void dengan railing minimalis", "caption": "Interior — Stair & Void", "kind": "3D View" }
+    ]
+  },
+  "clients": {
+    "note": "Publikasi logo klien menunggu persetujuan tertulis. Placeholder di bawah akan diganti begitu izin terbit.",
+    "items": [
+      { "name": "Residential — B", "type": "Private Residence" },
+      { "name": "Residential — R", "type": "Private Residence" },
+      { "name": "Office — J", "type": "Corporate Office" },
+      { "name": "Retail — K", "type": "Retail Space" },
+      { "name": "Hospitality — S", "type": "Boutique Hotel" },
+      { "name": "Residential — M", "type": "Private Residence" }
+    ]
+  },
+  "news": {
+    "note": "Artikel inspirasi desain — terbit di blog dan kanal sosial Trilux.",
+    "items": [
+      {
+        "slug": "lighting-warmth-minimal",
+        "category": "Interior",
+        "title": "Pencahayaan Tak Langsung: Rahasia Ruang Minimalis Terasa Hangat",
+        "excerpt": "Mengapa satu garis cove lighting mengubah persepsi ruang lebih dari sekadar lampu hias — prinsip layering cahaya yang kami pakai di setiap proyek.",
+        "date": "2026-11-01",
+        "readTime": "4 min"
+      },
+      {
+        "slug": "material-honesty",
+        "category": "Material",
+        "title": "Material Jujur: Stone, Timber, dan Brass yang Age with Dignity",
+        "excerpt": "Memilih material bukan dari tren, tapi dari bagaimana ia menua. Catatan singkat soal patina, perawatan, dan karakter ruang jangka panjang.",
+        "date": "2026-11-01",
+        "readTime": "5 min"
+      },
+      {
+        "slug": "walkthrough-before-build",
+        "category": "Technology",
+        "title": "Menguji Ruang Sebelum Dibangun",
+        "excerpt": "Bagaimana walkthrough virtual menemukan masalah skala dan peredaman sejak fase desain — dan mengapa itu lebih murah daripada koreksi di lapangan.",
+        "date": "2026-11-01",
+        "readTime": "6 min"
+      }
+    ]
+  },
+  "studio": {
+    "note": "Eksplorasi ruang interaktif — dummy. Akun dan fitur kolaborasi belum tersedia.",
+    "room": { "label": "Ruang Tamu", "w": 600, "d": 420, "unit": "cm" },
+    "partitions": [
+      { "id": "p1", "orientation": "vertical", "x": 380, "from": 0, "to": 240, "label": "Partisi A" }
+    ],
+    "furniture": [
+      { "id": "sofa", "label": "Sofa 3-seater", "w": 220, "d": 90, "x": 80, "y": 60 },
+      { "id": "table", "label": "Meja TV", "w": 180, "d": 45, "x": 80, "y": 300 },
+      { "id": "cabinet", "label": "Kabinet", "w": 120, "d": 45, "x": 480, "y": 120 }
+    ]
+  },
+  "site": {
+    "phone": "0822 8734 8422",
+    "phoneHref": "tel:+6282287348422",
+    "email": "triluxdesign@gmail.com",
+    "instagram": "@trilux_design",
+    "instagramUrl": "https://instagram.com/trilux_design",
+    "wa": "https://wa.me/6282287348422",
+    "location": "Jakarta, Indonesia"
+  }
+}

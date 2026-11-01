@@ -95,6 +95,7 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
     <div class="tabs" role="tablist" aria-label="Panel admin">
       <button class="tab" role="tab" id="tabStats" aria-selected="true" aria-controls="statsPanel">📊 Monitoring</button>
       <button class="tab" role="tab" id="tabCms" aria-selected="false" aria-controls="cmsPanel">✎ Kelola Konten</button>
+      <button class="tab" role="tab" id="tabContent" aria-selected="false" aria-controls="contentPanel">🧩 Content JSON</button>
       <button class="tab" role="tab" id="tabLeads" aria-selected="false" aria-controls="leadsPanel">✉ Leads</button>
     </div>
 
@@ -182,6 +183,27 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
       </div>
     </section>
 
+    <!-- CONTENT JSON PANEL -->
+    <section id="contentPanel" role="tabpanel" aria-labelledby="tabContent" class="hidden">
+      <div class="card">
+        <div class="panel-title">Content JSON — nav, about, expertise, services, gallery, clients, news, studio, site</div>
+        <p class="refresh-note" style="margin-bottom:var(--sp-4)">
+          Satu sumber data untuk semua halaman baru brief v0 (<code>/about /services /gallery /clients /news /studio</code>).
+          Load mengambil versi live (Blob bila tersedia), Save menulis ke Blob + lokal.
+          <strong>Landing hydrate otomatis</strong> via <code>/api/content</code>.
+          Sub-page static perlu rebuild: jalankan <code>node scripts/build-pages.mjs</code> lalu redeploy (atau pakai Watermelon MCP bila tersedia).
+        </p>
+        <textarea class="txt" id="contentJson" style="min-height:420px;font-size:var(--body-s);font-family:ui-monospace,Menlo,Consolas,monospace" spellcheck="false" aria-label="Content JSON"></textarea>
+        <div class="save-row" style="margin-top:var(--sp-4)">
+          <button class="btn btn-sm" id="contentLoad" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff">Muat Live</button>
+          <button class="btn btn-sm" id="contentSave" style="background:var(--brass-700);border-color:var(--brass-700);color:#fff">Simpan</button>
+          <button class="btn btn-sm" id="contentFormat">Format</button>
+          <span class="status" id="contentStatus" role="status"></span>
+        </div>
+        <p class="refresh-note" style="margin-top:var(--sp-4)" id="contentMeta"></p>
+      </div>
+    </section>
+
     <!-- LEADS PANEL -->
     <section id="leadsPanel" role="tabpanel" aria-labelledby="tabLeads" class="hidden">
       <div class="card">
@@ -242,17 +264,76 @@ textarea.txt { min-height: 110px; padding: var(--sp-3) var(--sp-4); line-height:
 
   /* ---- tabs ---- */
   function tab(name) {
-    ["stats", "cms", "leads"].forEach((n) => {
+    ["stats", "cms", "content", "leads"].forEach((n) => {
       $("tab" + n[0].toUpperCase() + n.slice(1)).setAttribute("aria-selected", String(name === n));
     });
     $("statsPanel").classList.toggle("hidden", name !== "stats");
     $("cmsPanel").classList.toggle("hidden", name !== "cms");
+    $("contentPanel").classList.toggle("hidden", name !== "content");
     $("leadsPanel").classList.toggle("hidden", name !== "leads");
     history.replaceState(null, "", "#" + name);
   }
   $("tabStats").addEventListener("click", () => tab("stats"));
   $("tabCms").addEventListener("click", () => tab("cms"));
+  $("tabContent").addEventListener("click", () => { tab("content"); if (!$("contentJson").value.trim()) loadContent(); });
   $("tabLeads").addEventListener("click", () => { tab("leads"); loadLeads(); });
+
+  /* ---- content.json editor (brief v0 sections) ---- */
+  async function loadContent() {
+    const st = $("contentStatus");
+    st.textContent = "Memuat…";
+    try {
+      const r = await fetch("/api/content");
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const liveContent = await r.json();
+      $("contentJson").value = JSON.stringify(liveContent, null, 2);
+      const meta = [];
+      if (liveContent.nav) meta.push("nav:" + liveContent.nav.length);
+      if (liveContent.expertise) meta.push("expertise:" + liveContent.expertise.length);
+      if (liveContent.services) meta.push("services:" + liveContent.services.length);
+      if (liveContent.gallery?.items) meta.push("gallery:" + liveContent.gallery.items.length);
+      if (liveContent.news?.items) meta.push("news:" + liveContent.news.items.length);
+      if (liveContent.studio?.furniture) meta.push("furniture:" + liveContent.studio.furniture.length);
+      $("contentMeta").textContent = "Terakhir dimuat: " + new Date().toLocaleString("id-ID") + " · " + meta.join(" · ");
+      st.textContent = "✅ Loaded.";
+    } catch (e) {
+      st.textContent = "⚠ Gagal muat: " + e.message;
+    }
+  }
+  $("contentLoad").addEventListener("click", loadContent);
+  $("contentFormat").addEventListener("click", () => {
+    try {
+      $("contentJson").value = JSON.stringify(JSON.parse($("contentJson").value), null, 2);
+      $("contentStatus").textContent = "✅ Formatted.";
+    } catch (e) {
+      $("contentStatus").textContent = "⚠ JSON tidak valid: " + e.message;
+    }
+  });
+  $("contentSave").addEventListener("click", async () => {
+    const st = $("contentStatus");
+    let parsed;
+    try { parsed = JSON.parse($("contentJson").value); }
+    catch (e) { st.textContent = "⚠ JSON tidak valid: " + e.message; return; }
+    st.textContent = "Menyimpan…";
+    try {
+      const r = await fetch("/api/content", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({ content: parsed }),
+      });
+      const j = await r.json();
+      if (r.ok && j.ok) {
+        st.textContent = j.saved === "blob"
+          ? "✅ Tersimpan ke Blob — landing hydrate otomatis. Sub-page static: rebuild + redeploy."
+          : "⚠ Tersimpan sementara (" + j.saved + ") — set BLOB_READ_WRITE_TOKEN agar permanen.";
+        $("contentMeta").textContent = "Disimpan: " + new Date().toLocaleString("id-ID");
+      } else {
+        st.textContent = "⚠ Gagal: " + (j.error || r.status);
+      }
+    } catch (e) {
+      st.textContent = "⚠ Error jaringan: " + e.message;
+    }
+  });
 
   /* ---- stats ---- */
   async function loadStats() {
