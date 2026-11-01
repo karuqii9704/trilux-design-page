@@ -175,9 +175,12 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
 
 .section-title {
   font-size: var(--display-l);
-  line-height: 1.05;
+  line-height: 1.12;
   letter-spacing: -0.015em;
   max-width: 20ch;
+  /* Fraunces glyph clearance: ascender/descender must not be clipped */
+  padding-top: 0.06em;
+  padding-bottom: 0.08em;
 }
 
 .hairline { border: none; border-top: 1px solid var(--rule-on-bone); margin: 0; }
