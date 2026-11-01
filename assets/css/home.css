@@ -8,6 +8,7 @@ figure{ margin: 0; }
 
 /* home page sits on ink from the very top */
 body{ background: var(--ink-900); color: var(--text-on-ink); }
+html{ background: var(--ink-900); } /* isi gutter scrollbar Windows — html transparan → strip putih di tepi kanan */
 
 /* body scroll lock while drawer/lightbox open (JS toggles class) */
 html.wm-menu-open, body.wm-menu-open{ overflow: hidden; }

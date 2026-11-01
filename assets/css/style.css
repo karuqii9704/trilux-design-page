@@ -101,7 +101,7 @@
    ========================================================================== */
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; background: var(--bone-100); } /* isi gutter scrollbar Windows — html transparan → strip putih di tepi kanan (home override ke ink via home.css) */
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
