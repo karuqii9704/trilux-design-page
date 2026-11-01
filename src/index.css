@@ -1,0 +1,34 @@
+/* Tailwind v4 (via @tailwindcss/vite).
+   Geist = primary typeface (loaded di index.html). Murni hitam/putih —
+   tidak ada purple/cream/dark mode. Aksen brass Trilux hanya sebagai
+   detail kecil (logo mark) — halaman tetap hitam/putih. */
+@import "tailwindcss";
+
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  background: #ffffff; /* isi gutter scrollbar Windows — html transparan → strip putih */
+}
+
+body {
+  font-family: "Geist", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* scroll lock saat drawer menu terbuka (Navbar toggle class ini) */
+html.trilux-menu-open,
+body.trilux-menu-open {
+  overflow: hidden;
+}
+
+/* reduced motion: matikan transisi panjang */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

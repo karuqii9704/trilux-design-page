@@ -1,14 +1,8 @@
 {
   "nav": [
-    { "label": "About", "href": "/about" },
-    { "label": "Portfolio", "href": "/project" },
-    { "label": "Services", "href": "/services" },
-    { "label": "Gallery", "href": "/gallery" },
-    { "label": "Clients", "href": "/clients" },
-    { "label": "News", "href": "/news" },
-    { "label": "Simulator", "href": "/simulasi" },
-    { "label": "Studio", "href": "/studio" },
-    { "label": "Contact", "href": "/#contact" }
+    { "label": "Work", "href": "#work" },
+    { "label": "About", "href": "#about" },
+    { "label": "Contact", "href": "#contact" }
   ],
   "about": {
     "eyebrow": "About us",
@@ -155,7 +149,7 @@
     "title": "Trilux Design — Interior, Exterior & Architecture",
     "description": "Trilux Design — studio desain interior dan arsitektur premium. Experiencing luxury before it's built: visualisasi imersif, presisi, dan kemewahan minimalis.",
     "phone": "0822 8734 8422",
-    "phoneHref": "tel:+628****8422",
+    "phoneHref": "tel:+6282287348422",
     "email": "triluxdesign@gmail.com",
     "instagram": "@trilux_design",
     "instagramUrl": "https://instagram.com/trilux_design",
