@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 /* Generate the new Trilux home (index.html + assets/css/home.css) from scratch.
 
-   Design language: Watermelon UI patterns (full-screen drawer w/ stagger physics,
-   drag-enabled marquee with curved masks, feature/bento grids, minimal footer)
-   adapted to vanilla JS + Trilux PRD §6 tokens (Fraunces display / Archivo body,
-   ink/bone/brass, hairline rules, radius-none, no shadows on public pages).
+   Design language: hero + navbar per RIVR glassmorphism template (floating rounded
+   panel, in-panel nav that pins fixed on scroll, centered badge/h1/sub, glass stat
+   card bottom-left, cutout corner card bottom-right) × Watermelon UI patterns for
+   the rest (full-screen drawer w/ stagger physics, drag-enabled marquee with
+   curved masks, feature/bento grids, minimal footer) — all vanilla JS + Trilux
+   PRD §6 tokens (Fraunces display / Archivo body, ink/bone/brass, hairline rules,
+   radius-none, no shadows on public pages).
 
-   Stage = SHAPES-BASED only (no photo layers — standing user call).
+   Stage = SHAPES-BASED only (no photo/video layers — standing user call; the
+   template's video background is replaced by the SVG cinema rig).
    Gallery strip = the 8 shapes-based SVG placeholders (brief: "gambar mostly dummy").
    Content seeded at build time from data/content.json (CMS single source of truth).
 */
@@ -69,9 +73,19 @@ const missions = about.missions.map((m, i) => `      <div class="wm-mission reve
       </div>`).join("\n");
 
 const navLinks = nav.map((n, i) => `        <a class="wm-menu__link" href="${attr(n.href)}"><small>${String(i + 1).padStart(2, "0")}</small>${esc(n.label)}</a>`).join("\n");
+/* center navbar menu (RIVR template) — same CMS source, no numbers */
+const navMenuLinks = nav.map((n) => `    <li><a href="${attr(n.href)}">${esc(n.label)}</a></li>`).join("\n");
+
+/* ---------- hero stat card — figures stay honest (brief: dummy stated explicitly) ---------- */
+const projectsData = JSON.parse(fs.readFileSync(path.join(root, "data/projects.json"), "utf8"));
+const projectCount = (projectsData.projects ? projectsData.projects.length : 0) + 1; // + featured
+const stats = {
+  projects: projectCount,             // real count from projects.json (featured + list) — no inflation
+  disciplines: content.services.length, // Interior / Exterior / MEP / Manufacturing
+};
 
 /* ---------- CSS ---------- */
-const CSS = `/* Trilux home — Watermelon-UI patterns × PRD §6 tokens.
+const CSS = `/* Trilux home — Watermelon-UI patterns × RIVR glass hero × PRD §6 tokens.
    Global reset/tokens/reveal live in style.css (loaded first). */
 
 :root{ --ease-out-expo: cubic-bezier(0.16,1,0.3,1); }
@@ -79,37 +93,59 @@ const CSS = `/* Trilux home — Watermelon-UI patterns × PRD §6 tokens.
 /* figure margin reset (figure dipakai untuk hero panel) */
 figure{ margin: 0; }
 
-/* home page sits on ink from the very top */
-body{ background: var(--ink-900); color: var(--text-on-ink); }
-html{ background: var(--ink-900); } /* isi gutter scrollbar Windows — html transparan → strip putih di tepi kanan */
+/* page sits on bone (template: light page · dark floating glass panel) */
+body{ background: var(--bone-100); color: var(--text-on-bone); }
+html{ background: var(--bone-100); } /* isi gutter scrollbar Windows — html transparan → strip putih di tepi kanan */
+/* sections below the hero are ink/bone alternations; text colors set per-section */
+main{ display: block; }
 
 /* body scroll lock while drawer/lightbox open (JS toggles class) */
 html.wm-menu-open, body.wm-menu-open{ overflow: hidden; }
 
-/* ---------- fixed navbar (Watermelon pattern) ---------- */
-/* Always carries a scrim so wordmark/burger/CTA stay legible over the hero panel. */
-.wm-nav{ position: fixed; inset: 0 0 auto 0; z-index: 50;
+/* ---------- navbar — RIVR template: in-panel at top · pins fixed w/ scrim on scroll ---------- */
+.wm-nav{ position: absolute; inset: 0 0 auto 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 clamp(1rem,2.5vw,2.5rem); height: 4.5rem;
-  background: linear-gradient(rgba(20,16,16,.72), rgba(20,16,16,0));
-  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
-  border-bottom: 1px solid transparent;
-  transition: background .4s var(--ease-out-expo), border-color .4s; }
-.wm-nav.is-scrolled{ background: rgba(20,16,16,.88); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom-color: var(--rule-on-ink); }
-.wm-nav__brand{ display: flex; align-items: center; gap: .6rem; height: 100%;
+  padding: 1.5rem 1.5rem; }
+.wm-nav.is-scrolled{ position: fixed; top: 0; left: 0; right: 0;
+  padding-left: clamp(1rem,2.5vw,2.5rem); padding-right: clamp(1rem,2.5vw,2.5rem);
+  background: linear-gradient(rgba(20,16,16,.85), rgba(20,16,16,.55));
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--rule-on-ink); }
+.wm-nav__brand{ display: flex; align-items: center; gap: .6rem;
   font-family: var(--font-display); font-size: 1.15rem; letter-spacing: .02em; color: var(--text-on-ink); }
 .wm-nav__brand em{ font-style: normal; color: var(--brass-500); }
 .wm-nav__brand svg{ display: block; }
-.wm-nav__center{ position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); }
+@media (max-width: 1023px){
+  .wm-nav__brand{ position: absolute; left: 50%; transform: translateX(-50%); }
+}
+/* center menu — desktop only (9 items need the width; below 1024 the drawer takes over) */
+.wm-nav__menu{ position: absolute; left: 50%; transform: translateX(-50%);
+  display: none; align-items: center; gap: clamp(1rem, 1.8vw, 2rem);
+  list-style: none; margin: 0; padding: 0; }
+@media (min-width: 1024px){ .wm-nav__menu{ display: flex; } }
+.wm-nav__menu a{ font-size: var(--body-m); color: var(--text-on-ink); opacity: .85;
+  white-space: nowrap; transition: opacity .3s; }
+.wm-nav__menu a:hover{ opacity: .55; }
 .wm-burger{ display: flex; flex-direction: column; gap: 5px; padding: .75rem; z-index: 90; position: relative; }
 .wm-burger span{ display: block; width: 1.5rem; height: 1.5px; background: var(--text-on-ink);
   border-radius: 999px; transition: width .3s var(--ease-out-expo); }
 .wm-burger:hover span{ width: 1.25rem; }
-.wm-nav__cta{ font-size: var(--label); letter-spacing: .18em; text-transform: uppercase;
-  color: var(--text-on-ink); border: 1px solid var(--rule-on-ink); border-radius: 999px;
-  padding: .55rem 1.25rem; transition: background .3s, color .3s, border-color .3s; }
-.wm-nav__cta:hover{ background: var(--text-on-ink); color: var(--ink-900); border-color: var(--text-on-ink); }
-@media (max-width: 860px){ .wm-nav__cta{ display: none; } }
+@media (min-width: 1024px){ .wm-burger{ display: none; } }
+/* CTA pill — template "Book Demo" button, brass on dark */
+.wm-nav__cta{ display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--brass-500); color: var(--ink-900); border-radius: 999px;
+  padding: .35rem .8rem .35rem .35rem; font-size: var(--body-s);
+  transition: background .3s, transform .3s var(--ease-out-expo); }
+.wm-nav__cta:hover{ background: var(--brass-300); transform: scale(1.02); }
+.wm-nav__cta .wm-cta-ic{ display: flex; align-items: center; justify-content: center;
+  width: 1.5rem; height: 1.5rem; border-radius: 999px; background: rgba(20,16,16,.15); flex: 0 0 auto; }
+.wm-nav__cta svg{ width: .9rem; height: .9rem; }
+@media (min-width: 1024px){
+  .wm-nav{ padding: 1.5rem 2.5rem; }
+  .wm-nav__cta{ padding: .45rem 1.3rem .45rem .45rem; font-size: var(--body-m); gap: .65rem; }
+  .wm-nav__cta .wm-cta-ic{ width: 1.7rem; height: 1.7rem; }
+  .wm-nav__cta svg{ width: 1.05rem; height: 1.05rem; }
+}
 
 /* ---------- full-screen menu (drawer physics) ---------- */
 .wm-overlay{ position: fixed; inset: 0; z-index: 60; background: rgba(10,8,7,.55);
@@ -161,45 +197,113 @@ html.wm-menu-open, body.wm-menu-open{ overflow: hidden; }
   display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
   font-size: var(--body-s); color: var(--text-on-ink-muted); }
 
-/* ---------- hero — split composition: calm copy left · framed shapes panel right ---------- */
-.wm-hero{ position: relative; min-height: 100svh; display: flex; flex-direction: column;
-  justify-content: center; padding: 7.5rem clamp(1rem,4vw,4rem) clamp(3rem,6vw,5rem); }
+/* ---------- hero — RIVR template glass panel: floating rounded frame, shapes stage, centered copy ---------- */
+.wm-hero{ position: relative; margin: clamp(.5rem,1.5vw,1.25rem); height: calc(100svh - 2 * clamp(.5rem,1.5vw,1.25rem));
+  border-radius: clamp(1.25rem, 2.5vw, 2.5rem); overflow: hidden;
+  background: var(--ink-900); }
+.wm-hero__stage{ position: absolute; inset: 0; z-index: 0; }
+.wm-hero__stage svg{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.wm-hero__scrim{ position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(20,16,16,.55) 0%, rgba(20,16,16,.22) 26%, rgba(20,16,16,.16) 52%, rgba(20,16,16,.38) 78%, rgba(20,16,16,.88) 100%); }
 .wm-hero__inner{ position: relative; z-index: 2; max-width: var(--content-max); margin: 0 auto; width: 100%;
-  display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem,5vw,5rem);
-  align-items: center; }
-.wm-hero__copy{ grid-column: 1; }
-.wm-hero__panel{ grid-column: 2; position: relative;
-  border: 1px solid var(--rule-on-ink); border-radius: 2px;
-  aspect-ratio: 4 / 5; max-height: min(68vh, 44rem); width: 100%;
-  overflow: hidden; background: linear-gradient(160deg, #241c18, #141010); }
-.wm-hero__panel svg{ position: absolute; inset: 0; width: 100%; height: 100%; }
-.wm-hero__panel figcaption{ position: absolute; left: 1rem; bottom: .9rem;
-  font-size: var(--label); letter-spacing: .18em; text-transform: uppercase;
-  color: var(--text-on-ink-muted); display: flex; gap: .5rem; align-items: center; }
-.wm-hero__panel figcaption::before{ content: ""; width: .4rem; height: .4rem; background: var(--brass-500); border-radius: 50%; }
-.wm-eyebrow{ font-size: var(--eyebrow); letter-spacing: .14em; text-transform: uppercase;
-  color: var(--brass-500); display: flex; align-items: center; gap: .75rem; }
-.wm-eyebrow::before{ content: ""; width: 2.5rem; height: 1px; background: var(--brass-500); }
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 7.5rem clamp(1rem,4vw,4rem) 9rem; }
+.wm-badge{ display: inline-flex; align-items: center; gap: .55rem;
+  padding: .55rem 1.15rem; border-radius: 999px;
+  background: rgba(242,237,228,.08); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border: 1px solid rgba(242,237,228,.16);
+  font-size: var(--body-s); letter-spacing: .02em; color: var(--text-on-ink);
+  animation: wm-rise .8s var(--ease-out-expo) .05s both; }
+.wm-badge svg{ width: .95rem; height: .95rem; color: var(--brass-300); flex: 0 0 auto; }
 .wm-hero h1{ font-family: var(--font-display); font-weight: 400;
-  font-size: var(--display-xl); line-height: 1.02; letter-spacing: -.02em;
-  margin: 1.25rem 0 1.5rem; max-width: 12ch; padding-top: .08em; padding-bottom: .12em; }
+  font-size: clamp(2.6rem, min(6.2vw, 10.5vh), 5.4rem); line-height: 1.02; letter-spacing: -.02em;
+  margin: 1.4rem 0 1.2rem; max-width: 16ch; padding-top: .08em; padding-bottom: .12em;
+  animation: wm-rise .8s var(--ease-out-expo) .2s both; }
 .wm-hero h1 em{ font-style: italic; color: var(--brass-300); }
-.wm-hero__sub{ max-width: 46ch; color: var(--text-on-ink-muted); font-size: var(--body-l); }
-.wm-hero__row{ display: flex; align-items: flex-end; justify-content: flex-start;
-  gap: 2.5rem; flex-wrap: wrap; margin-top: 3rem; }
-.wm-scrollcue{ display: flex; align-items: center; gap: .75rem; font-size: var(--label);
-  letter-spacing: .18em; text-transform: uppercase; color: var(--text-on-ink-muted); }
-.wm-scrollcue i{ position: relative; width: 1px; height: 2.5rem; background: var(--rule-on-ink); overflow: hidden; }
-.wm-scrollcue i::after{ content: ""; position: absolute; left: 0; top: -100%; width: 100%; height: 100%;
-  background: var(--brass-500); animation: wm-cue 2.2s var(--ease-out-expo) infinite; }
-@keyframes wm-cue{ 0%{ top: -100%; } 55%{ top: 100%; } 100%{ top: 100%; } }
+.wm-hero__sub{ max-width: 52ch; color: var(--text-on-ink-muted); font-size: var(--body-l);
+  line-height: 1.75; opacity: .82; animation: wm-rise .8s var(--ease-out-expo) .4s both; }
+.wm-hero__cta{ display: flex; align-items: center; justify-content: center; gap: 1rem;
+  flex-wrap: wrap; margin-top: 2rem; animation: wm-rise .8s var(--ease-out-expo) .55s both; }
+@keyframes wm-rise{ from{ opacity: 0; transform: translateY(18px); } to{ opacity: 1; transform: none; } }
+/* glass stat card — bottom-left, template BottomLeftCard */
+.wm-hero__meta{ position: absolute; z-index: 2; left: clamp(1rem,2.5vw,2.5rem); bottom: clamp(1.5rem,4vw,3.5rem);
+  display: flex; flex-direction: row; gap: .8rem;
+  animation: wm-rise .8s var(--ease-out-expo) .7s both; }
+.wm-stat{ display: flex; flex-direction: column; gap: .3rem; text-align: left;
+  padding: clamp(.8rem,1.4vw,1.1rem) clamp(1rem,1.6vw,1.4rem); border-radius: 1.35rem;
+  background: rgba(242,237,228,.07); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  border: 1px solid rgba(242,237,228,.14); min-width: 8.5rem; }
+.wm-stat b{ font-family: var(--font-display); font-weight: 400; font-size: clamp(1.35rem,1.9vw,1.65rem);
+  color: var(--text-on-ink); letter-spacing: -.01em; line-height: 1.1; padding-top: .04em; }
+.wm-stat span{ font-size: var(--label); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-on-ink-muted); }
+/* cutout corner card — bottom-right, template BottomRightCorner (bone chip over ink panel,
+   two SVG intersection masks close the rounded seams) */
+.wm-corner{ position: absolute; z-index: 2; right: 0; bottom: 0; display: flex; align-items: center;
+  gap: clamp(.9rem,1.6vw,1.5rem);
+  padding: clamp(.9rem,1.8vw,1.4rem) clamp(1.1rem,2.2vw,1.8rem) clamp(.9rem,1.8vw,1.4rem) clamp(2.2rem,4.5vw,3.5rem);
+  background: var(--bone-100); color: var(--text-on-bone);
+  border-radius: 1.75rem 0 0 0; animation: wm-rise .8s var(--ease-out-expo) .85s both; }
+.wm-corner__mask-t, .wm-corner__mask-l{ position: absolute; background: var(--bone-100); pointer-events: none; }
+.wm-corner__mask-t{ top: -1.75rem; right: 0; width: 1.75rem; height: 1.75rem; }
+.wm-corner__mask-l{ bottom: 0; left: -1.75rem; width: 1.75rem; height: 1.75rem; }
+.wm-corner__mask-t svg, .wm-corner__mask-l svg{ width: 100%; height: 100%; display: block; }
+.wm-corner__icon{ display: flex; align-items: center; justify-content: center;
+  width: 2.6rem; height: 2.6rem; border-radius: 999px; flex: 0 0 auto;
+  background: rgba(20,16,16,.05); border: 1px solid rgba(20,16,16,.12); color: rgba(20,16,16,.85); }
+.wm-corner__icon svg{ width: 1.15rem; height: 1.15rem; }
+.wm-corner b{ display: block; font-family: var(--font-display); font-weight: 400;
+  font-size: 1.05rem; color: rgba(20,16,16,.95); letter-spacing: -.01em; line-height: 1.25; }
+.wm-corner small{ display: flex; align-items: center; gap: .3rem;
+  font-size: var(--body-s); color: rgba(20,16,16,.6); margin-top: .15rem; }
+.wm-corner small svg{ width: .8rem; height: .8rem; }
 @media (max-width: 860px){
-  .wm-hero{ justify-content: flex-start; padding-top: 6.5rem; }
-  .wm-hero__inner{ display: block; }
-  .wm-hero__copy{ margin-bottom: 2.5rem; }
-  .wm-hero__panel{ max-height: 46vh; aspect-ratio: 1 / 1; width: 100%; }
-  .wm-hero h1{ font-size: clamp(3rem, 13vw, 5rem); }
+  .wm-hero__inner{ padding: 7rem 1.25rem 13.5rem; }
+  .wm-hero h1{ font-size: clamp(2.35rem, 10.5vw, 3rem); margin: 1.2rem 0 1.1rem; }
   .wm-hero__sub{ font-size: var(--body-m); }
+  .wm-hero__cta{ gap: .75rem; margin-top: 1.8rem; }
+  .wm-hero__cta a{ padding: .7rem 1.4rem; font-size: var(--body-s); }
+  /* compact right-aligned stat pair in one row above the corner card (template mobile layout) */
+  .wm-hero__meta{ left: auto; right: 1.25rem; bottom: 6.5rem; flex-direction: row; gap: .5rem; align-items: stretch; }
+  .wm-stat{ min-width: 0; padding: .55rem .75rem; }
+  .wm-stat b{ font-size: 1.05rem; }
+  .wm-stat span{ font-size: .55rem; letter-spacing: .1em; }
+  .wm-corner{ border-radius: 1.25rem 0 0 0; }
+  .wm-corner__mask-t{ top: -1.25rem; width: 1.25rem; height: 1.25rem; }
+  .wm-corner__mask-l{ left: -1.25rem; width: 1.25rem; height: 1.25rem; }
+  .wm-corner b{ font-size: .92rem; }
+  .wm-corner small{ display: none; }
+}
+/* short viewports — compress so centered copy never invades the bottom cards */
+@media (max-height: 780px) and (min-width: 861px){
+  .wm-hero__inner{ padding-top: 5rem; padding-bottom: 7.5rem; }
+  .wm-badge{ padding: .4rem .95rem; }
+  .wm-hero h1{ font-size: clamp(2.4rem, min(6vw, 9.5vh), 4.6rem); margin: .9rem 0 .8rem; }
+  .wm-hero__sub{ max-width: 40ch; font-size: var(--body-m); line-height: 1.55; }
+  .wm-hero__cta{ margin-top: 1.4rem; }
+  .wm-hero__cta a{ padding: .7rem 1.5rem; }
+  .wm-hero__meta{ bottom: 1.75rem; }
+  .wm-corner{ padding-top: .7rem; padding-bottom: .7rem; }
+}
+/* very short viewports (small phones landscape / SE) — aggressive compression */
+@media (max-height: 700px){
+  .wm-hero__inner{ padding-top: 5.5rem; padding-bottom: 9rem; }
+  .wm-badge{ padding: .35rem .85rem; font-size: .68rem; }
+  .wm-hero h1{ font-size: clamp(1.9rem, 7.5vw, 2.6rem); margin: .9rem 0 .8rem; }
+  .wm-hero__sub{ font-size: .8rem; line-height: 1.55; }
+  .wm-hero__cta{ margin-top: 1.3rem; gap: .6rem; }
+  .wm-hero__cta a{ padding: .55rem 1.1rem; font-size: .72rem; }
+  .wm-hero__meta{ bottom: 5.5rem; gap: .4rem; }
+  .wm-stat{ padding: .45rem .6rem; border-radius: 1rem; }
+  .wm-stat b{ font-size: .95rem; }
+  .wm-stat span{ font-size: .5rem; }
+  .wm-corner{ padding: .6rem .9rem .6rem 1.6rem; border-radius: 1rem 0 0 0; }
+  .wm-corner__mask-t{ top: -1rem; width: 1rem; height: 1rem; }
+  .wm-corner__mask-l{ left: -1rem; width: 1rem; height: 1rem; }
+  .wm-corner__icon{ width: 2rem; height: 2rem; }
+  .wm-corner__icon svg{ width: .9rem; height: .9rem; }
+  .wm-corner b{ font-size: .8rem; }
 }
 .wm-btn-outline{ border: 1px solid var(--rule-on-ink); border-radius: 999px;
   padding: .8rem 1.75rem; font-size: var(--body-s); letter-spacing: .08em;
@@ -391,7 +495,8 @@ html.wm-menu-open, body.wm-menu-open{ overflow: hidden; }
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce){
   .wm-clients__track{ animation: none; }
-  .wm-scrollcue i::after{ animation: none; }
+  .wm-badge, .wm-hero h1, .wm-hero__sub, .wm-hero__cta,
+  .wm-hero__meta, .wm-corner{ animation: none; }
 }
 `;
 
@@ -411,18 +516,22 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
 
-<!-- ══════════ FIXED NAVBAR (Watermelon pattern) ══════════ -->
+<!-- ══════════ NAVBAR — RIVR template: in-panel at top · pins fixed w/ scrim on scroll ══════════ -->
 <header class="wm-nav" id="wmNav">
   <a class="wm-nav__brand" href="#top" aria-label="Trilux Design — home">
     <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26V6h20v4H12v6h14v4H12v6z" fill="var(--brass-500)"/></svg>
     Trilux<em>&nbsp;Design</em>
   </a>
-  <div class="wm-nav__center">
-    <button class="wm-burger" id="wmBurger" aria-label="Open menu" aria-expanded="false" aria-controls="wmDrawer">
-      <span></span><span></span>
-    </button>
-  </div>
-  <a class="wm-nav__cta" href="#contact">Book a meeting</a>
+  <ul class="wm-nav__menu">
+${navMenuLinks}
+  </ul>
+  <a class="wm-nav__cta" href="${attr(site.wa)}" target="_blank" rel="noopener">
+    <span class="wm-cta-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+    Book a meeting
+  </a>
+  <button class="wm-burger" id="wmBurger" aria-label="Open menu" aria-expanded="false" aria-controls="wmDrawer">
+    <span></span><span></span>
+  </button>
 </header>
 
 <!-- ══════════ FULL-SCREEN MENU (drawer physics) ══════════ -->
@@ -443,23 +552,32 @@ ${navLinks}
 
 <main id="top">
 
-  <!-- ══════════ HERO — split composition: calm copy left · framed shapes panel right ══════════ -->
+  <!-- ══════════ HERO — RIVR template glass panel: shapes stage, centered badge/h1/sub, glass stat card BL, cutout corner card BR ══════════ -->
   <section class="wm-hero" id="hero" aria-label="Trilux Design — hero">
+    <div class="wm-hero__stage" id="wmStage" aria-hidden="true"></div>
+    <div class="wm-hero__scrim" aria-hidden="true"></div>
     <div class="wm-hero__inner">
-      <div class="wm-hero__copy">
-        <p class="wm-eyebrow reveal">— Portfolio + Interior Design &amp; Architecture</p>
-        <h1 class="reveal">Trilux<br><em>Design</em></h1>
-        <p class="wm-hero__sub reveal"><strong style="font-weight:500;color:var(--text-on-ink)">${esc(about.title)}.</strong><br>${esc(about.intro)}</p>
-        <div class="wm-hero__row reveal">
-          <div class="wm-scrollcue"><i aria-hidden="true"></i><span>Scroll to explore</span></div>
-          <a class="wm-btn-outline" href="/project">View Project →</a>
-        </div>
+      <p class="wm-badge reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z"/></svg>
+        Interior · Exterior · Architecture
+      </p>
+      <h1 class="reveal">Experiencing Luxury, <em>Before It&rsquo;s Built.</em></h1>
+      <p class="wm-hero__sub reveal">${esc(about.intro)}</p>
+      <div class="wm-hero__cta reveal">
+        <a class="wm-btn-solid" href="#contact">Book a meeting</a>
+        <a class="wm-btn-outline" href="/project">View Project →</a>
       </div>
-      <figure class="wm-hero__panel reveal">
-        <div id="wmStage" aria-hidden="true"></div>
-        <figcaption>Atelier massing study — 1:200</figcaption>
-      </figure>
     </div>
+    <div class="wm-hero__meta reveal">
+      <div class="wm-stat"><b>${stats.projects}+</b><span>Projects delivered</span></div>
+      <div class="wm-stat"><b>${stats.disciplines}</b><span>Disciplines in-house</span></div>
+    </div>
+    <a class="wm-corner reveal" href="/studio">
+      <span class="wm-corner__mask-t" aria-hidden="true"><svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="var(--bone-100)"/></svg></span>
+      <span class="wm-corner__mask-l" aria-hidden="true"><svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M56 56H0C30.9279 56 56 30.9279 56 0V56Z" fill="var(--bone-100)"/></svg></span>
+      <span class="wm-corner__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+      <span><b>Walk the studio</b><small>Simulator <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></small></span>
+    </a>
   </section>
 
   <!-- ══════════ MARQUEE — drag-enabled gallery strip ══════════ -->

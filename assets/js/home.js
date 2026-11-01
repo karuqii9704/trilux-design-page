@@ -1,9 +1,9 @@
-/* Trilux home — interaksi (adaptasi pola Watermelon UI ke vanilla):
-   - fixed navbar + scrolled state
+/* Trilux home — interaksi (adaptasi pola RIVR glass template + Watermelon UI ke vanilla):
+   - navbar in-panel di hero · pins fixed w/ scrim begitu panel hero scroll keluar
    - full-screen drawer menu (staggered links, morph X, body scroll lock)
    - drag-enabled marquee strip (rAF, velocity inertia, seamless loop)
    - click card → zoom lightbox (ESC/overlay close)
-   - shapes-based hero stage (cinema rig, pointer parallax) — NO photo layers
+   - shapes-based hero stage full-bleed (cinema rig landscape, pointer parallax) — NO photo/video layers
 */
 (() => {
   "use strict";
@@ -11,12 +11,17 @@
   const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const $ = (s, r = document) => r.querySelector(s);
 
-  /* ══════════ 1. navbar scrolled state ══════════ */
+  /* ══════════ 1. navbar — in-panel at top · pins fixed w/ scrim once hero panel scrolls out (RIVR template) ══════════ */
   const nav = $("#wmNav");
   if (nav) {
-    const onScroll = () => nav.classList.toggle("is-scrolled", window.scrollY > 24);
+    const hero = $("#hero");
+    const onScroll = () => {
+      const limit = hero ? hero.offsetTop + hero.offsetHeight - nav.offsetHeight : 0;
+      nav.classList.toggle("is-scrolled", window.scrollY > limit);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
   }
 
   /* ══════════ 2. full-screen drawer (Watermelon physics) ══════════ */
@@ -153,52 +158,55 @@
     if (e.key === "Escape" && lbOpen) closeLightbox();
   });
 
-  /* ══════════ 5. hero shapes panel (cinema rig, pointer parallax) ══════════ */
+  /* ══════════ 5. hero shapes stage — full-bleed landscape rig (cinema scene, pointer parallax) ══════════ */
   const stage = $("#wmStage");
   if (stage) {
-    // Rig drawn for the 4:5 framed panel on the right — calm, no full-bleed glow.
+    // Full-bleed landscape stage behind the glass hero content (RIVR-glass pattern,
+    // shapes-only per repo rule: no photo/video layers — replaces template video bg).
+    // viewBox 1600×900.
     stage.innerHTML = `
-      <svg viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%">
+      <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%">
         <defs>
           <linearGradient id="wmSky" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#241c18"/><stop offset="1" stop-color="#141010"/>
           </linearGradient>
-          <radialGradient id="wmGlow" cx="0.62" cy="0.24" r="0.6">
-            <stop offset="0" stop-color="#e4c07a" stop-opacity=".16"/><stop offset="1" stop-color="#e4c07a" stop-opacity="0"/>
+          <radialGradient id="wmGlow" cx="0.5" cy="0.42" r="0.75">
+            <stop offset="0" stop-color="#e4c07a" stop-opacity=".22"/><stop offset="1" stop-color="#e4c07a" stop-opacity="0"/>
           </radialGradient>
         </defs>
-        <rect width="800" height="1000" fill="url(#wmSky)"/>
-        <rect width="800" height="1000" fill="url(#wmGlow)"/>
-        <g class="wm-rig" style="transform-origin:50% 92%">
+        <rect width="1600" height="900" fill="url(#wmSky)"/>
+        <rect width="1600" height="900" fill="url(#wmGlow)"/>
+        <g class="wm-rig" style="transform-origin:50% 96%">
           <!-- ground -->
-          <rect x="0" y="820" width="800" height="180" fill="#1b1512"/>
-          <rect x="0" y="818" width="800" height="2" fill="rgba(242,237,228,.14)"/>
-          <!-- plinth block -->
-          <rect x="90" y="700" width="620" height="120" fill="#2e241e"/>
+          <rect x="0" y="740" width="1600" height="160" fill="#1b1512"/>
+          <rect x="0" y="738" width="1600" height="2" fill="rgba(242,237,228,.14)"/>
+          <!-- plinth -->
+          <rect x="180" y="650" width="1240" height="90" fill="#2e241e"/>
           <!-- towers -->
-          <rect x="150" y="420" width="130" height="280" fill="#2e241e"/>
-          <rect x="150" y="416" width="130" height="4" fill="#c08a3e"/>
-          <rect x="330" y="280" width="170" height="420" fill="#3a2d24"/>
-          <rect x="330" y="276" width="170" height="4" fill="#c08a3e"/>
-          <rect x="550" y="500" width="110" height="220" fill="#2e241e"/>
+          <rect x="300" y="380" width="220" height="270" fill="#2e241e"/>
+          <rect x="300" y="376" width="220" height="4" fill="#c08a3e"/>
+          <rect x="620" y="220" width="300" height="430" fill="#3a2d24"/>
+          <rect x="620" y="216" width="300" height="4" fill="#c08a3e"/>
+          <rect x="1010" y="430" width="190" height="220" fill="#2e241e"/>
           <!-- arch ring -->
-          <circle cx="560" cy="240" r="90" fill="none" stroke="#c08a3e" stroke-width="1.5" opacity=".8"/>
-          <circle cx="560" cy="240" r="90" fill="#e4c07a" opacity=".05"/>
+          <circle cx="1030" cy="170" r="120" fill="none" stroke="#c08a3e" stroke-width="1.5" opacity=".8"/>
+          <circle cx="1030" cy="170" r="120" fill="#e4c07a" opacity=".05"/>
           <!-- brass bridge deck -->
-          <rect x="240" y="392" width="430" height="5" fill="#c08a3e" opacity=".85"/>
+          <rect x="440" y="350" width="760" height="5" fill="#c08a3e" opacity=".85"/>
           <!-- lit windows -->
           <g fill="#e4c07a">
-            <rect x="172" y="452" width="20" height="26"/><rect x="212" y="452" width="20" height="26"/>
-            <rect x="172" y="512" width="20" height="26"/><rect x="212" y="512" width="20" height="26"/>
-            <rect x="360" y="320" width="24" height="32"/><rect x="412" y="320" width="24" height="32"/>
-            <rect x="360" y="392" width="24" height="32"/><rect x="412" y="392" width="24" height="32"/>
-            <rect x="360" y="464" width="24" height="32"/><rect x="466" y="464" width="24" height="32"/>
-            <rect x="572" y="540" width="18" height="24"/><rect x="610" y="540" width="18" height="24"/>
+            <rect x="336" y="412" width="30" height="40"/><rect x="392" y="412" width="30" height="40"/>
+            <rect x="336" y="492" width="30" height="40"/><rect x="392" y="492" width="30" height="40"/>
+            <rect x="676" y="282" width="34" height="46"/><rect x="756" y="282" width="34" height="46"/>
+            <rect x="676" y="368" width="34" height="46"/><rect x="756" y="368" width="34" height="46"/>
+            <rect x="676" y="454" width="34" height="46"/><rect x="836" y="454" width="34" height="46"/>
+            <rect x="1040" y="470" width="26" height="34"/><rect x="1096" y="470" width="26" height="34"/>
+            <rect x="1040" y="540" width="26" height="34"/><rect x="1140" y="540" width="26" height="34"/>
           </g>
           <!-- ground grid hairlines -->
           <g stroke="rgba(242,237,228,.07)">
-            <line x1="0" y1="860" x2="800" y2="860"/><line x1="0" y1="900" x2="800" y2="900"/>
-            <line x1="0" y1="940" x2="800" y2="940"/>
+            <line x1="0" y1="780" x2="1600" y2="780"/><line x1="0" y1="825" x2="1600" y2="825"/>
+            <line x1="0" y1="868" x2="1600" y2="868"/>
           </g>
         </g>
       </svg>`;
@@ -206,8 +214,8 @@
       const rig = stage.querySelector(".wm-rig");
       let tx = 0, ty = 0, cx = 0, cy = 0;
       window.addEventListener("pointermove", (e) => {
-        tx = (e.clientX / window.innerWidth - 0.5) * 8;
-        ty = (e.clientY / window.innerHeight - 0.5) * 6;
+        tx = (e.clientX / window.innerWidth - 0.5) * 10;
+        ty = (e.clientY / window.innerHeight - 0.5) * 7;
       }, { passive: true });
       const par = () => {
         cx += (tx - cx) * 0.06; cy += (ty - cy) * 0.06;

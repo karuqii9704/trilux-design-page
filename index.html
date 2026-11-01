@@ -13,18 +13,30 @@
 </head>
 <body>
 
-<!-- ══════════ FIXED NAVBAR (Watermelon pattern) ══════════ -->
+<!-- ══════════ NAVBAR — RIVR template: in-panel at top · pins fixed w/ scrim on scroll ══════════ -->
 <header class="wm-nav" id="wmNav">
   <a class="wm-nav__brand" href="#top" aria-label="Trilux Design — home">
     <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26V6h20v4H12v6h14v4H12v6z" fill="var(--brass-500)"/></svg>
     Trilux<em>&nbsp;Design</em>
   </a>
-  <div class="wm-nav__center">
-    <button class="wm-burger" id="wmBurger" aria-label="Open menu" aria-expanded="false" aria-controls="wmDrawer">
-      <span></span><span></span>
-    </button>
-  </div>
-  <a class="wm-nav__cta" href="#contact">Book a meeting</a>
+  <ul class="wm-nav__menu">
+    <li><a href="/about">About</a></li>
+    <li><a href="/project">Portfolio</a></li>
+    <li><a href="/services">Services</a></li>
+    <li><a href="/gallery">Gallery</a></li>
+    <li><a href="/clients">Clients</a></li>
+    <li><a href="/news">News</a></li>
+    <li><a href="/simulasi">Simulator</a></li>
+    <li><a href="/studio">Studio</a></li>
+    <li><a href="/#contact">Contact</a></li>
+  </ul>
+  <a class="wm-nav__cta" href="https://wa.me/6282287348422" target="_blank" rel="noopener">
+    <span class="wm-cta-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+    Book a meeting
+  </a>
+  <button class="wm-burger" id="wmBurger" aria-label="Open menu" aria-expanded="false" aria-controls="wmDrawer">
+    <span></span><span></span>
+  </button>
 </header>
 
 <!-- ══════════ FULL-SCREEN MENU (drawer physics) ══════════ -->
@@ -53,23 +65,32 @@
 
 <main id="top">
 
-  <!-- ══════════ HERO — split composition: calm copy left · framed shapes panel right ══════════ -->
+  <!-- ══════════ HERO — RIVR template glass panel: shapes stage, centered badge/h1/sub, glass stat card BL, cutout corner card BR ══════════ -->
   <section class="wm-hero" id="hero" aria-label="Trilux Design — hero">
+    <div class="wm-hero__stage" id="wmStage" aria-hidden="true"></div>
+    <div class="wm-hero__scrim" aria-hidden="true"></div>
     <div class="wm-hero__inner">
-      <div class="wm-hero__copy">
-        <p class="wm-eyebrow reveal">— Portfolio + Interior Design &amp; Architecture</p>
-        <h1 class="reveal">Trilux<br><em>Design</em></h1>
-        <p class="wm-hero__sub reveal"><strong style="font-weight:500;color:var(--text-on-ink)">Experiencing Luxury, Before It's Built.</strong><br>Trilux Design adalah studio desain interior dan arsitektur premium yang membuktikan kualitasnya lewat visualisasi imersif — klien melihat, merasakan, dan menguji setiap detail ruang sebelum satu pun material dipasang.</p>
-        <div class="wm-hero__row reveal">
-          <div class="wm-scrollcue"><i aria-hidden="true"></i><span>Scroll to explore</span></div>
-          <a class="wm-btn-outline" href="/project">View Project →</a>
-        </div>
+      <p class="wm-badge reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z"/></svg>
+        Interior · Exterior · Architecture
+      </p>
+      <h1 class="reveal">Experiencing Luxury, <em>Before It&rsquo;s Built.</em></h1>
+      <p class="wm-hero__sub reveal">Trilux Design adalah studio desain interior dan arsitektur premium yang membuktikan kualitasnya lewat visualisasi imersif — klien melihat, merasakan, dan menguji setiap detail ruang sebelum satu pun material dipasang.</p>
+      <div class="wm-hero__cta reveal">
+        <a class="wm-btn-solid" href="#contact">Book a meeting</a>
+        <a class="wm-btn-outline" href="/project">View Project →</a>
       </div>
-      <figure class="wm-hero__panel reveal">
-        <div id="wmStage" aria-hidden="true"></div>
-        <figcaption>Atelier massing study — 1:200</figcaption>
-      </figure>
     </div>
+    <div class="wm-hero__meta reveal">
+      <div class="wm-stat"><b>2+</b><span>Projects delivered</span></div>
+      <div class="wm-stat"><b>4</b><span>Disciplines in-house</span></div>
+    </div>
+    <a class="wm-corner reveal" href="/studio">
+      <span class="wm-corner__mask-t" aria-hidden="true"><svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="var(--bone-100)"/></svg></span>
+      <span class="wm-corner__mask-l" aria-hidden="true"><svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M56 56H0C30.9279 56 56 30.9279 56 0V56Z" fill="var(--bone-100)"/></svg></span>
+      <span class="wm-corner__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+      <span><b>Walk the studio</b><small>Simulator <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></small></span>
+    </a>
   </section>
 
   <!-- ══════════ MARQUEE — drag-enabled gallery strip ══════════ -->
