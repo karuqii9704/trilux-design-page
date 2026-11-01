@@ -14,13 +14,21 @@ Website resmi Trilux Design — studio desain interior & arsitektur premium (Jak
 - Font: Geist (Google Fonts, persis spec lampiran)
 - Aset: shapes-based only — tidak ada foto/video layer (standing user call)
 
-## Struktur halaman (single-page marketing landing)
-1. **Navbar** — fixed top, logo Trilux, burger 2-garis centered, CTA "Book a meeting" (→ WA),
-   full-screen drawer menu (mobile slide-up / desktop slide-from-right, stagger links, X-morph, scroll lock)
-2. **Hero** — minimal white, teks saja: "Experiencing Luxury, Before It's Built." + subhead
-3. **ImageMarquee** — infinite drag-enabled strip (rAF 0.8px/frame + momentum inertia + seamless loop),
-   curved white masks atas/bawah, 6 gambar (Higgs CDN proxy URLs persis spec lampiran)
-4. **BottomSection** — copy + 2 underline CTA ("Book a meeting" / "See Projects")
+## Struktur halaman (single-page marketing landing — scroll ke bawah hingga footer)
+Navbar (drawer) → Hero (minimal white, teks) → ImageMarquee (drag rAF, 6 gambar Higgs, curved masks)
+→ **About** (Sekilas Perusahaan + Visi & Misi 3 bernomor, copy verbatim brief v0)
+→ **Our Expertise** (4 kolom bernomor 01–04) → **Services** (accordion 4 layanan, modern-minimal)
+→ **Portfolio** (featured Padang Residence I + grid + lightbox View details)
+→ **Gallery** (karosel drag + prev/next + thumbnail rail + zoom lightbox — shapes placeholder, swipe+zoom per brief)
+→ **Clients** (text rail marquee + disclaimer izin) → **News** (3 kartu artikel dummy)
+→ **Studio** (floorplan SVG interaktif: drag furnitur cm, partisi adjustable, stepper cm — dummy jujur)
+→ **Contact** (WA/email/IG/lokasi) → **Footer**.
+Plus: scroll progress bar 2px di atas viewport.
+
+Konten = CMS runtime hydration (`useContent` → `/api/content` Blob, fallback seed `data/`);
+proyek = `useProjects` → `/api/admin?cms=1`.
+Simulator: brief v0 tulis "Please take out" → sengaja tidak dibangun.
+Semua visual shapes-based (NO foto layer — standing constraint; brief: foto asli masih tahap desain).
 
 ## Tetap dipertahankan (di luar SPA)
 - `admin/` — CMS admin (self-contained: dashboard stats, featured/projects CMS, content JSON, leads) — token via `ADMIN_TOKEN`
