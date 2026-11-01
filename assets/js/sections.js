@@ -5,6 +5,10 @@ import { renderNavItems, renderAbout, renderExpertise, renderServices, renderCli
 
 (() => {
   "use strict";
+  /* Home baru (Watermelon-ified, assets/js/home.js) punya nav + konten sendiri
+     yang di-seed build-time dari content.json — hydration legacy ini hanya untuk
+     landing lama ber-marker CMS. Deteksi: home baru ada #wmStage. */
+  if (document.getElementById("wmStage")) return;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function setHTML(el, html) { if (el && html) el.innerHTML = html; }

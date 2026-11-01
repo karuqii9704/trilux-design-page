@@ -1,633 +1,473 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trilux Design — Interior, Exterior & Architecture</title>
-<meta name="description" content="A cinematic scroll through Trilux Design — a Jakarta-based studio for interior, exterior and architectural design. Explore our portfolio and request a quotation.">
-<link rel="canonical" href="https://trilux-design-page.vercel.app/">
-<link rel="icon" type="image/svg+xml" href="assets/img/logo-mark.svg">
-<meta property="og:title" content="Trilux Design — Interior, Exterior & Architecture">
-<meta property="og:description" content="Spaces built on precision. Finished with warmth. Explore the Trilux Design portfolio.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://trilux-design-page.vercel.app/">
-<meta property="og:image" content="https://trilux-design-page.vercel.app/assets/img/cover.jpg">
-<meta property="og:image:alt" content="Two-storey contemporary house designed by Trilux Design">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="preload" href="assets/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/archivo-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=6">
-<link rel="stylesheet" href="assets/css/cinema.css?v=8">
-<link rel="stylesheet" href="assets/css/sections.css?v=2">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "Trilux Design",
-  "image": "https://trilux-design-page.vercel.app/assets/img/cover.jpg",
-  "telephone": "+62822-8734-8422",
-  "email": "triluxdesign@gmail.com",
-  "address": { "@type": "PostalAddress", "addressLocality": "Jakarta", "addressCountry": "ID" },
-  "sameAs": ["https://instagram.com/trilux_design"]
-}
-</script>
+<title>Trilux Design — Interior, Exterior &amp; Architecture</title>
+<meta name="description" content="Trilux Design — studio desain interior dan arsitektur premium. Experiencing luxury before it's built: visualisasi imersif, presisi, dan kemewahan minimalis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=9">
+<link rel="stylesheet" href="assets/css/home.css?v=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23141010'/%3E%3Cpath d='M6 26V6h20v4H12v6h14v4H12v6z' fill='%23c08a3e'/%3E%3C/svg%3E">
 </head>
 <body>
-<div id="intro-loader" aria-hidden="true">
-  <svg class="intro-mark" width="52" height="52" viewBox="0 0 40 40" fill="none">
-    <rect class="b1" x="6" y="18" width="6" height="16" fill="#c08a3e"/>
-    <rect class="b2" x="17" y="6" width="6" height="28" fill="#c08a3e"/>
-    <rect class="b3" x="28" y="13" width="6" height="21" fill="#c08a3e"/>
-    <rect class="b4" x="4" y="34" width="32" height="1.5" fill="#c08a3e"/>
-  </svg>
-  <span class="intro-word">Trilux <em>Design</em></span>
-  <span class="intro-bar"><span class="intro-bar-fill"></span></span>
-</div>
-<script>
-/* intro loader — fade once everything is loaded; 3s safety cap */
-(() => {
-  "use strict";
-  const el = document.getElementById("intro-loader");
-  if (!el) return;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const started = performance.now();
-  const MIN_MS = 900; // below this the intro reads as a flash, not an intro
-  let fired = false;
-  const done = () => {
-    if (fired) return;
-    fired = true;
-    const wait = reduce ? 0 : Math.max(0, MIN_MS - (performance.now() - started));
-    setTimeout(() => {
-      el.classList.add("is-done");
-      setTimeout(() => el.remove(), 700);
-    }, wait);
-  };
-  if (document.readyState === "complete") done();
-  else {
-    window.addEventListener("load", done, { once: true });
-    setTimeout(done, reduce ? 400 : 3000);
-  }
-})();
-</script>
-<a class="skip-link" href="#main">Skip to main content</a>
 
-<main id="main">
+<!-- ══════════ FIXED NAVBAR (Watermelon pattern) ══════════ -->
+<header class="wm-nav" id="wmNav">
+  <a class="wm-nav__brand" href="#top" aria-label="Trilux Design — home">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26V6h20v4H12v6h14v4H12v6z" fill="var(--brass-500)"/></svg>
+    Trilux<em>&nbsp;Design</em>
+  </a>
+  <div class="wm-nav__center">
+    <button class="wm-burger" id="wmBurger" aria-label="Open menu" aria-expanded="false" aria-controls="wmDrawer">
+      <span></span><span></span>
+    </button>
+  </div>
+  <a class="wm-nav__cta" href="#contact">Book a meeting</a>
+</header>
 
-  <!-- S1 — Cinematic scroll stage (shapes-based; NO photo layers — brand rule) -->
-  <section class="cinema-scroll" id="cinema" aria-label="Trilux Design cinematic scroll story">
-    <div class="stage">
-      <div class="world">
-        <div class="sky-img" aria-hidden="true"></div>
-        <header class="site-header" aria-label="Primary navigation">
-          <a class="cinema-logo" href="#cinema" aria-label="Trilux Design — back to top">
-            <svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-              <rect class="logo-draw d1" x="6" y="18" width="6" height="16" fill="#c08a3e"/>
-              <rect class="logo-draw d2" x="17" y="6" width="6" height="28" fill="#c08a3e"/>
-              <rect class="logo-draw d3" x="28" y="13" width="6" height="21" fill="#c08a3e"/>
-              <rect class="logo-draw d4" x="4" y="34" width="32" height="1.5" fill="#c08a3e"/>
-              <circle class="logo-pulse" cx="20" cy="20" r="18" stroke="#e4c07a" stroke-width="1" fill="none" opacity="0"/>
-            </svg>
-            <span class="logo-word">Trilux<em>&nbsp;Design</em></span>
-          </a>
-          <nav class="cinema-nav" aria-label="Main menu">
-<!-- CMS:NAV:START -->
-<a href="/about">About</a>
-            <a href="/project">Portfolio</a>
-            <a href="/services">Services</a>
-            <a href="/gallery">Gallery</a>
-            <a href="/clients">Clients</a>
-            <a href="/news">News</a>
-            <a href="/simulasi">Simulator</a>
-            <a href="/studio">Studio</a>
-            <a href="/#contact">Contact</a><!-- /CMS:NAV:END -->
-          </nav>
-          <button class="cinema-nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navOverlay" aria-label="Open menu">
-            <span class="nav__toggle-bars"><span></span><span></span><span></span></span>
-          </button>
-          <a class="lang-switcher" href="https://wa.me/6282287348422" target="_blank" rel="noopener">WhatsApp <span aria-hidden="true">→</span></a>
-          <div class="nav-overlay" id="navOverlay" aria-hidden="true">
-            <nav class="nav-overlay__list" aria-label="Mobile menu">
-<!-- CMS:NAV:MOBILE:START -->
-<a href="/about">About</a>
-            <a href="/project">Portfolio</a>
-            <a href="/services">Services</a>
-            <a href="/gallery">Gallery</a>
-            <a href="/clients">Clients</a>
-            <a href="/news">News</a>
-            <a href="/simulasi">Simulator</a>
-            <a href="/studio">Studio</a>
-            <a href="/#contact">Contact</a><!-- /CMS:NAV:MOBILE:END -->
-            </nav>
-            <a class="btn btn-on-ink" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
-          </div>
-        </header>
-        <div class="back-stack">
-          <div class="plinth" aria-hidden="true"></div>
-          <div class="tower tower-a" aria-hidden="true"></div>
-          <div class="tower tower-b" aria-hidden="true"></div>
-          <div class="tower tower-c" aria-hidden="true"></div>
-          <section class="sights-slider" aria-label="Trilux services slider">
-            <div class="sights-track">
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Interior and spatial design card" data-href="services">
-                <span class="sight-kicker">Studio Discipline</span>
-                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Crect x='21' y='21' width='22' height='22' transform='rotate(45 32 32)'/%3E%3C/svg%3E" alt="">
-                <h3>Interior &amp; Spatial Design</h3>
-                <p>Layouts, lighting scenarios, and material stories shaped around how you actually live.</p>
-              </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Exterior facades card" data-href="services">
-                <span class="sight-kicker">Street Presence</span>
-                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Cpath d='M12 34L32 15l20 19M19 29v20h26V29'/%3E%3C/svg%3E" alt="">
-                <h3>Exterior Facades</h3>
-                <p>Strong lines, stone and timber cladding, and facades that age with dignity.</p>
-              </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Architecture and building card" data-href="services">
-                <span class="sight-kicker">Design &amp; Build</span>
-                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Crect x='17' y='13' width='30' height='38'/%3E%3Cpath d='M25 22h4m6 0h4M25 31h4m6 0h4M25 40h4m6 0h4'/%3E%3C/svg%3E" alt="">
-                <h3>Architecture &amp; Building</h3>
-                <p>From permit drawings to handover — one team, one contract, one standard.</p>
-              </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Renovation and retrofit card" data-href="studio">
-                <span class="sight-kicker">Existing Homes</span>
-                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Ccircle cx='32' cy='32' r='24'/%3E%3Cpath d='M41 23l-5 12-12 5 5-12z' fill='%23c08a3e' stroke='none'/%3E%3C/svg%3E" alt="">
-                <h3>Renovation &amp; Retrofit</h3>
-                <p>Careful surgery for older houses — new light, flow, and services without losing soul.</p>
-              </article>
-              <article class="sight-card" tabindex="0" role="button" aria-label="Open Consultation and estimation card" data-href="#contact">
-                <span class="sight-kicker">Start Here</span>
-                <img class="sight-pin" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23c08a3e' stroke-width='3'%3E%3Cpath d='M32 10l6 14 15 1-11 10 3 15-13-8-13 8 3-15-11-10 15-1z'/%3E%3C/svg%3E" alt="">
-                <h3>Consultation &amp; Estimation</h3>
-                <p>Budget clarity before commitment — explore the Studio planner or talk to us directly.</p>
-              </article>
-            </div>
-          </section>
+<!-- ══════════ FULL-SCREEN MENU (drawer physics) ══════════ -->
+<div class="wm-overlay" id="wmOverlay"></div>
+<nav class="wm-drawer" id="wmDrawer" aria-label="Primary" aria-hidden="true">
+  <button class="wm-drawer__close" id="wmClose" aria-label="Close menu"><i></i></button>
+  <div class="wm-menu">
+        <a class="wm-menu__link" href="/about"><small>01</small>About</a>
+        <a class="wm-menu__link" href="/project"><small>02</small>Portfolio</a>
+        <a class="wm-menu__link" href="/services"><small>03</small>Services</a>
+        <a class="wm-menu__link" href="/gallery"><small>04</small>Gallery</a>
+        <a class="wm-menu__link" href="/clients"><small>05</small>Clients</a>
+        <a class="wm-menu__link" href="/news"><small>06</small>News</a>
+        <a class="wm-menu__link" href="/simulasi"><small>07</small>Simulator</a>
+        <a class="wm-menu__link" href="/studio"><small>08</small>Studio</a>
+        <a class="wm-menu__link" href="/#contact"><small>09</small>Contact</a>
+  </div>
+  <div class="wm-drawer__cta">
+    <a class="wm-btn-outline" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
+  </div>
+  <div class="wm-drawer__meta">
+    <span>Jakarta, Indonesia</span>
+    <span>triluxdesign@gmail.com</span>
+  </div>
+</nav>
+
+<main id="top">
+
+  <!-- ══════════ HERO — split composition: calm copy left · framed shapes panel right ══════════ -->
+  <section class="wm-hero" id="hero" aria-label="Trilux Design — hero">
+    <div class="wm-hero__inner">
+      <div class="wm-hero__copy">
+        <p class="wm-eyebrow reveal">— Portfolio + Interior Design &amp; Architecture</p>
+        <h1 class="reveal">Trilux<br><em>Design</em></h1>
+        <p class="wm-hero__sub reveal"><strong style="font-weight:500;color:var(--text-on-ink)">Experiencing Luxury, Before It's Built.</strong><br>Trilux Design adalah studio desain interior dan arsitektur premium yang membuktikan kualitasnya lewat visualisasi imersif — klien melihat, merasakan, dan menguji setiap detail ruang sebelum satu pun material dipasang.</p>
+        <div class="wm-hero__row reveal">
+          <div class="wm-scrollcue"><i aria-hidden="true"></i><span>Scroll to explore</span></div>
+          <a class="wm-btn-outline" href="/project">View Project →</a>
         </div>
-        <h1 class="hero-title" aria-label="TRILUX"><span aria-hidden="true">T</span><span aria-hidden="true">R</span><span aria-hidden="true">I</span><span aria-hidden="true">L</span><span aria-hidden="true">U</span><span aria-hidden="true">X</span></h1>
-        <div class="scene-shape bridge-img" aria-hidden="true"></div>
-        <div class="scene-shape frame-two-img" aria-hidden="true"><div class="arch-ring"></div></div>
-        <div class="scene-shape splitframe-img splitframe-left" aria-hidden="true"></div>
-        <div class="scene-shape splitframe-img splitframe-right" aria-hidden="true"></div>
-        <div class="shade"></div>
       </div>
-
-      <aside class="sim-cta-card" aria-label="Buka studio planner">
-        <p class="sim-cta-kicker">Start Here</p>
-        <h2 class="sim-cta-title">Jelajahi ruang Anda</h2>
-        <p class="sim-cta-sub">Atur partisi dan furnitur dalam satuan cm — eksplorasi awal sebelum survei.</p>
-        <a class="sim-cta-btn" href="studio">Buka Studio Planner <span aria-hidden="true">→</span></a>
-      </aside>
-
-      <section class="intro-copy" aria-label="Trilux overview">
-        <p>An architecture and interior studio shaping calm, precise spaces — from the first sketch to the final brass fitting.</p>
-        <div class="hero-tags" aria-label="Trilux highlights">
-          <span>Interior</span>
-          <span>Exterior</span>
-          <span>Architecture</span>
-        </div>
-      </section>
-
-      <section class="story-panel story-panel-bridge" aria-label="Studio approach">
-        <h2>Every project starts with structure.</h2>
-        <p>We pair architectural rigour with warm materiality — concrete discipline softened by timber, brass, and natural light.</p>
-        <dl class="facts">
-          <div>
-            <dt>2024</dt>
-            <dd>Latest residence delivered in Padang</dd>
-          </div>
-          <div>
-            <dt>01/04</dt>
-            <dd>Featured project showing below</dd>
-          </div>
-        </dl>
-      </section>
-
-      <section class="story-panel story-panel-bazaar" aria-label="Featured project teaser">
-        <h2>Craft stays close to home.</h2>
-        <p>Our current featured residence — stone facade, high voids, marble and gold — is one scroll away.</p>
-        <button class="note-button" type="button">
-          <span aria-hidden="true">↗</span>
-          <span>See the featured project</span>
-        </button>
-      </section>
+      <figure class="wm-hero__panel reveal">
+        <div id="wmStage" aria-hidden="true"></div>
+        <figcaption>Atelier massing study — 1:200</figcaption>
+      </figure>
     </div>
   </section>
 
-  <!-- S1.5 — About / Visi & Misi (brief v0) -->
-  <section class="sec panel-bone" id="about" aria-label="About Trilux">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="eyebrow">About us</p>
-        <h2 class="section-title">Experiencing Luxury, Before It's Built</h2>
-      </div>
-      <div id="aboutBlock">
-<!-- CMS:ABOUT:START -->
-
-      <div class="about-grid reveal">
-        <div>
-          <p class="about-lede">Experiencing Luxury, Before It's Built</p>
-          <p class="about-body">Trilux Design adalah studio desain interior dan arsitektur premium yang membuktikan kualitasnya lewat visualisasi imersif — klien melihat, merasakan, dan menguji setiap detail ruang sebelum satu pun material dipasang.</p>
-        </div>
-        <div>
-          <div class="vision-block">
-            <p class="vision-label">Visi</p>
-            <p class="vision-text">Menjadi studio desain interior dan arsitektur premium terdepan yang mendefinisikan ulang standar kemewahan masa depan melalui sinergi estetika minimalis dan teknologi pemodelan imersif.</p>
-          </div>
-          <ul class="mission-list">
-      <li>
-      <span class="m-num">01</span>
-      <div>
-        <h3>Experiential Design</h3>
-        <p>Menghadirkan Pengalaman Desain Imersif — memungkinkan klien melihat, merasakan, dan menguji setiap detail ruang secara presisi melalui teknologi visualisasi berbasis virtual sebelum tahap konstruksi dimulai.</p>
-      </div>
-    </li>
-      <li>
-      <span class="m-num">02</span>
-      <div>
-        <h3>Refined Luxury</h3>
-        <p>Mewujudkan Estetika Minimalis &amp; Kemewahan Abadi — menciptakan karya arsitektur dan interior yang elegan, fungsional, dan bernilai tinggi dengan pendekatan desain minimalis serta pemilihan material berkualitas mutakhir.</p>
-      </div>
-    </li>
-      <li>
-      <span class="m-num">03</span>
-      <div>
-        <h3>Built Perfection</h3>
-        <p>Menjamin Presisi dan Efisiensi Konstruksi — eksekusi lapangan menyeluruh dengan pengawasan teknis ketat untuk memastikan hasil akhir identik dengan desain digital.</p>
-      </div>
-    </li>
-          </ul>
-        </div>
-      </div><!-- /CMS:ABOUT:END -->
+  <!-- ══════════ MARQUEE — drag-enabled gallery strip ══════════ -->
+  <section class="wm-marquee" id="gallery" aria-label="Galeri tampak 3D proyek">
+    <div class="wm-marquee__mask wm-marquee__mask--top" aria-hidden="true">
+      <svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0 0H1440V50C1440 50 1200 100 720 100C240 100 0 50 0 50V0Z" fill="var(--bone-100)"/></svg>
     </div>
+    <div class="wm-marquee__mask wm-marquee__mask--bottom" aria-hidden="true">
+      <svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0 0H1440V50C1440 50 1200 100 720 100C240 100 0 50 0 50V0Z" fill="var(--bone-100)"/></svg>
+    </div>
+    <div class="wm-marquee__head reveal">
+      <div>
+        <p class="wm-eyebrow" style="color:var(--brass-700)">— Gallery</p>
+        <h2>Tampak 3D Pilihan</h2>
+      </div>
+      <p>Katalog tampak 3D proyek — tanpa detail ukuran, material, maupun spesifikasi lain. Swipe untuk menjelajah, zoom untuk detail.</p>
+    </div>
+    <div class="wm-marquee__track" id="wmTrack">
+      <figure class="wm-slide" data-zoom="0" tabindex="0" role="button" aria-label="Zoom: Exterior — Stone Facade">
+        <img src="/assets/img/gallery/g-01.svg" alt="Tampak 3D eksterior rumah dua lantai fasad batu" loading="lazy" decoding="async">
+        <figcaption>Exterior — Stone Facade</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="1" tabindex="0" role="button" aria-label="Zoom: Interior — Double-Height Living">
+        <img src="/assets/img/gallery/g-02.svg" alt="Tampak 3D ruang tamu double height" loading="lazy" decoding="async">
+        <figcaption>Interior — Double-Height Living</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="2" tabindex="0" role="button" aria-label="Zoom: Interior — Kitchen Island">
+        <img src="/assets/img/gallery/g-03.svg" alt="Tampak 3D dapur dengan island dan lighting tersembunyi" loading="lazy" decoding="async">
+        <figcaption>Interior — Kitchen Island</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="3" tabindex="0" role="button" aria-label="Zoom: Interior — Primary Suite">
+        <img src="/assets/img/gallery/g-04.svg" alt="Tampak 3D kamar utama dengan wardrobe custom" loading="lazy" decoding="async">
+        <figcaption>Interior — Primary Suite</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="4" tabindex="0" role="button" aria-label="Zoom: Exterior — Night Facade">
+        <img src="/assets/img/gallery/g-05.svg" alt="Tampak 3D fasad malam dengan lighting warm" loading="lazy" decoding="async">
+        <figcaption>Exterior — Night Facade</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="5" tabindex="0" role="button" aria-label="Zoom: Interior — Dining">
+        <img src="/assets/img/gallery/g-06.svg" alt="Tampak 3D ruang makan dengan cermin dan brass" loading="lazy" decoding="async">
+        <figcaption>Interior — Dining</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="6" tabindex="0" role="button" aria-label="Zoom: Interior — Bath">
+        <img src="/assets/img/gallery/g-07.svg" alt="Tampak 3D kamar mandi dengan stone vanity" loading="lazy" decoding="async">
+        <figcaption>Interior — Bath</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="7" tabindex="0" role="button" aria-label="Zoom: Interior — Stair &amp; Void">
+        <img src="/assets/img/gallery/g-08.svg" alt="Tampak 3D tangga dan void dengan railing minimalis" loading="lazy" decoding="async">
+        <figcaption>Interior — Stair &amp; Void</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="0" tabindex="0" role="button" aria-label="Zoom: Exterior — Stone Facade">
+        <img src="/assets/img/gallery/g-01.svg" alt="Tampak 3D eksterior rumah dua lantai fasad batu" loading="lazy" decoding="async">
+        <figcaption>Exterior — Stone Facade</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="1" tabindex="0" role="button" aria-label="Zoom: Interior — Double-Height Living">
+        <img src="/assets/img/gallery/g-02.svg" alt="Tampak 3D ruang tamu double height" loading="lazy" decoding="async">
+        <figcaption>Interior — Double-Height Living</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="2" tabindex="0" role="button" aria-label="Zoom: Interior — Kitchen Island">
+        <img src="/assets/img/gallery/g-03.svg" alt="Tampak 3D dapur dengan island dan lighting tersembunyi" loading="lazy" decoding="async">
+        <figcaption>Interior — Kitchen Island</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="3" tabindex="0" role="button" aria-label="Zoom: Interior — Primary Suite">
+        <img src="/assets/img/gallery/g-04.svg" alt="Tampak 3D kamar utama dengan wardrobe custom" loading="lazy" decoding="async">
+        <figcaption>Interior — Primary Suite</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="4" tabindex="0" role="button" aria-label="Zoom: Exterior — Night Facade">
+        <img src="/assets/img/gallery/g-05.svg" alt="Tampak 3D fasad malam dengan lighting warm" loading="lazy" decoding="async">
+        <figcaption>Exterior — Night Facade</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="5" tabindex="0" role="button" aria-label="Zoom: Interior — Dining">
+        <img src="/assets/img/gallery/g-06.svg" alt="Tampak 3D ruang makan dengan cermin dan brass" loading="lazy" decoding="async">
+        <figcaption>Interior — Dining</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="6" tabindex="0" role="button" aria-label="Zoom: Interior — Bath">
+        <img src="/assets/img/gallery/g-07.svg" alt="Tampak 3D kamar mandi dengan stone vanity" loading="lazy" decoding="async">
+        <figcaption>Interior — Bath</figcaption>
+      </figure>
+      <figure class="wm-slide" data-zoom="7" tabindex="0" role="button" aria-label="Zoom: Interior — Stair &amp; Void">
+        <img src="/assets/img/gallery/g-08.svg" alt="Tampak 3D tangga dan void dengan railing minimalis" loading="lazy" decoding="async">
+        <figcaption>Interior — Stair &amp; Void</figcaption>
+      </figure>
+    </div>
+    <p class="wm-marquee__hint reveal">↔ Drag / geser untuk menjelajah · klik kartu untuk zoom · dummy per brief</p>
+  </section>
+
+  <!-- ══════════ ABOUT ══════════ -->
+  <section class="wm-section wm-section--ink" id="about">
+    <div class="wm-wrap">
+      <header class="wm-sec-head reveal">
+        <div>
+          <p class="wm-eyebrow">— About us</p>
+          <h2>Experiencing Luxury, Before It's Built</h2>
+        </div>
+        <a class="wm-sec-more" href="/about">Profil lengkap →</a>
+      </header>
+      <div class="wm-about">
+        <div class="reveal">
+          <p class="wm-about__lede">Experiencing Luxury, Before It's Built</p>
+        </div>
+        <div class="wm-about__body reveal">
+          <p>Trilux Design adalah studio desain interior dan arsitektur premium yang membuktikan kualitasnya lewat visualisasi imersif — klien melihat, merasakan, dan menguji setiap detail ruang sebelum satu pun material dipasang.</p>
+          <div class="wm-vision">
+            <h3>Visi</h3>
+            <p>Menjadi studio desain interior dan arsitektur premium terdepan yang mendefinisikan ulang standar kemewahan masa depan melalui sinergi estetika minimalis dan teknologi pemodelan imersif.</p>
+          </div>
+          <div class="wm-missions">
+      <div class="wm-mission reveal">
+        <b>01</b>
+        <div>
+          <h3>Experiential Design</h3>
+          <p>Menghadirkan Pengalaman Desain Imersif — memungkinkan klien melihat, merasakan, dan menguji setiap detail ruang secara presisi melalui teknologi visualisasi berbasis virtual sebelum tahap konstruksi dimulai.</p>
+        </div>
+      </div>
+      <div class="wm-mission reveal">
+        <b>02</b>
+        <div>
+          <h3>Refined Luxury</h3>
+          <p>Mewujudkan Estetika Minimalis &amp; Kemewahan Abadi — menciptakan karya arsitektur dan interior yang elegan, fungsional, dan bernilai tinggi dengan pendekatan desain minimalis serta pemilihan material berkualitas mutakhir.</p>
+        </div>
+      </div>
+      <div class="wm-mission reveal">
+        <b>03</b>
+        <div>
+          <h3>Built Perfection</h3>
+          <p>Menjamin Presisi dan Efisiensi Konstruksi — eksekusi lapangan menyeluruh dengan pengawasan teknis ketat untuk memastikan hasil akhir identik dengan desain digital.</p>
+        </div>
+      </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- S1.6 — Our Expertise (brief v0: 4 disciplines) -->
-  <section class="sec panel-ink" id="expertise" aria-label="Our expertise">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="eyebrow">Capabilities</p>
-        <h2 class="section-title">Our Expertise</h2>
-      </div>
-      <div class="expertise-grid reveal" id="expertiseGrid">
-<!-- CMS:EXPERTISE:START -->
-
-      <div class="expertise-cell">
-        <span class="e-num">01</span>
+  <!-- ══════════ EXPERTISE (feature-1 pattern) ══════════ -->
+  <section class="wm-section wm-section--bone" id="expertise">
+    <div class="wm-wrap">
+      <header class="wm-sec-head reveal">
+        <div>
+          <p class="wm-eyebrow" style="color:var(--brass-700)">— Expertise</p>
+          <h2>Empat Disiplin, Satu Tanggung Jawab</h2>
+        </div>
+        <a class="wm-sec-more" href="/services">Layanan →</a>
+      </header>
+      <div class="wm-expertise reveal">
+      <div class="wm-expertise__cell reveal">
+        <span class="wm-expertise__num">01</span>
         <h3>Virtual Experience &amp; 3D Walkthrough</h3>
         <p>Eksplorasi dan rasakan skala ruang, tata cahaya, serta detail material secara imersif sebelum konstruksi dimulai.</p>
       </div>
-      <div class="expertise-cell">
-        <span class="e-num">02</span>
+      <div class="wm-expertise__cell reveal">
+        <span class="wm-expertise__num">02</span>
         <h3>Luxury Interior &amp; Spatial Design</h3>
         <p>Perancangan interior minimalis kelas atas dengan proporsi presisi, pencahayaan terintegrasi, dan kurasi material premium.</p>
       </div>
-      <div class="expertise-cell">
-        <span class="e-num">03</span>
+      <div class="wm-expertise__cell reveal">
+        <span class="wm-expertise__num">03</span>
         <h3>Modern Architectural Planning</h3>
         <p>Arsitektur bernilai estetika tinggi yang berfokus pada garis desain bersih, fungsi optimal, dan efisiensi struktur.</p>
       </div>
-      <div class="expertise-cell">
-        <span class="e-num">04</span>
+      <div class="wm-expertise__cell reveal">
+        <span class="wm-expertise__num">04</span>
         <h3>Management</h3>
         <p>Eksekusi lapangan menyeluruh dengan pengawasan teknis ketat untuk memastikan hasil akhir identik dengan desain digital.</p>
       </div>
-    <!-- /CMS:EXPERTISE:END -->
-    </div>
+      </div>
     </div>
   </section>
 
-  <!-- S1.7 — Services teaser (brief v0: 4 services, modern & minimal) -->
-  <section class="sec panel-bone" id="services" aria-label="Services">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="eyebrow">What we do</p>
-        <h2 class="section-title">Services</h2>
-        <p class="sec-sub">Interior, exterior, building systems, and manufacturing — satu tanggung jawab dari sketsa hingga serah terima.</p>
-      </div>
-      <div class="services-grid reveal" id="servicesGrid">
-<!-- CMS:SERVICES:START -->
-
-      <article class="service-card">
-        <span class="s-tag">01 — Spatial</span>
+  <!-- ══════════ SERVICES (bento-01 pattern) ══════════ -->
+  <section class="wm-section wm-section--ink" id="services">
+    <div class="wm-wrap">
+      <header class="wm-sec-head reveal">
+        <div>
+          <p class="wm-eyebrow">— Services</p>
+          <h2>Layanan Modern &amp; Minimal</h2>
+        </div>
+        <a class="wm-sec-more" href="/services">Semua layanan →</a>
+      </header>
+      <div class="wm-bento">
+      <article class="wm-bento__card reveal">
+        <span class="wm-bento__num">01 — Spatial</span>
         <h3>Interior</h3>
-        <p class="s-desc">Perancangan interior minimalis kelas atas: layout, lighting scenario, kurasi material, dan furnishing detail — dari konsep hingga specifikasi produksi.</p>
-        <ul>
-          <li>Space planning &amp; layout</li>
-          <li>Lighting &amp; material curation</li>
-          <li>Custom furniture &amp; millwork</li>
-          <li>Styling &amp; handover</li>
-        </ul>
+        <p>Perancangan interior minimalis kelas atas: layout, lighting scenario, kurasi material, dan furnishing detail — dari konsep hingga specifikasi produksi.</p>
+        <div class="wm-bento__list"><span class="wm-chip">Space planning &amp; layout</span><span class="wm-chip">Lighting &amp; material curation</span><span class="wm-chip">Custom furniture &amp; millwork</span><span class="wm-chip">Styling &amp; handover</span></div>
       </article>
-      <article class="service-card">
-        <span class="s-tag">02 — Facade</span>
+      <article class="wm-bento__card reveal">
+        <span class="wm-bento__num">02 — Facade</span>
         <h3>Exterior</h3>
-        <p class="s-desc">Fasad berkarakter: komposisi material stone, timber, dan kaca yang age with dignity — kuat secara bentuk, tepat secara struktur.</p>
-        <ul>
-          <li>Facade composition</li>
-          <li>Cladding &amp; material spec</li>
-          <li>Landscape interface</li>
-          <li>Night lighting concept</li>
-        </ul>
+        <p>Fasad berkarakter: komposisi material stone, timber, dan kaca yang age with dignity — kuat secara bentuk, tepat secara struktur.</p>
+        <div class="wm-bento__list"><span class="wm-chip">Facade composition</span><span class="wm-chip">Cladding &amp; material spec</span><span class="wm-chip">Landscape interface</span><span class="wm-chip">Night lighting concept</span></div>
       </article>
-      <article class="service-card">
-        <span class="s-tag">03 — Systems</span>
+      <article class="wm-bento__card reveal">
+        <span class="wm-bento__num">03 — Systems</span>
         <h3>Mechanical, Electrical, Plumbing</h3>
-        <p class="s-desc">Sistem bangunan yang bekerja diam-diam: MEP terintegrasi dengan desain, presisi spesifikasi, dan koordinasi lapangan ketat.</p>
-        <ul>
-          <li>MEP coordination</li>
-          <li>HVAC &amp; electrical layout</li>
-          <li>Plumbing &amp; drainage</li>
-          <li>Smart home readiness</li>
-        </ul>
+        <p>Sistem bangunan yang bekerja diam-diam: MEP terintegrasi dengan desain, presisi spesifikasi, dan koordinasi lapangan ketat.</p>
+        <div class="wm-bento__list"><span class="wm-chip">MEP coordination</span><span class="wm-chip">HVAC &amp; electrical layout</span><span class="wm-chip">Plumbing &amp; drainage</span><span class="wm-chip">Smart home readiness</span></div>
       </article>
-      <article class="service-card">
-        <span class="s-tag">04 — Craft</span>
+      <article class="wm-bento__card reveal">
+        <span class="wm-bento__num">04 — Craft</span>
         <h3>Manufacturing</h3>
-        <p class="s-desc">Produksi elemen kustom: millwork, railing, kanopi, dan finishing brass — dikontrol dari gambar kerja hingga instalasi.</p>
-        <ul>
-          <li>Custom millwork</li>
-          <li>Metal &amp; brass works</li>
-          <li>Workshop drawings</li>
-          <li>Installation oversight</li>
-        </ul>
+        <p>Produksi elemen kustom: millwork, railing, kanopi, dan finishing brass — dikontrol dari gambar kerja hingga instalasi.</p>
+        <div class="wm-bento__list"><span class="wm-chip">Custom millwork</span><span class="wm-chip">Metal &amp; brass works</span><span class="wm-chip">Workshop drawings</span><span class="wm-chip">Installation oversight</span></div>
       </article>
-    <!-- /CMS:SERVICES:END -->
-      <p class="sec-more reveal"><a href="/services">Semua layanan →</a></p>
-    </div>
+      </div>
     </div>
   </section>
 
-  <!-- S1.8 — Clients rail (dummy per brief) -->
-  <section class="sec panel-ink" id="clients" aria-label="Our clients">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="eyebrow">Trusted by</p>
-        <h2 class="section-title">Our Clients</h2>
-      </div>
-      <div class="client-rail reveal" id="clientRail" aria-label="Client logo carousel">
-<!-- CMS:CLIENTS:START -->
-
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">R</span>
-        <span class="c-name">Residential — B</span>
-        <span class="c-type">Private Residence</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">R</span>
-        <span class="c-name">Residential — R</span>
-        <span class="c-type">Private Residence</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">O</span>
-        <span class="c-name">Office — J</span>
-        <span class="c-type">Corporate Office</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">R</span>
-        <span class="c-name">Retail — K</span>
-        <span class="c-type">Retail Space</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">H</span>
-        <span class="c-name">Hospitality — S</span>
-        <span class="c-type">Boutique Hotel</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">R</span>
-        <span class="c-name">Residential — M</span>
-        <span class="c-type">Private Residence</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">R</span>
-        <span class="c-name">Residential — B</span>
-        <span class="c-type">Private Residence</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">R</span>
-        <span class="c-name">Residential — R</span>
-        <span class="c-type">Private Residence</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">O</span>
-        <span class="c-name">Office — J</span>
-        <span class="c-type">Corporate Office</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">R</span>
-        <span class="c-name">Retail — K</span>
-        <span class="c-type">Retail Space</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">H</span>
-        <span class="c-name">Hospitality — S</span>
-        <span class="c-type">Boutique Hotel</span>
-      </div>
-      <div class="client-item">
-        <span class="c-mark" aria-hidden="true">R</span>
-        <span class="c-name">Residential — M</span>
-        <span class="c-type">Private Residence</span>
-      </div>
-    <!-- /CMS:CLIENTS:END -->
-      <p class="gallery-hint reveal" id="clientNote" style="margin-top:var(--sp-4)">
-<!-- CMS:CLIENTS:NOTE:START -->
-Publikasi logo klien menunggu persetujuan tertulis. Placeholder di bawah akan diganti begitu izin terbit.<!-- /CMS:CLIENTS:NOTE:END -->
-</p>
+  <!-- ══════════ CLIENTS rail (dummy) ══════════ -->
+  <section class="wm-section wm-section--bone" id="clients" style="padding-bottom:0">
+    <div class="wm-wrap">
+      <header class="wm-sec-head reveal">
+        <div>
+          <p class="wm-eyebrow" style="color:var(--brass-700)">— Clients</p>
+          <h2>Dipercaya Oleh</h2>
+        </div>
+        <a class="wm-sec-more" href="/clients">Semua klien →</a>
+      </header>
     </div>
+    <div class="wm-clients reveal" aria-label="Client logo carousel">
+      <div class="wm-clients__track">
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">R</span>
+          <span><span class="wm-client__name">Residential — B</span><br><span class="wm-client__type">Private Residence</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">R</span>
+          <span><span class="wm-client__name">Residential — R</span><br><span class="wm-client__type">Private Residence</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">O</span>
+          <span><span class="wm-client__name">Office — J</span><br><span class="wm-client__type">Corporate Office</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">R</span>
+          <span><span class="wm-client__name">Retail — K</span><br><span class="wm-client__type">Retail Space</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">H</span>
+          <span><span class="wm-client__name">Hospitality — S</span><br><span class="wm-client__type">Boutique Hotel</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">R</span>
+          <span><span class="wm-client__name">Residential — M</span><br><span class="wm-client__type">Private Residence</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">R</span>
+          <span><span class="wm-client__name">Residential — B</span><br><span class="wm-client__type">Private Residence</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">R</span>
+          <span><span class="wm-client__name">Residential — R</span><br><span class="wm-client__type">Private Residence</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">O</span>
+          <span><span class="wm-client__name">Office — J</span><br><span class="wm-client__type">Corporate Office</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">R</span>
+          <span><span class="wm-client__name">Retail — K</span><br><span class="wm-client__type">Retail Space</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">H</span>
+          <span><span class="wm-client__name">Hospitality — S</span><br><span class="wm-client__type">Boutique Hotel</span></span>
+        </div>
+        <div class="wm-client">
+          <span class="wm-client__mark" aria-hidden="true">R</span>
+          <span><span class="wm-client__name">Residential — M</span><br><span class="wm-client__type">Private Residence</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="wm-wrap">
+      <p class="reveal" style="font-size:var(--body-s);opacity:.6;margin-top:1.5rem">Publikasi logo klien menunggu persetujuan tertulis. Placeholder di bawah akan diganti begitu izin terbit.</p>
     </div>
   </section>
 
-  <!-- S5 — Selected Work -->
-  <section class="selected-work panel-bone" id="selected-work">
-    <div class="wrap">
-    <!-- CMS:PROJECT:START — rendered by build.js from data/projects.json -->
-      <p class="eyebrow reveal">Featured Project</p>
-      <div class="work__head reveal">
+  <!-- ══════════ NEWS (dummy) ══════════ -->
+  <section class="wm-section wm-section--ink" id="news">
+    <div class="wm-wrap">
+      <header class="wm-sec-head reveal">
         <div>
-          <div class="work__title-row">
-            <span class="work__index" id="workIndex">01/04</span>
-            <h2 class="work__name" id="workName">Padang Residence I</h2>
-          </div>
-          <p class="work__location"><span id="workLocation">Padang, West Sumatera</span> <span class="work__year" id="workYear">— 2024</span></p>
+          <p class="wm-eyebrow">— Article</p>
+          <h2>Tulisan Terbaru</h2>
         </div>
-        <div class="pagination" role="group" aria-label="Featured projects">
-          <button class="pagination__dot" type="button" aria-current="true" aria-label="Lihat proyek 1"><span>1</span></button>
-          <button class="pagination__dot" type="button" disabled aria-label="Proyek 2 — segera hadir"><span>2</span></button>
-          <button class="pagination__dot" type="button" disabled aria-label="Proyek 3 — segera hadir"><span>3</span></button>
-          <button class="pagination__dot" type="button" disabled aria-label="Proyek 4 — segera hadir"><span>4</span></button>
-        </div>
-      </div>
-
-      <dl class="meta-row reveal">
-        <div>
-          <dt>Project Specifics</dt>
-          <dd id="workSpecs">A Residential Masterpiece</dd>
-        </div>
-        <div>
-          <dt>Project Type</dt>
-          <dd id="workType">Full Scope — Design &amp; Build</dd>
-        </div>
-        <div>
-          <dt>Client Description</dt>
-          <dd id="workClient">General Practitioner</dd>
-        </div>
-      </dl>
-
-      <div class="work__media reveal">
-        <img id="workMainImage" src="assets/img/cover.jpg" alt="Two-storey contemporary house with a hip roof, stone-clad facade and a red hatchback parked in front" loading="lazy" decoding="async">
-        <span class="cursor-chip" aria-hidden="true">View Project →</span>
-      </div>
-
-      <div class="work__bottom reveal">
-        <p class="work__desc" id="workDesc">Located in Padang, this design features an architectural approach that prioritizes modern luxury through the harmonization of premium materials and bold geometric play. From a contemporary exterior facade dominated by strong lines to a grand living room interior with a high void and marble accents and gold elements that give a prestigious impression, this aesthetic is combined with flexible public functionality through the use of vertical wooden panels and warm indirect lighting, creating an elegant spatial transition that still feels comfortable and organic.</p>
-        <div class="thumb-grid" id="thumbGrid" role="group" aria-label="Project gallery">
-          <button type="button" aria-current="true" aria-label="Tampilkan foto taman dan tangga eksterior" data-full="assets/img/thumb-1.jpg">
-            <img src="assets/img/thumb-1.jpg" alt="" loading="lazy" decoding="async">
-          </button>
-          <button type="button" aria-label="Tampilkan foto ruang makan" data-full="assets/img/thumb-2.jpg">
-            <img src="assets/img/thumb-2.jpg" alt="" loading="lazy" decoding="async">
-          </button>
-          <button type="button" aria-label="Tampilkan foto ruang keluarga dengan cermin emas" data-full="assets/img/thumb-3.jpg">
-            <img src="assets/img/thumb-3.jpg" alt="" loading="lazy" decoding="async">
-          </button>
-        </div>
-      </div>
-    <!-- /CMS:PROJECT:END -->
-    </div>
-  </section>
-
-  <!-- S5.5 — News teaser (brief v0: artikel inspirasi desain — dummy) -->
-  <section class="sec panel-ink" id="news" aria-label="News and articles">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="eyebrow">Journal</p>
-        <h2 class="section-title">News &amp; Articles</h2>
-        <p class="sec-sub">Artikel inspirasi desain dari tim kami — terbit di blog dan kanal sosial Trilux.</p>
-      </div>
-      <div class="news-grid reveal" id="newsGrid">
-<!-- CMS:NEWS:START -->
-
-      <article class="news-card" id="lighting-warmth-minimal">
-        <span class="n-cat">Interior</span>
+        <a class="wm-sec-more" href="/news">Semua artikel →</a>
+      </header>
+      <div class="wm-news">
+      <article class="wm-news__card reveal" id="lighting-warmth-minimal">
+        <span class="wm-news__cat">Interior</span>
         <h3>Pencahayaan Tak Langsung: Rahasia Ruang Minimalis Terasa Hangat</h3>
         <p>Mengapa satu garis cove lighting mengubah persepsi ruang lebih dari sekadar lampu hias — prinsip layering cahaya yang kami pakai di setiap proyek.</p>
-        <div class="n-meta"><span>2026-11-01</span><span>4 min</span></div>
-        <a class="n-link" href="/news#lighting-warmth-minimal">Baca selengkapnya <span aria-hidden="true">→</span></a>
+        <div class="wm-news__meta"><span>2026-11-01</span><span>4 min</span></div>
       </article>
-      <article class="news-card" id="material-honesty">
-        <span class="n-cat">Material</span>
+      <article class="wm-news__card reveal" id="material-honesty">
+        <span class="wm-news__cat">Material</span>
         <h3>Material Jujur: Stone, Timber, dan Brass yang Age with Dignity</h3>
         <p>Memilih material bukan dari tren, tapi dari bagaimana ia menua. Catatan singkat soal patina, perawatan, dan karakter ruang jangka panjang.</p>
-        <div class="n-meta"><span>2026-11-01</span><span>5 min</span></div>
-        <a class="n-link" href="/news#material-honesty">Baca selengkapnya <span aria-hidden="true">→</span></a>
+        <div class="wm-news__meta"><span>2026-11-01</span><span>5 min</span></div>
       </article>
-      <article class="news-card" id="walkthrough-before-build">
-        <span class="n-cat">Technology</span>
+      <article class="wm-news__card reveal" id="walkthrough-before-build">
+        <span class="wm-news__cat">Technology</span>
         <h3>Menguji Ruang Sebelum Dibangun</h3>
         <p>Bagaimana walkthrough virtual menemukan masalah skala dan peredaman sejak fase desain — dan mengapa itu lebih murah daripada koreksi di lapangan.</p>
-        <div class="n-meta"><span>2026-11-01</span><span>6 min</span></div>
-        <a class="n-link" href="/news#walkthrough-before-build">Baca selengkapnya <span aria-hidden="true">→</span></a>
+        <div class="wm-news__meta"><span>2026-11-01</span><span>6 min</span></div>
       </article>
-    <!-- /CMS:NEWS:END -->
-      <p class="sec-more reveal"><a href="/news">Semua artikel →</a></p>
-    </div>
+      </div>
     </div>
   </section>
 
-  <!-- S6 — Contact -->
-  <section class="contact panel-ink" id="contact">
-    <div class="wrap contact__grid">
-      <div class="contact__media reveal">
-        <img src="assets/img/contact.jpg" alt="Modern two-storey house exterior at dusk with a warmly lit carport and timber slat screen" loading="lazy" decoding="async">
+  <!-- ══════════ STUDIO pitch ══════════ -->
+  <section class="wm-section wm-section--bone" id="studio">
+    <div class="wm-wrap wm-studio">
+      <div class="wm-studio__viz reveal" aria-label="Ilustrasi floorplan interaktif (dummy)">
+        <svg viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img">
+          <rect width="640" height="440" fill="#efe9dc"/>
+          <rect x="20" y="20" width="600" height="400" fill="none" stroke="#221c18" stroke-width="1.5"/>
+          <g stroke="#221c18" stroke-opacity=".18">
+            <line x1="95" y1="20" x2="95" y2="420"/><line x1="170" y1="20" x2="170" y2="420"/>
+            <line x1="245" y1="20" x2="245" y2="420"/><line x1="320" y1="20" x2="320" y2="420"/>
+            <line x1="395" y1="20" x2="395" y2="420"/><line x1="470" y1="20" x2="470" y2="420"/>
+            <line x1="545" y1="20" x2="545" y2="420"/>
+            <line x1="20" y1="87" x2="620" y2="87"/><line x1="20" y1="153" x2="620" y2="153"/>
+            <line x1="20" y1="220" x2="620" y2="220"/><line x1="20" y1="287" x2="620" y2="287"/>
+            <line x1="20" y1="353" x2="620" y2="353"/>
+          </g>
+          <rect x="95" y="153" width="225" height="134" fill="#c08a3e" fill-opacity=".18" stroke="#8a5f1e" stroke-width="1.5"/>
+          <rect x="395" y="87" width="150" height="133" fill="#8a5f1e" fill-opacity=".12" stroke="#8a5f1e" stroke-width="1.5"/>
+          <rect x="170" y="287" width="150" height="93" fill="#c08a3e" fill-opacity=".12" stroke="#8a5f1e" stroke-width="1.5"/>
+          <line x1="320" y1="153" x2="320" y2="287" stroke="#8a5f1e" stroke-width="3"/>
+          <circle cx="320" cy="153" r="6" fill="#c08a3e"/><circle cx="320" cy="287" r="6" fill="#c08a3e"/>
+          <g font-family="ui-monospace,monospace" font-size="11" fill="#6b6259">
+            <text x="160" y="210">600 cm</text><text x="330" y="210">partisi</text>
+            <text x="430" y="150">kabinet</text><text x="230" y="215">sofa</text>
+            <text x="220" y="340">meja tv</text>
+          </g>
+        </svg>
       </div>
       <div class="reveal">
-        <p class="eyebrow">Contact</p>
-        <h2 class="section-title">Let's build something timeless.</h2>
-        <p class="contact__sub">Tell us about your site, your programme, and the atmosphere you want to live in — we typically reply within one business day.</p>
-        <dl class="contact-details">
-          <div>
-            <dt>Phone</dt>
-            <dd><a href="tel:+628****8422">0822 8734 8422</a></dd>
-          </div>
-          <div>
-            <dt>Social</dt>
-            <dd><a href="https://instagram.com/trilux_design" target="_blank" rel="noopener">@trilux_design</a></dd>
-          </div>
-          <div>
-            <dt>Email</dt>
-            <dd><a href="mailto:triluxdesign@gmail.com">triluxdesign@gmail.com</a></dd>
-          </div>
-          <div>
-            <dt>Location</dt>
-            <dd>Jakarta, Indonesia</dd>
-          </div>
-        </dl>
-        <div class="contact__ctas">
-          <a class="btn btn-on-ink" href="/studio">Studio Planner →</a>
-          <a class="btn btn-on-ink" href="mailto:triluxdesign@gmail.com">Email Us →</a>
-          <a class="btn btn-on-ink js-wa" href="https://wa.me/6282287348422?text=Halo%20Trilux%20Design%2C%20saya%20ingin%20menanyakan%20proyek." target="_blank" rel="noopener">Whatsapp →</a>
+        <p class="wm-eyebrow" style="color:var(--brass-700)">— Studio</p>
+        <h2>Uji Ruang Sebelum Dibangun</h2>
+        <p>Eksplorasi ruang interaktif — dummy. Akun dan fitur kolaborasi belum tersedia.</p>
+        <div class="wm-studio__specs">
+          <div><b>600 × 420</b><span>Ruang uji (cm)</span></div>
+          <div><b>3 + 1</b><span>Furnitur + partisi</span></div>
+          <div><b>40 cm</b><span>Grid dasar</span></div>
+        </div>
+        <div class="wm-contact__actions">
+          <a class="wm-btn-solid" style="background:var(--ink-900);color:var(--text-on-ink)" href="/studio">Buka Studio →</a>
+          <a class="wm-btn-outline" style="color:var(--text-on-bone);border-color:var(--rule-on-bone)" href="/simulasi">Simulator →</a>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- ══════════ CONTACT + FOOTER (footer-1 pattern) ══════════ -->
+  <section class="wm-section wm-section--ink wm-contact" id="contact">
+    <div class="wm-wrap wm-contact__grid">
+      <div class="reveal">
+        <p class="wm-eyebrow">— Contact</p>
+        <h2>Ceritakan proyek Anda.<br><em>Kita mulai dari survei.</em></h2>
+        <div class="wm-contact__actions">
+          <a class="wm-btn-solid" href="https://wa.me/6282287348422" target="_blank" rel="noopener">Whatsapp →</a>
+          <a class="wm-btn-outline" href="mailto:triluxdesign@gmail.com">Email Us →</a>
+        </div>
+      </div>
+      <div class="wm-contact__info reveal">
+        <div>
+          <h3>Studio</h3>
+          <p>Trilux Design — Interior · Exterior · Building<br>Jakarta, Indonesia</p>
+        </div>
+        <div>
+          <h3>Kami balas dalam 1×24 jam</h3>
+          <a href="https://wa.me/6282287348422" target="_blank" rel="noopener">0822 8734 8422 (WA)</a>
+          <a href="mailto:triluxdesign@gmail.com">triluxdesign@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer class="wm-foot wm-section--ink">
+    <span>© 2026 Trilux Design · Interior · Exterior · Building</span>
+    <nav aria-label="Footer">
+      <a href="/about">About</a><a href="/project">Portfolio</a><a href="/news">News</a><a href="#top">Back to top ↑</a>
+    </nav>
+  </footer>
 
 </main>
 
-<!-- S7 — Footer -->
-<footer class="site-footer panel-ink">
-  <div class="wrap footer-inner">
-    <div class="footer-brand">
-      <svg class="logo-live" width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <rect class="logo-draw d1" x="6" y="18" width="6" height="16" fill="#c08a3e"/>
-        <rect class="logo-draw d2" x="17" y="6" width="6" height="28" fill="#c08a3e"/>
-        <rect class="logo-draw d3" x="28" y="13" width="6" height="21" fill="#c08a3e"/>
-        <rect class="logo-draw d4" x="4" y="34" width="32" height="1.5" fill="#c08a3e"/>
-      </svg>
-      <div>
-        <span class="footer-name">Trilux <em>Design</em></span>
-        <span class="footer-tag">Interior · Exterior · Building — Jakarta</span>
-      </div>
-    </div>
-    <span class="footer-copy">© 2026 Trilux Design</span>
-    <a href="#cinema" id="backToTop">Back to top ↑</a>
-  </div>
-</footer>
+<!-- zoom lightbox (shared with marquee cards) -->
+<div class="wm-lightbox" id="wmLightbox" role="dialog" aria-modal="true" aria-label="Zoom gambar galeri" aria-hidden="true">
+  <button class="wm-lightbox__close" id="wmLbClose" aria-label="Tutup zoom">✕</button>
+  <figure>
+    <div id="wmLbFrame"></div>
+    <figcaption id="wmLbCap"></figcaption>
+  </figure>
+</div>
 
-<script src="assets/js/track.js" defer></script>
-<script src="assets/js/sections.js?v=2" defer></script>
-<script>
-/* CMS runtime hydration — admin edits go live without redeploy.
-   Static markup above is the build-time seed; this fetch overrides it. */
-(() => {
-  "use strict";
-  const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  fetch("/api/admin?cms=1")
-    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then((p) => {
-      const f = p && p.featured;
-      if (!f) return;
-      const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-      set("workIndex", f.index);
-      set("workName", f.name);
-      set("workLocation", f.location);
-      set("workYear", "— " + (f.year || ""));
-      set("workSpecs", f.specifics);
-      set("workType", f.type);
-      set("workClient", f.client);
-      set("workDesc", f.description);
-      const img = document.getElementById("workMainImage");
-      if (img && f.cover) img.src = f.cover;
-      if (img && f.coverAlt) img.alt = f.coverAlt;
-      const grid = document.getElementById("thumbGrid");
-      if (grid && Array.isArray(f.gallery) && f.gallery.length) {
-        grid.innerHTML = f.gallery.map((g, i) =>
-          `<button type="button"${i === 0 ? ' aria-current="true"' : ''} aria-label="${esc(g.label)}" data-full="${esc(g.thumb)}">
-            <img src="${esc(g.thumb)}" alt="" loading="lazy" decoding="async">
-          </button>`).join("");
-      }
-    })
-    .catch(() => { /* static seed already rendered — hydration is best-effort */ });
-})();
-</script>
-<script src="assets/js/main.js?v=3" defer></script>
-<script src="assets/js/cinema.js?v=8" defer></script>
+<script src="assets/js/home.js?v=1"></script>
+<script src="assets/js/main.js?v=3"></script>
+<script src="assets/js/track.js?v=1"></script>
 </body>
 </html>

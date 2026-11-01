@@ -3,7 +3,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "outputDirectory": ".",
-  "buildCommand": "node build.js && node scripts/build-pages.mjs",
+  "buildCommand": "node scripts/generate-home.mjs && node build.js && node scripts/build-pages.mjs",
   "headers": [
     {
       "source": "/admin",
