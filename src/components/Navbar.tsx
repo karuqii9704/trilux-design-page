@@ -1,5 +1,6 @@
 /* Navbar — fixed top bar + full-screen drawer menu (physics per spec prompt).
-   Adaptasi Trilux: logo Trilux, link Work/About/Contact, CTA "Book a meeting" → WA.
+   Adaptasi Trilux: logo Trilux, link anchor ke section brief v0,
+   CTA "Book a meeting" → WA.
    - Burger: 2 garis, hover shrink w-6→w-5, absolutely centered
    - Overlay: fade + backdrop-blur
    - Drawer: mobile slide-up / desktop slide-from-right (500ms, cubic-bezier(0.16,1,0.3,1))
@@ -12,9 +13,13 @@ interface NavbarProps {
   setMenuOpen: (open: boolean) => void;
 }
 
+/* anchor ke section brief v0 (Simulator "please take out" — sengaja tidak ada) */
 const LINKS = [
-  { label: "Work", href: "#work" },
+  { label: "Work", href: "#portfolio" },
   { label: "About", href: "#about" },
+  { label: "Services", href: "#services" },
+  { label: "Gallery", href: "#gallery" },
+  { label: "Studio", href: "#studio" },
   { label: "Contact", href: "#contact" },
 ];
 

@@ -18,17 +18,49 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* scroll lock saat drawer menu terbuka (Navbar toggle class ini) */
+/* scroll lock saat drawer menu terbuka (Navbar toggle class) */
 html.trilux-menu-open,
 body.trilux-menu-open {
   overflow: hidden;
 }
 
-/* reduced motion: matikan transisi panjang */
+/* anchor section — offset di bawah fixed navbar */
+section[id] {
+  scroll-margin-top: 4.5rem;
+}
+
+/* ---- Reveal on scroll (Reveal.tsx) ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 16px));
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Clients rail (text marquee, CSS loop — bukan core interaction) ---- */
+@keyframes trilux-rail {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.trilux-rail-track {
+  animation: trilux-rail 36s linear infinite;
+}
+.trilux-rail:hover .trilux-rail-track {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .trilux-rail-track {
+    animation: none;
   }
 }
