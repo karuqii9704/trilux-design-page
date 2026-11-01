@@ -26,6 +26,10 @@ export default function App() {
   const content = useContent();
   const projects = useProjects();
 
+  /* defensive: hook selalu return shape valid, tapi guard untuk keamanan hydration */
+  const featured = projects?.featured;
+  const projectList = projects?.projects ?? [];
+
   return (
     <div className="min-h-screen bg-white overflow-hidden">
       <ScrollProgress />
@@ -36,7 +40,7 @@ export default function App() {
         <About about={content.about} />
         <Expertise items={content.expertise} />
         <Services services={content.services} />
-        <Portfolio featured={projects.featured} projects={projects.projects} />
+        <Portfolio featured={featured} projects={projectList} />
         <Gallery gallery={content.gallery} />
         <Clients clients={content.clients} />
         <News news={content.news} />

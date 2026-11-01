@@ -70,7 +70,7 @@ export default function Portfolio({ featured, projects }: Props) {
       </Reveal>
 
       {/* Grid proyek lain */}
-      {projects.length > 0 && (
+      {projects && projects.length > 0 && (
         <div className="mt-16 grid gap-6 sm:grid-cols-2">
           {projects.map((p, i) => (
             <Reveal key={p.slug} delay={i * 90}>
@@ -154,7 +154,7 @@ function Lightbox({ project, onClose }: { project: FeaturedProject | ProjectItem
 
           <p className="mt-6 text-base text-neutral-700 leading-relaxed">{project.description}</p>
 
-          {project.highlights.length > 0 && (
+          {project.highlights && project.highlights.length > 0 && (
             <ul className="mt-6 space-y-2">
               {project.highlights.map((h: string) => (
                 <li key={h} className="flex gap-3 text-sm text-neutral-700">
@@ -180,7 +180,7 @@ function Lightbox({ project, onClose }: { project: FeaturedProject | ProjectItem
             </div>
           </dl>
 
-          {project.gallery.length > 0 && (
+          {project.gallery && project.gallery.length > 0 && (
             <div className="mt-6">
               <p className="text-xs uppercase tracking-[0.22em] text-neutral-400">Gallery — tampak 3D</p>
               <div className="mt-3 grid grid-cols-3 gap-3">

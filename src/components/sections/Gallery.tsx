@@ -10,12 +10,13 @@ import { Shape } from "../Shapes";
 import type { GalleryData, GalleryItem } from "../../types";
 
 export default function Gallery({ gallery }: { gallery: GalleryData }) {
+  const items = gallery?.items ?? [];
   const [index, setIndex] = useState(0);
   const [zoom, setZoom] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef({ down: false, startX: 0, startScroll: 0 });
 
-  const n = gallery.items.length;
+  const n = items.length;
   const go = useCallback(
     (dir: 1 | -1) => setIndex((i) => (i + dir + n) % n),
     [n],
@@ -88,7 +89,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
           </div>
 
           {/* stage — gambar besar + tombol zoom */}
-          <div className="mt-4 relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden rounded-sm border border-neutral-200 bg-neutral-50">
+          <div className="mt-4 relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden rounded-sm border border-neutral-200 bg-neutral-50 touch-none">
             {gallery.items.map((g: GalleryItem, i: number) => (
               <button
                 key={i}
@@ -121,7 +122,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
           {/* thumb rail — swipeable/draggable */}
           <div
             ref={trackRef}
-            className="mt-4 flex gap-3 overflow-x-auto pb-2 select-none cursor-grab active:cursor-grabbing"
+            className="mt-4 flex gap-3 overflow-x-auto pb-2 select-none cursor-grab active:cursor-grabbing touch-pan-x"
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}

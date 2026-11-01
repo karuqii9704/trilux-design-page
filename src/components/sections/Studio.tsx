@@ -34,11 +34,11 @@ export default function Studio({ studio }: { studio: StudioData }) {
   const [roomD, setRoomD] = useState(room.d);
 
   /* furnitur lokal (posisi/ukuran bisa berubah) */
-  const [furniture, setFurniture] = useState<FurnitureItem[]>(studio.furniture.map((f: FurnitureItem) => ({ ...f })));
+  const [furniture, setFurniture] = useState<FurnitureItem[]>((studio?.furniture ?? []).map((f: FurnitureItem) => ({ ...f })));
   const [selected, setSelected] = useState<string | null>(null);
 
   /* partisi lokal */
-  const [partitions, setPartitions] = useState<Partition[]>(studio.partitions.map((p: Partition) => ({ ...p })));
+  const [partitions, setPartitions] = useState<Partition[]>((studio?.partitions ?? []).map((p: Partition) => ({ ...p })));
 
   const svgRef = useRef<SVGSVGElement>(null);
   const drag = useRef<DragState>(null);

@@ -6,9 +6,8 @@ import SectionHeading from "../SectionHeading";
 import type { ClientsData } from "../../types";
 
 export default function Clients({ clients }: { clients: ClientsData }) {
-  const items = clients.items;
+  const items = clients?.items ?? [];
   const rail = [...items, ...items]; // duplikasi untuk loop seamless
-
   return (
     <section id="clients" className="border-t border-neutral-200 px-4 sm:px-6 md:px-10 py-16 sm:py-20 max-w-6xl mx-auto">
       <SectionHeading eyebrow="Our Clients" title="Dipercaya proyek-proyek residensial & komersial." align="left" />
