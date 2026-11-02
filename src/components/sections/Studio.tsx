@@ -182,7 +182,7 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
     <Reveal className="mt-8">
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         {/* ===== Canvas floorplan ===== */}
-        <div className="border border-neutral-200 rounded-sm bg-neutral-50/50 p-3 sm:p-5 overflow-hidden">
+        <div className="border tr-line rounded-sm tr-sunken/50 p-3 sm:p-5 overflow-hidden">
           <svg
             ref={svgRef}
             viewBox={`-${PAD} -${PAD} ${vw} ${vh}`}
@@ -195,22 +195,22 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
           >
             <defs>
               <pattern id="stGrid" width={GRID} height={GRID} patternUnits="userSpaceOnUse">
-                <path d={`M ${GRID} 0 L 0 0 0 ${GRID}`} fill="none" stroke="#141010" strokeOpacity="0.08" strokeWidth="1" />
-              </pattern>
-            </defs>
+              <path d={`M ${GRID} 0 L 0 0 0 ${GRID}`} fill="none" className="tr-grid" strokeWidth="1" />
+            </pattern>
+          </defs>
 
             {/* room */}
             <rect x={0} y={0} width={roomW} height={roomD} fill="url(#stGrid)" stroke="none" />
-            <rect x={0} y={0} width={roomW} height={roomD} fill="none" stroke="#141010" strokeWidth="4" />
+            <rect x={0} y={0} width={roomW} height={roomD} fill="none" className="tr-stroke" strokeWidth="4" />
             {gridLines.map((l, i) => (
-              <line key={i} {...l} stroke="#141010" strokeOpacity="0.05" strokeWidth="1" />
+              <line key={i} {...l} className="tr-grid-soft" strokeWidth="1" />
             ))}
 
             {/* label dimensi ruangan */}
-            <text x={roomW / 2} y={-14} textAnchor="middle" fontSize="13" fill="#6b6259">
+            <text x={roomW / 2} y={-14} textAnchor="middle" fontSize="13" className="tr-dim">
               {roomW} cm
             </text>
-            <text x={-14} y={roomD / 2} textAnchor="middle" fontSize="13" fill="#6b6259" transform={`rotate(-90 -14 ${roomD / 2})`}>
+            <text x={-14} y={roomD / 2} textAnchor="middle" fontSize="13" className="tr-dim" transform={`rotate(-90 -14 ${roomD / 2})`}>
               {roomD} cm
             </text>
 
@@ -220,15 +220,15 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
                 <g key={p.id}>
                   <line
                     x1={p.from} y1={p.x} x2={p.to} y2={p.x}
-                    stroke="#b07f3a" strokeWidth="3" className="cursor-grab"
+                    className="tr-stroke-brass cursor-grab" strokeWidth="3"
                     onPointerDown={(e) => onPartDown(e, p.id, "move")}
                   />
                   <circle
-                    cx={p.to} cy={p.x} r="8" fill="#b07f3a" className="cursor-ew-resize"
+                    cx={p.to} cy={p.x} r="8" className="tr-brass-bg cursor-ew-resize"
                     onPointerDown={(e) => onPartDown(e, p.id, "resize")}
                     aria-label={`Handle partisi ${p.label}`}
                   />
-                  <text x={(p.from + p.to) / 2} y={p.x - 10} textAnchor="middle" fontSize="12" fill="#8f6524">
+                  <text x={(p.from + p.to) / 2} y={p.x - 10} textAnchor="middle" fontSize="12" className="tr-brass">
                     {p.label} · {p.to - p.from} cm
                   </text>
                 </g>
@@ -236,15 +236,15 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
                 <g key={p.id}>
                   <line
                     x1={p.x} y1={p.from} x2={p.x} y2={p.to}
-                    stroke="#b07f3a" strokeWidth="3" className="cursor-grab"
+                    className="tr-stroke-brass cursor-grab" strokeWidth="3"
                     onPointerDown={(e) => onPartDown(e, p.id, "move")}
                   />
                   <circle
-                    cx={p.x} cy={p.to} r="8" fill="#b07f3a" className="cursor-ns-resize"
+                    cx={p.x} cy={p.to} r="8" className="tr-brass-bg cursor-ns-resize"
                     onPointerDown={(e) => onPartDown(e, p.id, "resize")}
                     aria-label={`Handle partisi ${p.label}`}
                   />
-                  <text x={p.x + 10} y={(p.from + p.to) / 2} fontSize="12" fill="#8f6524">
+                  <text x={p.x + 10} y={(p.from + p.to) / 2} fontSize="12" className="tr-brass">
                     {p.label} · {p.to - p.from} cm
                   </text>
                 </g>
@@ -261,12 +261,12 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
               >
                 <rect
                   width={f.w} height={f.d}
-                  fill="rgba(176,127,58,0.10)"
-                  stroke={selected === f.id ? "#141010" : "#b07f3a"}
+                  className="tr-brass-bg" fillOpacity={selected === f.id ? "0.18" : "0.10"}
+                  stroke={selected === f.id ? "var(--tr-fg)" : "var(--tr-brass)"}
                   strokeWidth={selected === f.id ? 2.5 : 1.5}
                 />
-                <text x="4" y="-6" fontSize="12" fill="#141010">{f.label}</text>
-                <text x={f.w / 2} y={f.d / 2 + 4} textAnchor="middle" fontSize="11" fill="#6b6259">
+                <text x="4" y="-6" fontSize="12" className="tr-fg">{f.label}</text>
+                <text x={f.w / 2} y={f.d / 2 + 4} textAnchor="middle" fontSize="11" className="tr-dim">
                   {f.w} × {f.d} cm
                 </text>
               </g>
@@ -277,21 +277,21 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
         {/* ===== Panel kontrol ===== */}
         <aside className="space-y-8">
           {/* Ruangan */}
-          <div className="border-t-2 border-neutral-900 pt-5">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Ruangan</p>
+          <div className="border-t-2 tr-line-strong pt-5">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">Ruangan</p>
             <div className="mt-4 space-y-4">
               <Stepper label="Lebar" value={roomW} unit="cm" onMinus={() => stepRoom("w", -20)} onPlus={() => stepRoom("w", 20)} />
               <Stepper label="Kedalaman" value={roomD} unit="cm" onMinus={() => stepRoom("d", -20)} onPlus={() => stepRoom("d", 20)} />
             </div>
-            <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
+            <p className="mt-4 text-xs tr-faint leading-relaxed">
               Grid = {GRID} cm. Semua dimensi dalam sentimeter. Nilai dummy per brief.
             </p>
           </div>
 
           {/* Partisi */}
-          <div className="border-t border-neutral-200 pt-5">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Partisi / Dinding</p>
-            <p className="mt-3 text-xs text-neutral-500 leading-relaxed">
+          <div className="border-t tr-line pt-5">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">Partisi / Dinding</p>
+            <p className="mt-3 text-xs tr-faint leading-relaxed">
               Tarik handle brass untuk mengubah panjang. Seret badan partisi untuk menggeser posisi.
               Klik partisi tanpa menggeser untuk menghapus.
             </p>
@@ -299,23 +299,23 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
               <button
                 type="button"
                 onClick={() => addPartition("vertical")}
-                className="text-xs font-medium border border-neutral-300 rounded-full px-3 py-1.5 hover:border-neutral-900 transition-colors cursor-pointer"
+                className="text-xs font-medium border tr-line rounded-full px-3 py-1.5 hover:border-current transition-colors tr-fg cursor-pointer"
               >
                 ＋ Partisi vertikal
               </button>
               <button
                 type="button"
                 onClick={() => addPartition("horizontal")}
-                className="text-xs font-medium border border-neutral-300 rounded-full px-3 py-1.5 hover:border-neutral-900 transition-colors cursor-pointer"
+                className="text-xs font-medium border tr-line rounded-full px-3 py-1.5 hover:border-current transition-colors tr-fg cursor-pointer"
               >
                 ＋ Partisi horizontal
               </button>
             </div>
             <ul className="mt-3 space-y-1.5">
               {partitions.map((p) => (
-                <li key={p.id} className="flex items-center justify-between text-sm text-neutral-700">
+                <li key={p.id} className="flex items-center justify-between text-sm tr-muted">
                   <span>{p.label}</span>
-                  <span className="tabular-nums text-neutral-500">
+                  <span className="tabular-nums tr-faint">
                     {p.orientation === "horizontal" ? "horizontal" : "vertikal"} · {p.to - p.from} cm
                   </span>
                 </li>
@@ -324,9 +324,9 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
           </div>
 
           {/* Furnitur */}
-          <div className="border-t border-neutral-200 pt-5">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Furnitur</p>
-            <p className="mt-3 text-xs text-neutral-500 leading-relaxed">
+          <div className="border-t tr-line pt-5">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">Furnitur</p>
+            <p className="mt-3 text-xs tr-faint leading-relaxed">
               Seret furnitur di canvas. Pilih untuk melihat & mengubah ukuran (cm).
             </p>
             <ul className="mt-3 space-y-1.5">
@@ -337,8 +337,8 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
                     onClick={() => setSelected(f.id)}
                     className={`w-full text-left px-3 py-2 text-sm rounded-sm border transition-colors cursor-pointer ${
                       selected === f.id
-                        ? "border-neutral-900 bg-neutral-900 text-white"
-                        : "border-neutral-200 hover:border-neutral-900"
+                        ? "tr-line-strong tr-invert-bg tr-invert-fg"
+                        : "tr-line hover:border-current tr-fg"
                     }`}
                   >
                     <span className="font-medium">{f.label}</span>
@@ -350,8 +350,8 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
 
             {selected && selFurn && (
               <div className="mt-4">
-                <p className="text-xs text-neutral-500 mb-2">
-                  Ukuran terpilih: <span className="font-medium text-neutral-900">{selFurn.label}</span>
+                <p className="text-xs tr-faint mb-2">
+                  Ukuran terpilih: <span className="font-medium tr-fg">{selFurn.label}</span>
                 </p>
                 <Stepper
                   label="Lebar furnitur"
@@ -364,7 +364,7 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
             )}
           </div>
 
-          <p className="text-xs text-neutral-400 border border-neutral-200 rounded-sm p-3 leading-relaxed">
+          <p className="text-xs tr-faint border tr-line rounded-sm p-3 leading-relaxed">
             Eksplorasi ruang interaktif — dummy. Akun dan fitur kolaborasi belum tersedia
             (sesuai brief v0).
           </p>
@@ -379,20 +379,20 @@ function Stepper({ label, value, unit, onMinus, onPlus }: {
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-sm text-neutral-600">{label}</span>
-      <div className="flex items-center border border-neutral-300 rounded-full">
+      <span className="text-sm tr-muted">{label}</span>
+      <div className="flex items-center border tr-line rounded-full">
         <button
           type="button" onClick={onMinus} aria-label={`Kurangi ${label}`}
-          className="w-9 h-9 rounded-full hover:bg-neutral-100 transition-colors text-neutral-900 cursor-pointer"
+          className="w-9 h-9 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors tr-fg cursor-pointer"
         >
           −
         </button>
-        <output className="w-20 text-center text-sm font-medium tabular-nums">
-          {value} <span className="text-xs text-neutral-400">{unit}</span>
+        <output className="w-20 text-center text-sm font-medium tabular-nums tr-fg">
+          {value} <span className="text-xs tr-faint">{unit}</span>
         </output>
         <button
           type="button" onClick={onPlus} aria-label={`Tambah ${label}`}
-          className="w-9 h-9 rounded-full hover:bg-neutral-100 transition-colors text-neutral-900 cursor-pointer"
+          className="w-9 h-9 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors tr-fg cursor-pointer"
         >
           +
         </button>

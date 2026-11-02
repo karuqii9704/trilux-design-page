@@ -21,7 +21,8 @@ const IMAGES: string[] = [
 
 const SPEED = 0.8; // px per frame auto-scroll left
 
-/* Curved white mask — concave curtain (persis path spec). */
+/* Curved mask — concave curtain (persis path spec).
+   Fill mengikuti variabel tema (.tr-mask) agar seam dengan bg di mode gelap. */
 function Mask({ top }: { top: boolean }) {
   const d = top
     ? "M0 0H1440V50C1440 50 1200 100 720 100C240 100 0 50 0 50V0Z"
@@ -34,7 +35,7 @@ function Mask({ top }: { top: boolean }) {
       aria-hidden="true"
     >
       <svg viewBox="0 0 1440 100" preserveAspectRatio="none" className="w-full h-full">
-        <path d={d} fill="#ffffff" />
+        <path d={d} className="tr-mask" />
       </svg>
     </div>
   );
@@ -135,7 +136,7 @@ export default function Marquee() {
         {slides.map((src, i) => (
           <figure
             key={i}
-            className="w-60 h-80 sm:w-80 sm:h-[32rem] flex-shrink-0 rounded-2xl overflow-hidden bg-neutral-100"
+            className="w-60 h-80 sm:w-80 sm:h-[32rem] flex-shrink-0 rounded-2xl overflow-hidden tr-sunken"
           >
             <img
               src={src}

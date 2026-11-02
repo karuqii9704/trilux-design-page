@@ -1,7 +1,8 @@
 /* FooterIsland — FOOTER FLOATING ISLAND (brief v0 footer content).
    Pill rounded-full melayang di atas bottom (bukan menempel edge),
    berisi © + kontak WA/email + mode toggle ringkas.
-   Dipakai Landing (menggantikan BottomSection menempel) & StudioPage. */
+   Dipakai Landing (menggantikan BottomSection menempel) & StudioPage.
+   Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import { useTheme } from "../hooks/useTheme";
 
 const WA_URL = "https://wa.me/6282287348422";
@@ -28,14 +29,14 @@ export default function FooterIsland() {
 
   return (
     <footer className="px-4 sm:px-6 pb-8 pt-2">
-      <div className="mx-auto max-w-3xl rounded-full border border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.10)] px-5 sm:px-7 py-3.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+      <div className="mx-auto max-w-3xl rounded-full border tr-line tr-surface/80 backdrop-blur-xl tr-shadow px-5 sm:px-7 py-3.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         {/* kiri — copyright + kontak */}
-        <div className="flex items-center gap-4 sm:gap-5 text-xs text-neutral-600 dark:text-neutral-300">
+        <div className="flex items-center gap-4 sm:gap-5 text-xs tr-muted">
           <span>© {year} Trilux Design</span>
-          <a href={WA_URL} target="_blank" rel="noopener" className="underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:decoration-current transition-colors">
+          <a href={WA_URL} target="_blank" rel="noopener" className="underline underline-offset-4 hover:opacity-70 transition-opacity">
             WhatsApp
           </a>
-          <a href={`mailto:${EMAIL}`} className="underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:decoration-current transition-colors">
+          <a href={`mailto:${EMAIL}`} className="underline underline-offset-4 hover:opacity-70 transition-opacity">
             Email
           </a>
         </div>

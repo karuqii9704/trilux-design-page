@@ -1,6 +1,7 @@
 /* Services — 4 layanan (Interior · Exterior · MEP · Manufacturing).
-   Brief v0: "visualisasikan lebih modern & minimalist" → numbered rows/
-   hairline, hover reveal deskripsi + points. Berbasis data CMS. */
+   Brief v0: "visualisasikan lebih modern & minimalist" → numbered rows/hairline,
+   hover reveal deskripsi + points. Berbasis data CMS.
+   Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import { useState } from "react";
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
@@ -10,7 +11,7 @@ export default function Services({ services }: { services: ServiceItem[] }) {
   const [active, setActive] = useState<number>(0);
 
   return (
-    <section id="services" className="border-t border-neutral-200 px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
+    <section id="services" className="border-t tr-line px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
       <SectionHeading
         eyebrow="Services"
         title="Interior, exterior, sistem, hingga produksinya."
@@ -26,29 +27,28 @@ export default function Services({ services }: { services: ServiceItem[] }) {
                 type="button"
                 onClick={() => setActive(open ? -1 : i)}
                 aria-expanded={open}
-                className="group w-full text-left border-t border-neutral-200 py-6 sm:py-7 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900"
+                className="group w-full text-left border-t tr-line py-6 sm:py-7 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:tr-line-strong"
               >
                 <div className="flex items-baseline justify-between gap-6">
                   <div className="flex items-baseline gap-4 sm:gap-6 min-w-0">
-                    <span className="text-xs font-medium text-neutral-400 tabular-nums">{s.tag}</span>
-                    <h3 className={`text-2xl sm:text-3xl font-semibold tracking-tight transition-colors duration-300 ${
-                      open ? "text-neutral-900" : "text-neutral-900 group-hover:text-neutral-500"
+                    <span className="text-xs font-medium tr-faint tabular-nums">{s.tag}</span>
+                    <h3 className={`text-2xl sm:text-3xl font-semibold tracking-tight transition-colors duration-300 tr-fg ${
+                      open ? "" : "group-hover:tr-faint"
                     }`}>
                       {s.name}
                     </h3>
                   </div>
                   <span
                     aria-hidden="true"
-                    className={`flex-none text-2xl leading-none text-neutral-400 transition-transform duration-500 ${
-                      open ? "rotate-45 text-neutral-900" : ""
+                    className={`flex-none text-2xl leading-none tr-faint transition-transform duration-500 ${
+                      open ? "rotate-45 tr-fg" : ""
                     }`}
                   >
                     +
                   </span>
                 </div>
 
-                {/* jawaban accordion — animasi grid-rows (transform-only tidak memungkinkan untuk
-                    height auto; pakai grid-template-rows 0fr→1fr yang GPU-friendly) */}
+                {/* jawaban accordion — animasi grid-rows (GPU-friendly) */}
                 <div
                   className={`grid transition-[grid-template-rows] duration-500 ease-out ${
                     open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
@@ -56,12 +56,12 @@ export default function Services({ services }: { services: ServiceItem[] }) {
                 >
                   <div className="overflow-hidden">
                     <div className="pt-4 max-w-3xl">
-                      <p className="text-base sm:text-lg text-neutral-700 leading-relaxed">{s.desc}</p>
+                      <p className="text-base sm:text-lg tr-muted leading-relaxed">{s.desc}</p>
                       <ul className="mt-4 flex flex-wrap gap-2">
                         {s.points.map((p: string) => (
                           <li
                             key={p}
-                            className="text-xs font-medium uppercase tracking-wider text-neutral-500 border border-neutral-200 rounded-full px-3 py-1.5"
+                            className="tr-chip text-xs font-medium uppercase tracking-wider px-3 py-1.5"
                           >
                             {p}
                           </li>
@@ -74,7 +74,7 @@ export default function Services({ services }: { services: ServiceItem[] }) {
             </Reveal>
           );
         })}
-        <div className="border-t border-neutral-200" />
+        <div className="border-t tr-line" />
       </div>
     </section>
   );

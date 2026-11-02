@@ -1,13 +1,14 @@
 /* Contact — CONTACT (brief v0 nav item).
    Copy singkat + kontak asli (WA/email/IG/lokasi dari CMS site).
-   Footer = FooterIsland (floating island) — dirender Landing, bukan di sini. */
+   Footer = FooterIsland (floating island) — dirender Landing, bukan di sini.
+   Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
 import type { SiteData } from "../../types";
 
 export default function Contact({ site }: { site: SiteData }) {
   return (
-    <section id="contact" className="border-t border-neutral-200 px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
+    <section id="contact" className="border-t tr-line px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
       <div className="grid gap-12 md:grid-cols-2">
         <div>
           <SectionHeading
@@ -21,13 +22,13 @@ export default function Contact({ site }: { site: SiteData }) {
                 href={site.wa}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center gap-2 text-sm font-medium text-white bg-neutral-900 rounded-full px-6 py-3 hover:bg-neutral-800 transition-colors"
+                className="tr-btn text-sm font-medium rounded-full px-6 py-3"
               >
                 Whatsapp →
               </a>
               <a
                 href={`mailto:${site.email}`}
-                className="inline-flex items-center gap-2 text-sm font-medium text-neutral-900 border border-neutral-300 rounded-full px-6 py-3 hover:border-neutral-900 transition-colors"
+                className="inline-flex items-center gap-2 text-sm font-medium tr-fg border tr-line rounded-full px-6 py-3 hover:border-current transition-colors"
               >
                 Email Us →
               </a>
@@ -36,30 +37,30 @@ export default function Contact({ site }: { site: SiteData }) {
         </div>
 
         <Reveal delay={100}>
-          <dl className="border-t-2 border-neutral-900 pt-6 space-y-5 text-sm">
+          <dl className="border-t-2 tr-line-strong pt-6 space-y-5 text-sm">
             <div className="flex gap-6">
-              <dt className="w-24 flex-none text-xs uppercase tracking-wider text-neutral-400 pt-0.5">Phone</dt>
-              <dd className="font-medium text-neutral-900">
-                <a href={site.phoneHref} className="hover:text-neutral-500 transition-colors">{site.phone}</a>
+              <dt className="w-24 flex-none text-xs uppercase tracking-wider tr-faint pt-0.5">Phone</dt>
+              <dd className="font-medium tr-fg">
+                <a href={site.phoneHref} className="hover:opacity-60 transition-opacity">{site.phone}</a>
               </dd>
             </div>
             <div className="flex gap-6">
-              <dt className="w-24 flex-none text-xs uppercase tracking-wider text-neutral-400 pt-0.5">Email</dt>
+              <dt className="w-24 flex-none text-xs uppercase tracking-wider tr-faint pt-0.5">Email</dt>
               <dd>
-                <a href={`mailto:${site.email}`} className="text-neutral-700 hover:text-neutral-900 transition-colors">{site.email}</a>
+                <a href={`mailto:${site.email}`} className="tr-muted hover:tr-fg transition-colors">{site.email}</a>
               </dd>
             </div>
             <div className="flex gap-6">
-              <dt className="w-24 flex-none text-xs uppercase tracking-wider text-neutral-400 pt-0.5">Instagram</dt>
+              <dt className="w-24 flex-none text-xs uppercase tracking-wider tr-faint pt-0.5">Instagram</dt>
               <dd>
-                <a href={site.instagramUrl} target="_blank" rel="noopener" className="text-neutral-700 hover:text-neutral-900 transition-colors">
+                <a href={site.instagramUrl} target="_blank" rel="noopener" className="tr-muted hover:tr-fg transition-colors">
                   {site.instagram}
                 </a>
               </dd>
             </div>
             <div className="flex gap-6">
-              <dt className="w-24 flex-none text-xs uppercase tracking-wider text-neutral-400 pt-0.5">Location</dt>
-              <dd className="text-neutral-700">{site.location}</dd>
+              <dt className="w-24 flex-none text-xs uppercase tracking-wider tr-faint pt-0.5">Location</dt>
+              <dd className="tr-muted">{site.location}</dd>
             </div>
           </dl>
         </Reveal>

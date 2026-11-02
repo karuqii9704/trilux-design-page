@@ -1,5 +1,5 @@
 /* ScrollProgress — garis tipis (2px) di bawah viewport, scaleX mengikuti scroll.
-   Di luar navbar (tidak mengubah spec navbar lampiran). Reduced-motion: statis. */
+   Warna via var tema (invert) — otomatis ikut mode. Reduced-motion: statis. */
 import { useEffect, useRef } from "react";
 
 export default function ScrollProgress() {
@@ -32,7 +32,7 @@ export default function ScrollProgress() {
     <div
       ref={barRef}
       aria-hidden="true"
-      className="fixed top-0 left-0 right-0 h-[2px] origin-left scale-x-0 bg-neutral-900 z-[80]"
+      className="fixed top-0 left-0 right-0 h-[2px] origin-left scale-x-0 tr-invert-bg z-[80]"
     />
   );
 }

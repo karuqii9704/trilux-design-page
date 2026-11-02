@@ -104,7 +104,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
 
       {/* ══════════ FLOATING ISLAND (fixed, terpusat, melayang) ══════════ */}
       <header className="fixed top-0 inset-x-0 z-50 flex justify-center px-3 sm:px-4 pt-3 sm:pt-4 pointer-events-none">
-        <nav className="pointer-events-auto flex items-center justify-between gap-2 w-full max-w-3xl rounded-full border border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.10)] px-3 sm:px-4 py-2.5 sm:py-3">
+        <nav className="pointer-events-auto flex items-center justify-between gap-2 w-full max-w-3xl rounded-full border tr-line tr-surface/80 backdrop-blur-xl tr-shadow px-3 sm:px-4 py-2.5 sm:py-3">
           {/* LEFT — logo */}
           <a href="#top" aria-label="Trilux Design — home" className="flex items-center gap-2 tr-fg shrink-0">
             <TriluxLogo size={24} />
@@ -140,7 +140,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               href={WA_URL}
               target="_blank"
               rel="noopener"
-              className="hidden sm:inline-flex text-xs font-medium tracking-wide text-white bg-neutral-900 dark:bg-white dark:text-neutral-900 rounded-full px-4 py-2 hover:opacity-85 transition-opacity"
+              className="tr-btn hidden sm:inline-flex text-xs font-medium tracking-wide rounded-full px-4 py-2"
             >
               Book a meeting
             </a>
@@ -152,7 +152,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
 
       {/* ══════════ OVERLAY ══════════ */}
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] transition-opacity duration-500 ${
+        className={`fixed inset-0 tr-overlay backdrop-blur-sm z-[60] transition-opacity duration-500 ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
@@ -237,7 +237,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               target="_blank"
               rel="noopener"
               onClick={() => setMenuOpen(false)}
-              className="trilux-cta-drawer inline-flex text-sm font-medium text-white bg-neutral-900 dark:bg-white dark:text-neutral-900 rounded-full px-6 py-3 hover:opacity-85 transition-opacity"
+              className="trilux-cta-drawer inline-flex text-sm font-medium tr-btn rounded-full px-6 py-3"
               style={menuOpen ? { transitionDelay: "400ms" } : { transitionDelay: "0ms" }}
             >
               Book a meeting

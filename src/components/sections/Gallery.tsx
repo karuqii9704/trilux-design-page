@@ -2,7 +2,8 @@
    detail ukuran/material), wajib tombol swipe + zoom.
    Implementasi: carousel drag (pointer events, native di mobile), prev/next +
    thumb rail, zoom lightbox (klik gambar / tombol zoom / ESC tutup).
-   Visual = shapes-based placeholder (8 varian) — jujur dummy, siap ganti aset asli. */
+   Visual = shapes-based placeholder (8 varian) — jujur dummy, siap ganti aset asli.
+   Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import { useCallback, useEffect, useRef, useState } from "react";
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
@@ -55,7 +56,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
   };
 
   return (
-    <section id="gallery" className="border-t border-neutral-200 px-4 sm:px-6 md:px-10 py-20 sm:py-28">
+    <section id="gallery" className="border-t tr-line px-4 sm:px-6 md:px-10 py-20 sm:py-28">
       <div className="max-w-6xl mx-auto">
         <SectionHeading
           eyebrow="Gallery"
@@ -65,7 +66,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
 
         <Reveal className="mt-10">
           <div className="flex items-center justify-between gap-4">
-            <p className="text-sm text-neutral-500 tabular-nums">
+            <p className="text-sm tr-faint tabular-nums">
               {String(index + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
             </p>
             <div className="flex gap-2">
@@ -73,7 +74,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                 type="button"
                 onClick={() => go(-1)}
                 aria-label="Gambar sebelumnya"
-                className="w-11 h-11 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors text-neutral-900 cursor-pointer"
+                className="w-11 h-11 rounded-full border tr-line hover:border-current transition-colors tr-fg cursor-pointer"
               >
                 ←
               </button>
@@ -81,7 +82,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                 type="button"
                 onClick={() => go(1)}
                 aria-label="Gambar berikutnya"
-                className="w-11 h-11 rounded-full border border-neutral-300 hover:border-neutral-900 transition-colors text-neutral-900 cursor-pointer"
+                className="w-11 h-11 rounded-full border tr-line hover:border-current transition-colors tr-fg cursor-pointer"
               >
                 →
               </button>
@@ -89,7 +90,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
           </div>
 
           {/* stage — gambar besar + tombol zoom */}
-          <div className="mt-4 relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden rounded-sm border border-neutral-200 bg-neutral-50 touch-none">
+          <div className="mt-4 relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden rounded-sm border tr-line tr-sunken touch-none">
             {gallery.items.map((g: GalleryItem, i: number) => (
               <button
                 key={i}
@@ -103,20 +104,20 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                 <Shape variant={(i % 8) + 1} className="h-full w-full object-cover" />
               </button>
             ))}
-            <span className="absolute bottom-4 left-4 bg-white/90 border border-neutral-200 text-xs font-medium uppercase tracking-wider text-neutral-700 px-3 py-1.5">
+            <span className="absolute bottom-4 left-4 tr-surface/90 border tr-line text-xs font-medium uppercase tracking-wider tr-muted px-3 py-1.5">
               {gallery.items[index]?.kind}
             </span>
-            <span className="absolute bottom-4 right-4 bg-white/90 border border-neutral-200 text-xs text-neutral-500 px-3 py-1.5">
+            <span className="absolute bottom-4 right-4 tr-surface/90 border tr-line text-xs tr-faint px-3 py-1.5">
               klik untuk zoom
             </span>
           </div>
 
           {/* caption */}
           <div className="mt-4 flex items-baseline justify-between gap-4">
-            <h3 className="text-lg font-semibold tracking-tight text-neutral-900">
+            <h3 className="text-lg font-semibold tracking-tight tr-fg">
               {gallery.items[index]?.caption}
             </h3>
-            <p className="text-sm text-neutral-500">{gallery.items[index]?.alt}</p>
+            <p className="text-sm tr-faint">{gallery.items[index]?.alt}</p>
           </div>
 
           {/* thumb rail — swipeable/draggable */}
@@ -139,8 +140,8 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                 aria-current={i === index}
                 className={`flex-none w-24 h-32 sm:w-28 sm:h-36 overflow-hidden rounded-sm border transition-all duration-300 cursor-pointer ${
                   i === index
-                    ? "border-neutral-900 border-2"
-                    : "border-neutral-200 opacity-60 hover:opacity-100"
+                    ? "tr-line-strong border-2"
+                    : "tr-line opacity-60 hover:opacity-100"
                 }`}
               >
                 <Shape variant={(i % 8) + 1} className="h-full w-full object-cover" />
@@ -153,30 +154,30 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
       {/* Zoom lightbox */}
       {zoom && gallery.items[index] && (
         <div
-          className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center p-4 sm:p-10"
+          className="fixed inset-0 z-[70] tr-overlay flex items-center justify-center p-4 sm:p-10"
           role="dialog"
           aria-modal="true"
           aria-label={`Zoom: ${gallery.items[index].caption}`}
           onClick={() => setZoom(false)}
         >
           <figure
-            className="bg-white max-w-4xl w-full rounded-sm overflow-hidden"
+            className="tr-surface max-w-4xl w-full rounded-sm overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="aspect-[4/3] sm:aspect-[16/10] bg-neutral-50">
+            <div className="aspect-[4/3] sm:aspect-[16/10] tr-sunken">
               <Shape variant={(index % 8) + 1} className="h-full w-full object-cover" />
             </div>
             <figcaption className="px-5 py-4 flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-neutral-900">{gallery.items[index].caption}</p>
-                <p className="text-xs text-neutral-500 mt-0.5">{gallery.items[index].alt}</p>
+                <p className="text-sm font-semibold tr-fg">{gallery.items[index].caption}</p>
+                <p className="text-xs tr-faint mt-0.5">{gallery.items[index].alt}</p>
               </div>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => go(-1)}
                   aria-label="Sebelumnya"
-                  className="w-10 h-10 rounded-full border border-neutral-300 hover:border-neutral-900 cursor-pointer"
+                  className="w-10 h-10 rounded-full border tr-line hover:border-current tr-fg cursor-pointer"
                 >
                   ←
                 </button>
@@ -184,7 +185,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                   type="button"
                   onClick={() => go(1)}
                   aria-label="Berikutnya"
-                  className="w-10 h-10 rounded-full border border-neutral-300 hover:border-neutral-900 cursor-pointer"
+                  className="w-10 h-10 rounded-full border tr-line hover:border-current tr-fg cursor-pointer"
                 >
                   →
                 </button>
@@ -192,7 +193,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                   type="button"
                   onClick={() => setZoom(false)}
                   aria-label="Tutup zoom"
-                  className="w-10 h-10 rounded-full bg-neutral-900 text-white cursor-pointer"
+                  className="w-10 h-10 rounded-full tr-btn cursor-pointer"
                 >
                   ×
                 </button>

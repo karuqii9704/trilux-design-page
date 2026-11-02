@@ -1,27 +1,56 @@
 /* Tailwind v4 (via @tailwindcss/vite).
-   Geist = primary typeface (loaded di index.html). Murni hitam/putih —
-   tidak ada purple/cream. Mode gelap/terang TANPA warna baru: cukup tukar
-   variabel --tr-bg / --tr-fg / --tr-line (putih↔hitam). Aksen brass hanya
-   detail kecil di logo mark & handle partisi studio (bukan tema). */
+   Geist = primary typeface (loaded di index.html).
+   TEMA GELAP/TERANG DINAMIS — semua warna komponen berasal dari variabel CSS
+   (--tr-*), ditukar oleh html.trilux-dark. Murni hitam/putih (tanpa warna baru);
+   brass hanya aksen detail kecil (logo mark, handle partisi, highlight hover). */
 @import "tailwindcss";
 
 :root {
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  /* tema terang (default) */
-  --tr-bg: #ffffff;
-  --tr-fg: #171717;
-  --tr-line: rgba(0, 0, 0, 0.08);
+
+  /* ══ tema terang (default) ══ */
+  --tr-bg: #ffffff;             /* latar halaman */
+  --tr-surface: #ffffff;        /* panel/kartu/konten */
+  --tr-sunken: #fafafa;         /* area tenggelam (canvas, thumb, placeholder) */
+  --tr-fg: #171717;             /* teks utama */
+  --tr-muted: #525252;          /* teks sekunder */
+  --tr-faint: #737373;          /* teks tersier/eyebrow */
+  --tr-line: rgba(0, 0, 0, 0.1);      /* border hairline */
+  --tr-line-strong: #171717;    /* border tebal (akses) + hover */
+  --tr-invert-bg: #171717;      /* tombol/primer: bg gelap */
+  --tr-invert-fg: #ffffff;      /* tombol/primer: teks terang */
+  --tr-brass: #b07f3a;          /* aksen kecil saja */
+  --tr-mask: #ffffff;           /* marquee curved mask (ikuti bg) */
+  --tr-overlay: rgba(0, 0, 0, 0.5);
+  --tr-shadow: rgba(0, 0, 0, 0.1);
+  --tr-grid-line: rgba(0, 0, 0, 0.08);   /* grid floorplan */
+  --tr-grid-line-soft: rgba(0, 0, 0, 0.05);
+  --tr-dim: #6b6259;            /* label dimensi */
 }
 
-/* tema gelap — hitam/putih saja (bg hitam, fg putih, line putih transparan) */
+/* ══ tema gelap — tukar variabel, tanpa warna baru ══ */
 html.trilux-dark {
   --tr-bg: #0a0a0a;
+  --tr-surface: #111111;
+  --tr-sunken: #0e0e0e;
   --tr-fg: #f5f5f5;
-  --tr-line: rgba(255, 255, 255, 0.12);
+  --tr-muted: #d4d4d4;
+  --tr-faint: #a3a3a3;
+  --tr-line: rgba(255, 255, 255, 0.22);   /* lebih tegas agar kartu/section terlihat di hitam */
+  --tr-line-strong: #f5f5f5;
+  --tr-invert-bg: #f5f5f5;
+  --tr-invert-fg: #0a0a0a;
+  --tr-brass: #c99a5b;          /* brass sedikit lebih terang agar kelihatan di hitam */
+  --tr-mask: #0a0a0a;
+  --tr-overlay: rgba(0, 0, 0, 0.7);
+  --tr-shadow: rgba(0, 0, 0, 0.6);
+  --tr-grid-line: rgba(255, 255, 255, 0.14);
+  --tr-grid-line-soft: rgba(255, 255, 255, 0.08);
+  --tr-dim: #c4c4c4;
 }
 
 html {
-  background: var(--tr-bg); /* isi gutter scrollbar Windows — html transparan → strip putih */
+  background: var(--tr-bg); /* isi gutter scrollbar Windows */
 }
 
 body {
@@ -30,12 +59,50 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* utilitas tema (dipakai komponen — menghindari repetisi arbitrary values) */
-.tr-bg   { background-color: var(--tr-bg); }
-.tr-fg   { color: var(--tr-fg); }
-.tr-line { border-color: var(--tr-line); }
+/* ═══ utilitas tema (dipakai semua komponen — otomatis ikut mode) ═══ */
+.tr-bg           { background-color: var(--tr-bg); }
+.tr-surface      { background-color: var(--tr-surface); }
+.tr-sunken       { background-color: var(--tr-sunken); }
+.tr-fg           { color: var(--tr-fg); }
+.tr-muted        { color: var(--tr-muted); }
+.tr-faint        { color: var(--tr-faint); }
+.tr-line         { border-color: var(--tr-line); }
+.tr-line-strong  { border-color: var(--tr-line-strong); }
+.tr-brass        { color: var(--tr-brass); }
+.tr-brass-bg     { background-color: var(--tr-brass); }
+.tr-invert-bg    { background-color: var(--tr-invert-bg); }
+.tr-invert-fg    { color: var(--tr-invert-fg); }
+.tr-mask         { fill: var(--tr-mask); }          /* svg mask marquee */
+.tr-grid         { stroke: var(--tr-fg); stroke-opacity: 0.08; }
+.tr-grid-soft    { stroke: var(--tr-fg); stroke-opacity: 0.05; }
+.tr-dim          { fill: var(--tr-dim); }
+.tr-stroke       { stroke: var(--tr-fg); }
+.tr-stroke-brass { stroke: var(--tr-brass); }
+.tr-fill-surface { fill: var(--tr-surface); }
+.tr-fill-sunken  { fill: var(--tr-sunken); }
+.tr-overlay      { background-color: var(--tr-overlay); }
+.tr-shadow       { box-shadow: 0 12px 40px var(--tr-shadow); }
 
-/* scroll lock saat drawer menu terbuka (Navbar toggle class) */
+/* tombol primer semantik (terbalik: gelap-di-terang / terang-di-gelap) */
+.tr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--tr-invert-bg);
+  color: var(--tr-invert-fg);
+  border-radius: 9999px;
+  transition: opacity 200ms ease;
+}
+.tr-btn:hover { opacity: 0.85; }
+
+/* chip semantik (tags/points) */
+.tr-chip {
+  border: 1px solid var(--tr-line);
+  border-radius: 9999px;
+  color: var(--tr-faint);
+}
+
+/* scroll lock saat drawer menu terbuka */
 html.trilux-menu-open,
 body.trilux-menu-open {
   overflow: hidden;
@@ -59,7 +126,7 @@ section[id] {
   transform: none;
 }
 
-/* ---- Clients rail (text marquee, CSS loop — bukan core interaction) ---- */
+/* ---- Clients rail (text marquee, CSS loop) ---- */
 @keyframes trilux-rail {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }

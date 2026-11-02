@@ -1,5 +1,5 @@
 /* ErrorBoundary — bila ada section yang error, tampilkan fallback jujur
-   (bukan layar putih). Pola defensive: tidak pernah bikin produksi blank. */
+   (bukan layar putih). Warna via utilitas tema — ikut mode gelap/terang. */
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 
@@ -23,7 +23,6 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // log ke console (build produksi: tanpa sentry dulu)
     console.error("[Trilux ErrorBoundary]", error, info?.componentStack);
   }
 
@@ -31,19 +30,19 @@ export default class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
       return (
-        <div className="min-h-screen bg-white text-neutral-900 flex items-center justify-center px-6">
+        <div className="min-h-screen tr-bg tr-fg flex items-center justify-center px-6">
           <div className="max-w-md text-center">
-            <p className="text-xs uppercase tracking-[0.22em] text-neutral-400">Trilux Design</p>
+            <p className="text-xs uppercase tracking-[0.22em] tr-faint">Trilux Design</p>
             <h1 className="mt-4 text-2xl font-semibold tracking-tight">Halaman belum termuat</h1>
-            <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
+            <p className="mt-3 text-sm tr-muted leading-relaxed">
               Ada gangguan saat menampilkan halaman. Muat ulang, atau hubungi kami via WhatsApp.
             </p>
-            <p className="mt-4 text-xs text-neutral-400 font-mono break-all">{this.state.message}</p>
+            <p className="mt-4 text-xs tr-faint font-mono break-all">{this.state.message}</p>
             <div className="mt-6 flex justify-center gap-4">
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="text-sm font-medium text-white bg-neutral-900 rounded-full px-5 py-2.5 hover:bg-neutral-800 transition-colors cursor-pointer"
+                className="tr-btn text-sm font-medium px-5 py-2.5 cursor-pointer"
               >
                 Muat ulang
               </button>
@@ -51,7 +50,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                 href="https://wa.me/6282287348422"
                 target="_blank"
                 rel="noopener"
-                className="text-sm font-semibold text-neutral-900 underline underline-offset-4 decoration-neutral-400 hover:decoration-neutral-900"
+                className="text-sm font-semibold tr-fg underline underline-offset-4 hover:opacity-70 transition-opacity"
               >
                 Whatsapp →
               </a>

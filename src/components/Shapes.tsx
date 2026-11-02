@@ -1,11 +1,14 @@
 /* Shapes — placeholder visual shapes-based (NO foto layer — standing constraint).
    Komposisi garis arsitektur abstrak: dinding, void, tangga, furnitur — netral ink +
    aksen brass. Dipakai gallery (8 varian portrait), portfolio cover + thumbs.
-   Struktur siap ganti aset asli begitu foto proyek tersedia (brief v0: foto masih tahap desain). */
+   Struktur siap ganti aset asli begitu foto proyek tersedia (brief v0).
+   WARNA DINAMIS: semua stroke/fill memakai variabel tema (--tr-fg/--tr-brass/
+   --tr-sunken) — otomatis berganti saat mode gelap/terang (html.trilux-dark). */
 
-const INK = "#141010";
-const BRASS = "#b07f3a";
-const BONE = "#f0ebe2";
+/* INK → var(--tr-fg) · BRASS → var(--tr-brass) · BONE wash → fg opacity rendah */
+const INK = "var(--tr-fg)";
+const BRASS = "var(--tr-brass)";
+const WASH = "var(--tr-fg)"; /* bone wash — pakai fillOpacity rendah */
 
 interface ShapeProps {
   variant: number; // 1..8
@@ -23,7 +26,7 @@ export function Shape({ variant, className = "" }: ShapeProps) {
   };
   return (
     <svg viewBox="0 0 300 400" className={className} aria-hidden="true" role="presentation">
-      <rect x="0" y="0" width="300" height="400" fill="#ffffff" />
+      <rect x="0" y="0" width="300" height="400" className="tr-fill-sunken" />
       {variant === 1 && (
         <g {...common}>
           <rect x="30" y="60" width="240" height="280" />
@@ -42,14 +45,14 @@ export function Shape({ variant, className = "" }: ShapeProps) {
           <rect x="60" y="30" width="180" height="340" />
           <line x1="60" y1="30" x2="240" y2="120" stroke={BRASS} strokeOpacity="0.55" />
           <line x1="60" y1="30" x2="240" y2="210" stroke={BRASS} strokeOpacity="0.3" />
-          <rect x="90" y="150" width="120" height="180" fill={BONE} fillOpacity="0.6" />
+          <rect x="90" y="150" width="120" height="180" fill={WASH} fillOpacity="0.08" />
           <line x1="90" y1="150" x2="210" y2="150" />
         </g>
       )}
       {variant === 3 && (
         <g {...common}>
           <path d="M40 80 H200 V340 H40 Z" />
-          <rect x="120" y="180" width="90" height="60" fill={BONE} fillOpacity="0.6" />
+          <rect x="120" y="180" width="90" height="60" fill={WASH} fillOpacity="0.08" />
           <circle cx="135" cy="270" r="8" />
           <circle cx="170" cy="270" r="8" />
           <circle cx="205" cy="270" r="8" />
@@ -81,7 +84,7 @@ export function Shape({ variant, className = "" }: ShapeProps) {
       )}
       {variant === 6 && (
         <g {...common}>
-          <ellipse cx="150" cy="200" rx="70" ry="40" fill={BONE} fillOpacity="0.6" />
+          <ellipse cx="150" cy="200" rx="70" ry="40" fill={WASH} fillOpacity="0.08" />
           <rect x="60" y="160" width="26" height="40" />
           <rect x="214" y="160" width="26" height="40" />
           <rect x="120" y="290" width="26" height="40" />
@@ -92,7 +95,7 @@ export function Shape({ variant, className = "" }: ShapeProps) {
       {variant === 7 && (
         <g {...common}>
           <rect x="50" y="90" width="200" height="240" />
-          <rect x="50" y="90" width="200" height="70" fill={BONE} fillOpacity="0.6" />
+          <rect x="50" y="90" width="200" height="70" fill={WASH} fillOpacity="0.08" />
           <circle cx="150" cy="220" r="34" />
           <line x1="50" y1="300" x2="250" y2="300" />
           <line x1="90" y1="300" x2="90" y2="330" />
@@ -102,8 +105,8 @@ export function Shape({ variant, className = "" }: ShapeProps) {
       {variant === 8 && (
         <g {...common}>
           <rect x="60" y="60" width="180" height="300" fill="none" />
-          <path d="M70 340 h20 v-20 h20 v-20 h20 v-20 h20 v-20 h20 v-20 h20 v-20 h20 v-20 h20" />
-          <rect x="170" y="60" width="70" height="110" fill={BONE} fillOpacity="0.6" />
+          <path d="M70 340 h20 v-20 h20 v-20 h20 v-20 h20 v-20 h20 v-20 h20 v-20 h20" />
+          <rect x="170" y="60" width="70" height="110" fill={WASH} fillOpacity="0.08" />
           <line x1="60" y1="60" x2="240" y2="60" strokeWidth="4" />
         </g>
       )}
@@ -122,14 +125,14 @@ export function CoverShape({ className = "" }: { className?: string }) {
   };
   return (
     <svg viewBox="0 0 800 500" className={className} aria-hidden="true" role="presentation">
-      <rect x="0" y="0" width="800" height="500" fill="#ffffff" />
+      <rect x="0" y="0" width="800" height="500" className="tr-fill-sunken" />
       <g {...common}>
         <line x1="0" y1="400" x2="800" y2="400" strokeWidth="3" />
-        <rect x="120" y="160" width="260" height="240" fill={BONE} fillOpacity="0.5" />
+        <rect x="120" y="160" width="260" height="240" fill={WASH} fillOpacity="0.06" />
         <rect x="420" y="100" width="220" height="300" />
         <line x1="420" y1="100" x2="530" y2="40" />
         <line x1="530" y1="40" x2="640" y2="100" />
-        <rect x="300" y="260" width="180" height="140" fill="#ffffff" />
+        <rect x="300" y="260" width="180" height="140" className="tr-fill-sunken" />
         <line x1="180" y1="220" x2="320" y2="220" stroke={BRASS} />
         <line x1="480" y1="180" x2="600" y2="180" stroke={BRASS} />
         <line x1="480" y1="260" x2="600" y2="260" stroke={BRASS} strokeOpacity="0.5" />
