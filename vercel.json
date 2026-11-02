@@ -6,8 +6,8 @@
   "buildCommand": "npm run build",
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "source": "/((?!api/|admin).*)",
+      "destination": "/index"
     }
   ],
   "headers": [
