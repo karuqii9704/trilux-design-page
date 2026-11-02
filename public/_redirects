@@ -1,5 +1,0 @@
-# SPA fallback (Netlify/Vercel static reads _redirects from output dir)
-# Catch-all → /index.html (client router usePath menangani /studio, /admin via fallback)
-# API dikecualikan ( Functions) — negative lookahead tidak didukung _redirects,
-# jadi vercel.json rewrites yang menangani pengecualian api/; file ini plan B.
-/*    /index.html    200
