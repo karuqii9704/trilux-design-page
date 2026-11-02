@@ -140,6 +140,17 @@ Landing hanya menyisakan **StudioTeaser** (teks + tombol "Buka Studio" + badge "
   localStorage `trilux-theme`, deep-link `?theme=dark|light` (untuk QA). Murni hitam/putih
   (class `html.trilux-dark` + variabel --tr-bg/--tr-fg; komponen pakai Tailwind dark: variant
   + util .tr-bg/.tr-fg/.tr-line). Toggle tombol di navbar island + footer island (ikon matahari/bulan).
+- **Mode gelap/terang DINAMIS (2026-11-02, fix bug user)**: semua warna hardcoded
+  (155× text-neutral-*/bg-white/border-neutral-* di 15 file) diganti utilitas tema
+  berbasis CSS variabel di index.css: `--tr-bg/surface/sunken/fg/muted/faint/line/
+  line-strong/invert-bg/invert-fg/brass/mask/overlay/shadow/grid-line/dim` — ditukar
+  oleh `html.trilux-dark`. Kelas: .tr-bg .tr-surface .tr-sunken .tr-fg .tr-muted
+  .tr-faint .tr-line .tr-line-strong .tr-brass(.bg) .tr-invert-bg/fg .tr-mask
+  .tr-grid(-soft) .tr-dim .tr-stroke(-brass) .tr-fill-surface/sunken .tr-overlay
+  .tr-shadow .tr-btn .tr-chip. Shapes SVG + Studio floorplan SVG (grid/dinding/
+  partisi/furnitur/label) memakai var tema — ikut berganti otomatis. QA: 29/29
+  jsdom + piksel (dark hero mean RGB [29,29,29], putih murni 0.1%) + vision
+  (teks hero terbaca di gelap). Dark kontras diperkuat: --tr-line 0.22, grid 0.14.
 - Simulasi estimasi biaya (`/simulasi`): brief "Please take out" — sengaja tidak dibangun.
 - Simulator 3D Three.js: knowledge saja (belum direbuild ke SPA).
 
