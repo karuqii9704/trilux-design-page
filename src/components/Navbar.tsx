@@ -60,7 +60,7 @@ const DRAWER_CSS = `
    Garis tipis, konsisten burger 1.5px. */
 function ThemeIcon({ theme }: { theme: "light" | "dark" }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {theme === "light" ? (
         /* bulan — klik untuk gelap */
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -132,7 +132,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               onClick={toggle}
               aria-label={theme === "light" ? "Mode gelap" : "Mode terang"}
               title={theme === "light" ? "Mode gelap" : "Mode terang"}
-              className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer tr-fg"
+              className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer tr-fg"
             >
               <ThemeIcon theme={theme} />
             </button>
