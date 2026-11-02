@@ -36,3 +36,6 @@ REFERENSI DAN BAHAN/
 
 # file Figma lokal
 *.fig
+
+# artefak lampiran hermes (bukan kode proyek)
+.akos/template-attachment.txt
