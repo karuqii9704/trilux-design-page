@@ -13,6 +13,7 @@
    - disclaimer dummy jujur (brief v0) */
 import { useMemo, useRef, useState } from "react";
 import Reveal from "../Reveal";
+import { useLocale } from "../../hooks/useLocale";
 import type { FurnitureItem, Partition, StudioData } from "../../types";
 
 const CM_PER_PX = 1; // 1 px SVG = 1 cm pada viewBox room
@@ -28,6 +29,7 @@ type DragState =
   | null;
 
 export default function StudioFloorplan({ studio }: { studio: StudioData }) {
+  const { t } = useLocale();
   const room = studio.room;
   const [roomW, setRoomW] = useState(room.w);
   const [roomD, setRoomD] = useState(room.d);
@@ -153,14 +155,15 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
 
   const addPartition = (orientation: "vertical" | "horizontal") => {
     const id = `p${Date.now()}`;
+    const label = `${t.studio.newPartition} ${partitions.length + 1}`;
     if (orientation === "vertical") {
       const x = Math.round(roomW * 0.6);
-      setPartitions((prev) => [...prev, { id, orientation, x, from: 0, to: Math.round(roomD * 0.5), label: `Partisi ${prev.length + 1}` }]);
+      setPartitions((prev) => [...prev, { id, orientation, x, from: 0, to: Math.round(roomD * 0.5), label }]);
     } else {
       const y = Math.round(roomD * 0.5);
       setPartitions((prev) => [
         ...prev,
-        { id, orientation, x: y, from: 0, to: Math.round(roomW * 0.5), label: `Partisi ${prev.length + 1}` },
+        { id, orientation, x: y, from: 0, to: Math.round(roomW * 0.5), label },
       ]);
     }
   };
@@ -188,7 +191,7 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
             viewBox={`-${PAD} -${PAD} ${vw} ${vh}`}
             className="w-full h-auto touch-none select-none"
             role="application"
-            aria-label="Floorplan interaktif — seret furnitur, sesuaikan partisi dan ukuran dalam sentimeter"
+            aria-label={t.studio.floorplanAria}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
@@ -226,7 +229,7 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
                   <circle
                     cx={p.to} cy={p.x} r="8" className="tr-brass-bg cursor-ew-resize"
                     onPointerDown={(e) => onPartDown(e, p.id, "resize")}
-                    aria-label={`Handle partisi ${p.label}`}
+                    aria-label={`${t.studio.handlePartition} ${p.label}`}
                   />
                   <text x={(p.from + p.to) / 2} y={p.x - 10} textAnchor="middle" fontSize="12" className="tr-brass">
                     {p.label} · {p.to - p.from} cm
@@ -242,7 +245,7 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
                   <circle
                     cx={p.x} cy={p.to} r="8" className="tr-brass-bg cursor-ns-resize"
                     onPointerDown={(e) => onPartDown(e, p.id, "resize")}
-                    aria-label={`Handle partisi ${p.label}`}
+                    aria-label={`${t.studio.handlePartition} ${p.label}`}
                   />
                   <text x={p.x + 10} y={(p.from + p.to) / 2} fontSize="12" className="tr-brass">
                     {p.label} · {p.to - p.from} cm
@@ -278,22 +281,21 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
         <aside className="space-y-8">
           {/* Ruangan */}
           <div className="border-t-2 tr-line-strong pt-5">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">Ruangan</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">{t.studio.room}</p>
             <div className="mt-4 space-y-4">
-              <Stepper label="Lebar" value={roomW} unit="cm" onMinus={() => stepRoom("w", -20)} onPlus={() => stepRoom("w", 20)} />
-              <Stepper label="Kedalaman" value={roomD} unit="cm" onMinus={() => stepRoom("d", -20)} onPlus={() => stepRoom("d", 20)} />
+              <Stepper label={t.studio.width} value={roomW} unit="cm" onMinus={() => stepRoom("w", -20)} onPlus={() => stepRoom("w", 20)} reduce={t.studio.reduce} increase={t.studio.increase} />
+              <Stepper label={t.studio.depth} value={roomD} unit="cm" onMinus={() => stepRoom("d", -20)} onPlus={() => stepRoom("d", 20)} reduce={t.studio.reduce} increase={t.studio.increase} />
             </div>
             <p className="mt-4 text-xs tr-faint leading-relaxed">
-              Grid = {GRID} cm. Semua dimensi dalam sentimeter. Nilai dummy per brief.
+              {t.studio.gridNote}
             </p>
           </div>
 
           {/* Partisi */}
           <div className="border-t tr-line pt-5">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">Partisi / Dinding</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">{t.studio.partitions}</p>
             <p className="mt-3 text-xs tr-faint leading-relaxed">
-              Tarik handle brass untuk mengubah panjang. Seret badan partisi untuk menggeser posisi.
-              Klik partisi tanpa menggeser untuk menghapus.
+              {t.studio.partitionHint}
             </p>
             <div className="mt-3 flex gap-2">
               <button
@@ -301,14 +303,14 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
                 onClick={() => addPartition("vertical")}
                 className="text-xs font-medium border tr-line rounded-full px-3 py-1.5 hover:border-current transition-colors tr-fg cursor-pointer"
               >
-                ＋ Partisi vertikal
+                ＋ {t.studio.addVertical}
               </button>
               <button
                 type="button"
                 onClick={() => addPartition("horizontal")}
                 className="text-xs font-medium border tr-line rounded-full px-3 py-1.5 hover:border-current transition-colors tr-fg cursor-pointer"
               >
-                ＋ Partisi horizontal
+                ＋ {t.studio.addHorizontal}
               </button>
             </div>
             <ul className="mt-3 space-y-1.5">
@@ -316,7 +318,7 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
                 <li key={p.id} className="flex items-center justify-between text-sm tr-muted">
                   <span>{p.label}</span>
                   <span className="tabular-nums tr-faint">
-                    {p.orientation === "horizontal" ? "horizontal" : "vertikal"} · {p.to - p.from} cm
+                    {p.orientation === "horizontal" ? t.studio.orientationH : t.studio.orientationV} · {p.to - p.from} cm
                   </span>
                 </li>
               ))}
@@ -325,9 +327,9 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
 
           {/* Furnitur */}
           <div className="border-t tr-line pt-5">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">Furnitur</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">{t.studio.furniture}</p>
             <p className="mt-3 text-xs tr-faint leading-relaxed">
-              Seret furnitur di canvas. Pilih untuk melihat & mengubah ukuran (cm).
+              {t.studio.furnitureHint}
             </p>
             <ul className="mt-3 space-y-1.5">
               {furniture.map((f) => (
@@ -351,22 +353,23 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
             {selected && selFurn && (
               <div className="mt-4">
                 <p className="text-xs tr-faint mb-2">
-                  Ukuran terpilih: <span className="font-medium tr-fg">{selFurn.label}</span>
+                  {t.studio.selectedSize} <span className="font-medium tr-fg">{selFurn.label}</span>
                 </p>
                 <Stepper
-                  label="Lebar furnitur"
+                  label={t.studio.furnitureWidth}
                   value={selFurn.w}
                   unit="cm"
                   onMinus={() => stepFurn(-10)}
                   onPlus={() => stepFurn(10)}
+                  reduce={t.studio.reduce}
+                  increase={t.studio.increase}
                 />
               </div>
             )}
           </div>
 
           <p className="text-xs tr-faint border tr-line rounded-sm p-3 leading-relaxed">
-            Eksplorasi ruang interaktif — dummy. Akun dan fitur kolaborasi belum tersedia
-            (sesuai brief v0).
+            {t.studio.disclaimer}
           </p>
         </aside>
       </div>
@@ -374,16 +377,17 @@ export default function StudioFloorplan({ studio }: { studio: StudioData }) {
   );
 }
 
-function Stepper({ label, value, unit, onMinus, onPlus }: {
+function Stepper({ label, value, unit, onMinus, onPlus, reduce, increase }: {
   label: string; value: number; unit: string; onMinus: () => void; onPlus: () => void;
+  reduce: string; increase: string;
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-sm tr-muted">{label}</span>
       <div className="flex items-center border tr-line rounded-full">
         <button
-          type="button" onClick={onMinus} aria-label={`Kurangi ${label}`}
-          className="w-9 h-9 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors tr-fg cursor-pointer"
+          type="button" onClick={onMinus} aria-label={`${reduce} ${label}`}
+          className="w-9 h-9 rounded-full hover:bg-black/5 transition-colors tr-fg cursor-pointer"
         >
           −
         </button>
@@ -391,8 +395,8 @@ function Stepper({ label, value, unit, onMinus, onPlus }: {
           {value} <span className="text-xs tr-faint">{unit}</span>
         </output>
         <button
-          type="button" onClick={onPlus} aria-label={`Tambah ${label}`}
-          className="w-9 h-9 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors tr-fg cursor-pointer"
+          type="button" onClick={onPlus} aria-label={`${increase} ${label}`}
+          className="w-9 h-9 rounded-full hover:bg-black/5 transition-colors tr-fg cursor-pointer"
         >
           +
         </button>

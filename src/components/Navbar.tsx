@@ -1,10 +1,18 @@
 /* Navbar — FLOATING ISLAND CLAYMORPHISM (melayang di tengah atas, rounded-full,
    tonjolan cahaya + bayangan ganda lembut, backdrop-blur, border tipis).
-   - Island: logo kiri · menu anchor tengah (desktop) · theme toggle + CTA + burger kanan
-   - BURGER MOBILE (diperbaiki 2026-11-02): hit-area 44px (h-11 w-11), garis 2px
-     lebih tebal + terlihat, posisi FLOW (bukan absolute) → tidak pernah tertindih
-     CTA/logo di layar sempit. Hanya tampil < md.
-   - Theme toggle: matahari (terang) ↔ bulan (gelap) — ikon bermakna.
+   - Island: logo kiri · menu anchor tengah (desktop) · language switcher + theme
+     toggle + CTA + burger kanan
+   - i18n (2026-11-02): label menu + CTA + aria-label dari useLocale().t —
+     switcher EN|ID mengganti SELURUH halaman tanpa reload.
+   - LANGUAGE SWITCHER (dipulihkan 2026-11-02): pill kecil EN | ID di kanan
+     navbar desktop (sebelum theme toggle) + di drawer mobile. Aktif = chip
+     terbalik (.tr-invert). Bekerja penuh, bukan dekoratif.
+   - BURGER MOBILE: hit-area 44px (h-11 w-11), garis 2px tebal, posisi FLOW
+     (bukan absolute) → tidak pernah tertindih CTA/logo di layar sempit.
+   - OVERLAP FIX (2026-11-02): island pakai flex-wrap + gap konsisten; CTA
+     "Book a meeting" punya max-w + shrink-0 + whitespace-nowrap supaya tidak
+     menindih switcher/toggle di viewport menengah (sm..md); z-index island
+     (z-50) < overlay (z-60) < drawer (z-70) — stacking konteks tegas.
    - Drawer: mobile slide-up / desktop slide-from-right (500ms, expo).
    - Links stagger 150 + i*60 ms; hamburger→X morph; body scroll lock.
    Dipakai Landing dan StudioPage (props opsional). */
@@ -12,6 +20,7 @@ import { useEffect } from "react";
 import { TriluxLogo } from "./Logo";
 import { RouteLink } from "../hooks/usePath";
 import { useTheme } from "../hooks/useTheme";
+import { useLocale, type Locale } from "../hooks/useLocale";
 
 interface NavbarProps {
   menuOpen: boolean;
@@ -19,20 +28,21 @@ interface NavbarProps {
 }
 
 interface NavLink {
-  label: string;
+  key: string;
   href?: string; // anchor di landing
   route?: string; // SPA route (pushState)
 }
 
 /* anchor ke section brief v0 (Simulator "please take out" — sengaja tidak ada).
-   Studio = ROUTE terpisah /studio (halaman eksklusif), bukan anchor. */
+   Studio = ROUTE terpisah /studio (halaman eksklusif), bukan anchor.
+   Label dari kamus i18n (t.nav.*) — bilingual. */
 const LINKS: NavLink[] = [
-  { label: "Work", href: "#portfolio" },
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Studio", route: "/studio" },
-  { label: "Contact", href: "#contact" },
+  { key: "work", href: "#portfolio" },
+  { key: "about", href: "#about" },
+  { key: "services", href: "#services" },
+  { key: "gallery", href: "#gallery" },
+  { key: "studio", route: "/studio" },
+  { key: "contact", href: "#contact" },
 ];
 
 const WA_URL = "https://wa.me/6282287348422";
@@ -87,8 +97,49 @@ function ThemeIcon({ theme }: { theme: "light" | "dark" }) {
   );
 }
 
+/* Language switcher — pill EN | ID. Aktif = chip terbalik (.tr-invert-bg/fg).
+   Bekerja penuh: setLocale() → seluruh halaman berganti tanpa reload. */
+function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
+  const { locale, setLocale, t } = useLocale();
+
+  return (
+    <div
+      className="flex items-center rounded-full border tr-line tr-surface/70 backdrop-blur-sm"
+      role="group"
+      aria-label={t.lang.label}
+    >
+      {(["id", "en"] as Locale[]).map((l) => {
+        const active = l === locale;
+        return (
+          <button
+            key={l}
+            type="button"
+            onClick={() => setLocale(l)}
+            aria-pressed={active}
+            aria-label={l === "en" ? t.lang.switchToEn : t.lang.switchToId}
+            title={l === "en" ? t.lang.switchToEn : t.lang.switchToId}
+            className={
+              compact
+                ? `cursor-pointer rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                    active ? "tr-invert-bg tr-invert-fg" : "tr-fg tr-faint hover:tr-fg"
+                  }`
+                : `cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+                    active ? "tr-invert-bg tr-invert-fg" : "tr-fg tr-faint hover:tr-fg"
+                  }`
+            }
+          >
+            {l.toUpperCase()}
+          </button>
+        );
+      })}
+      <span className="sr-only">{t.lang.label}</span>
+    </div>
+  );
+}
+
 export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
   const { theme, toggle } = useTheme();
+  const { t } = useLocale();
 
   /* body scroll lock while menu open (spesifikasi: document.body.style.overflow) */
   useEffect(() => {
@@ -114,10 +165,22 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
     <>
       <style>{DRAWER_CSS}</style>
 
-      {/* ══════════ FLOATING ISLAND — claymorphism (fixed, terpusat, melayang) ══════════ */}
+      {/* ══════════ FLOATING ISLAND — claymorphism (fixed, terpusat, melayang) ══════════
+           OVERLAP FIX (audit CDP 2026-11-02): versi awal memakai menu anchor
+           `absolute left-1/2 -translate-x-1/2` — menu 6 item melebar ke kanan
+           dan MENINDIH switcher/toggle/CTA (rect: Contact 816-867 vs Bahasa
+           792-851 → overlap 35px). SOLUSI: island = 3 segmen flex FLOW yang
+           TIDAK PERNAH saling tumpang — logo kiri (shrink-0), menu tengah
+           (dalam alur flex, menyempit otomatis, hidden di <lg), aksi kanan
+           (shrink-0). Menu center hanya tampil di lg+ (saat semua segmen
+           muat); di <lg langsung burger → drawer. Tidak ada overlap di ukuran
+           apa pun. z-50 < overlay z-60 < drawer z-70 — stacking tegas. */}
       <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-4 sm:pt-4">
-        <nav className="tr-clay tr-surface pointer-events-auto flex w-full max-w-3xl items-center justify-between gap-2 rounded-full border tr-line px-3 py-2.5 backdrop-blur-xl sm:px-4 sm:py-3">
-          {/* LEFT — logo */}
+        <nav
+          className="tr-clay tr-surface pointer-events-auto flex w-full max-w-3xl flex-wrap items-center justify-between gap-2 rounded-full border tr-line px-3 py-2.5 backdrop-blur-xl sm:px-4 sm:py-3"
+          aria-label="Primary"
+        >
+          {/* LEFT — logo (shrink-0, tidak pernah tertindih) */}
           <a
             href="#top"
             aria-label="Trilux Design — home"
@@ -129,37 +192,42 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
             </span>
           </a>
 
-          {/* CENTER — menu anchor (desktop ≥md saja) */}
-          <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 md:flex lg:gap-8">
-            {LINKS.map((l) =>
-              l.route ? (
-                <RouteLink
-                  key={l.label}
-                  to={l.route}
-                  className="tr-fg text-sm font-normal opacity-80 transition-opacity hover:opacity-50"
-                >
-                  {l.label}
-                </RouteLink>
+          {/* CENTER — menu anchor (lg+ saja; DI DALAM alur flex, min-w-0, menyempit
+              otomatis, tidak pernah keluar ruangnya → tidak bisa menindih segmen
+              kanan). Sembunyi total di <lg (ganti burger). */}
+          <ul className="hidden min-w-0 flex-1 items-center justify-center gap-4 lg:flex xl:gap-6">
+            {LINKS.map((l) => {
+              const label = t.nav[l.key as keyof typeof t.nav];
+              const cls = "tr-fg min-w-0 whitespace-nowrap text-sm font-normal opacity-80 transition-opacity hover:opacity-50";
+              return l.route ? (
+                <li key={l.key} className="min-w-0">
+                  <RouteLink to={l.route} className={cls}>
+                    {label}
+                  </RouteLink>
+                </li>
               ) : (
-                <a
-                  key={l.label}
-                  href={l.href}
-                  className="tr-fg text-sm font-normal opacity-80 transition-opacity hover:opacity-50"
-                >
-                  {l.label}
-                </a>
-              ),
-            )}
+                <li key={l.key} className="min-w-0">
+                  <a href={l.href} className={cls}>
+                    {label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
 
-          {/* RIGHT — theme toggle + CTA (desktop) + burger (mobile) */}
+          {/* RIGHT — switcher + theme + CTA + burger. shrink-0 → selalu di ujung,
+              tidak pernah tertindih menu. Switcher tampil ≥sm; di mobile lewat drawer. */}
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            {/* language switcher — desktop/tablet (≥sm). EN | ID. */}
+            <span className="hidden sm:inline-flex">
+              <LanguageSwitcher compact />
+            </span>
             <button
               type="button"
               onClick={toggle}
-              aria-label={theme === "light" ? "Mode gelap" : "Mode terang"}
-              title={theme === "light" ? "Mode gelap" : "Mode terang"}
-              className="tr-fg flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5"
+              aria-label={theme === "light" ? t.footer.modeDark : t.footer.modeLight}
+              title={theme === "light" ? t.footer.modeDark : t.footer.modeLight}
+              className="tr-fg flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5"
             >
               <ThemeIcon theme={theme} />
             </button>
@@ -167,18 +235,18 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               href={WA_URL}
               target="_blank"
               rel="noopener"
-              className="tr-btn hidden rounded-full px-4 py-2 text-xs font-medium tracking-wide sm:inline-flex"
+              className="tr-btn hidden shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-medium tracking-wide sm:inline-flex"
             >
-              Book a meeting
+              {t.nav.bookMeeting}
             </a>
-            {/* BURGER — mobile only (< md). Hit area 44px, garis 2px tebal,
+            {/* BURGER — mobile only (< lg). Hit area 44px, garis 2px tebal,
                 posisi FLOW (bukan absolute) → tidak pernah tertindih elemen lain. */}
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
+              aria-label={t.nav.openMenu}
               aria-expanded={menuOpen}
-              className="tr-fg flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5 md:hidden"
+              className="tr-fg flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5 lg:hidden"
             >
               <span className="flex flex-col items-center justify-center gap-[6px]" aria-hidden="true">
                 <span className="block h-[2px] w-5 rounded-full bg-current transition-all duration-300 hover:w-6" />
@@ -219,7 +287,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
           <button
             type="button"
             onClick={() => setMenuOpen(false)}
-            aria-label="Close menu"
+            aria-label={t.nav.closeMenu}
             className="tr-fg relative h-11 w-11 cursor-pointer rounded-full transition-colors hover:bg-black/5"
           >
             <span
@@ -245,42 +313,48 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
 
         {/* links (stagger 150 + i*60 ms) */}
         <nav className="px-4 pt-6 sm:px-6 md:px-10" aria-label="Menu">
-          {LINKS.map((l, i) =>
-            l.route ? (
+          {LINKS.map((l, i) => {
+            const label = t.nav[l.key as keyof typeof t.nav];
+            return l.route ? (
               <RouteLink
-                key={l.label}
+                key={l.key}
                 to={l.route}
                 onClick={() => setMenuOpen(false)}
                 className="trilux-link tr-fg block py-3 text-3xl font-medium transition-opacity hover:opacity-50"
                 style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
               >
-                {l.label}
+                {label}
               </RouteLink>
             ) : (
               <a
-                key={l.label}
+                key={l.key}
                 href={l.href}
                 onClick={() => setMenuOpen(false)}
                 className="trilux-link tr-fg block py-3 text-3xl font-medium transition-opacity hover:opacity-50"
                 style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
               >
-                {l.label}
+                {label}
               </a>
-            ),
-          )}
+            );
+          })}
 
-          {/* drawer CTA — delay 400ms */}
+          {/* drawer footer — switcher bahasa + CTA (delay 400ms) */}
           <div className="pt-12">
-            <a
-              href={WA_URL}
-              target="_blank"
-              rel="noopener"
-              onClick={() => setMenuOpen(false)}
-              className="trilux-cta-drawer tr-btn inline-flex rounded-full px-6 py-3 text-sm font-medium"
-              style={menuOpen ? { transitionDelay: "400ms" } : { transitionDelay: "0ms" }}
-            >
-              Book a meeting
-            </a>
+            <div className="mb-5 inline-flex">
+              <LanguageSwitcher />
+            </div>
+            <div>
+              <a
+                href={WA_URL}
+                target="_blank"
+                rel="noopener"
+                onClick={() => setMenuOpen(false)}
+                className="trilux-cta-drawer tr-btn inline-flex rounded-full px-6 py-3 text-sm font-medium"
+                style={menuOpen ? { transitionDelay: "400ms" } : { transitionDelay: "0ms" }}
+              >
+                {t.nav.bookMeeting}
+              </a>
+            </div>
           </div>
         </nav>
       </aside>

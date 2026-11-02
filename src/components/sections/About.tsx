@@ -1,11 +1,16 @@
 /* About — Sekilas Perusahaan + Visi & Misi (copy asli brief v0, verbatim).
    Layout modern-minimal: grid 2 kolom (intro + misi bernomor), visi sebagai panel quote.
+   i18n (2026-11-02): label UI statis (Misi, heading section) dari useLocale().t;
+   konten panjang (intro, visi, misi, company) sudah bilingual dari CMS (useContent).
    Warna via utilitas tema (.tr-*) — otomatis ikut mode gelap/terang. */
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
+import { useLocale } from "../../hooks/useLocale";
 import type { AboutData, Mission } from "../../types";
 
 export default function About({ about }: { about: AboutData }) {
+  const { t } = useLocale();
+
   return (
     <section id="about" className="px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
       <SectionHeading
@@ -44,7 +49,9 @@ export default function About({ about }: { about: AboutData }) {
             </p>
 
             <div className="mt-10 space-y-6">
-              <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">Misi</p>
+              <p className="text-xs font-medium uppercase tracking-[0.22em] tr-faint">
+                {t.about.missionsLabel}
+              </p>
               {about.missions.map((m: Mission, i: number) => (
                 <div key={m.title} className="flex gap-4">
                   <span className="text-sm font-semibold tr-faint pt-0.5 tabular-nums">

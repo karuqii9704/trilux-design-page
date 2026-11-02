@@ -2,8 +2,10 @@
    Pill rounded-full melayang di atas bottom (bukan menempel edge),
    berisi © + kontak WA/email + mode toggle ringkas.
    Dipakai Landing (menggantikan BottomSection menempel) & StudioPage.
+   i18n (2026-11-02): label kontak + aria-label mode toggle dari useLocale().t.
    Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import { useTheme } from "../hooks/useTheme";
+import { useLocale } from "../hooks/useLocale";
 
 const WA_URL = "https://wa.me/6282287348422";
 const EMAIL = "hello@triluxdesign.id";
@@ -25,6 +27,7 @@ function ThemeIcon({ theme }: { theme: "light" | "dark" }) {
 
 export default function FooterIsland() {
   const { theme, toggle } = useTheme();
+  const { t } = useLocale();
   const year = new Date().getFullYear();
 
   return (
@@ -34,22 +37,22 @@ export default function FooterIsland() {
         <div className="flex items-center gap-4 sm:gap-5 text-xs tr-muted">
           <span>© {year} Trilux Design</span>
           <a href={WA_URL} target="_blank" rel="noopener" className="underline underline-offset-4 hover:opacity-70 transition-opacity">
-            WhatsApp
+            {t.footer.whatsapp}
           </a>
           <a href={`mailto:${EMAIL}`} className="underline underline-offset-4 hover:opacity-70 transition-opacity">
-            Email
+            {t.footer.email}
           </a>
         </div>
         {/* kanan — mode toggle */}
         <button
           type="button"
           onClick={toggle}
-          aria-label={theme === "light" ? "Mode gelap" : "Mode terang"}
-          title={theme === "light" ? "Mode gelap" : "Mode terang"}
-          className="flex items-center gap-1.5 rounded-full border tr-line px-3 py-1.5 text-xs font-medium tr-fg hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+          aria-label={theme === "light" ? t.footer.modeDark : t.footer.modeLight}
+          title={theme === "light" ? t.footer.modeDark : t.footer.modeLight}
+          className="flex items-center gap-1.5 rounded-full border tr-line px-3 py-1.5 text-xs font-medium tr-fg hover:bg-black/5 transition-colors cursor-pointer"
         >
           <ThemeIcon theme={theme} />
-          <span className="hidden sm:inline">{theme === "light" ? "Gelap" : "Terang"}</span>
+          <span className="hidden sm:inline">{theme === "light" ? t.footer.modeDark : t.footer.modeLight}</span>
         </button>
       </div>
     </footer>

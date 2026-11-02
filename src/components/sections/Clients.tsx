@@ -1,17 +1,20 @@
 /* Clients — OUR CLIENTS (brief v0: "dummy; if any").
    Text rail marquee (CSS loop — bukan core interaction) + disclaimer jujur:
    publikasi logo menunggu persetujuan tertulis. Pause saat hover.
+   i18n (2026-11-02): heading dari useLocale().t; konten dari CMS bilingual.
    Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
+import { useLocale } from "../../hooks/useLocale";
 import type { ClientsData } from "../../types";
 
 export default function Clients({ clients }: { clients: ClientsData }) {
+  const { t } = useLocale();
   const items = clients?.items ?? [];
   const rail = [...items, ...items]; // duplikasi untuk loop seamless
   return (
     <section id="clients" className="border-t tr-line px-4 sm:px-6 md:px-10 py-16 sm:py-20 max-w-6xl mx-auto">
-      <SectionHeading eyebrow="Our Clients" title="Dipercaya proyek-proyek residensial & komersial." align="left" />
+      <SectionHeading eyebrow={t.clients.eyebrow} title={t.clients.title} align="left" />
 
       <Reveal className="mt-10">
         <div className="trilux-rail overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">

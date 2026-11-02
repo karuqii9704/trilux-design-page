@@ -8,9 +8,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
 import { Shape } from "../Shapes";
+import { useLocale } from "../../hooks/useLocale";
 import type { GalleryData, GalleryItem } from "../../types";
 
 export default function Gallery({ gallery }: { gallery: GalleryData }) {
+  const { t } = useLocale();
   const items = gallery?.items ?? [];
   const [index, setIndex] = useState(0);
   const [zoom, setZoom] = useState(false);
@@ -59,8 +61,8 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
     <section id="gallery" className="border-t tr-line px-4 sm:px-6 md:px-10 py-20 sm:py-28">
       <div className="max-w-6xl mx-auto">
         <SectionHeading
-          eyebrow="Gallery"
-          title="Katalog tampak 3D."
+          eyebrow={t.gallery.eyebrow}
+          title={t.gallery.title}
           sub={gallery.note}
         />
 
@@ -73,7 +75,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
               <button
                 type="button"
                 onClick={() => go(-1)}
-                aria-label="Gambar sebelumnya"
+                aria-label={t.gallery.prev}
                 className="w-11 h-11 rounded-full border tr-line hover:border-current transition-colors tr-fg cursor-pointer"
               >
                 ←
@@ -81,7 +83,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
               <button
                 type="button"
                 onClick={() => go(1)}
-                aria-label="Gambar berikutnya"
+                aria-label={t.gallery.next}
                 className="w-11 h-11 rounded-full border tr-line hover:border-current transition-colors tr-fg cursor-pointer"
               >
                 →
@@ -108,7 +110,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
               {gallery.items[index]?.kind}
             </span>
             <span className="absolute bottom-4 right-4 tr-surface/90 border tr-line text-xs tr-faint px-3 py-1.5">
-              klik untuk zoom
+              {t.gallery.clickToZoom}
             </span>
           </div>
 
@@ -129,14 +131,14 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
             role="group"
-            aria-label="Thumbnail gallery"
+            aria-label={t.gallery.thumbRail}
           >
             {gallery.items.map((g: GalleryItem, i: number) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => setIndex(i)}
-                aria-label={`Pilih ${g.caption}`}
+                aria-label={`${t.gallery.choose} ${g.caption}`}
                 aria-current={i === index}
                 className={`flex-none w-24 h-32 sm:w-28 sm:h-36 overflow-hidden rounded-sm border transition-all duration-300 cursor-pointer ${
                   i === index
@@ -176,7 +178,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                 <button
                   type="button"
                   onClick={() => go(-1)}
-                  aria-label="Sebelumnya"
+                  aria-label={t.gallery.prev}
                   className="w-10 h-10 rounded-full border tr-line hover:border-current tr-fg cursor-pointer"
                 >
                   ←
@@ -184,7 +186,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                 <button
                   type="button"
                   onClick={() => go(1)}
-                  aria-label="Berikutnya"
+                  aria-label={t.gallery.next}
                   className="w-10 h-10 rounded-full border tr-line hover:border-current tr-fg cursor-pointer"
                 >
                   →
@@ -192,7 +194,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                 <button
                   type="button"
                   onClick={() => setZoom(false)}
-                  aria-label="Tutup zoom"
+                  aria-label={t.gallery.closeZoom}
                   className="inline-flex w-10 h-10 items-center justify-center rounded-full tr-btn cursor-pointer"
                 >
                   ×

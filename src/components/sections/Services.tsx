@@ -1,21 +1,24 @@
 /* Services — 4 layanan (Interior · Exterior · MEP · Manufacturing).
    Brief v0: "visualisasikan lebih modern & minimalist" → numbered rows/hairline,
    hover reveal deskripsi + points. Berbasis data CMS.
+   i18n (2026-11-02): heading dari useLocale().t; konten layanan dari CMS bilingual.
    Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import { useState } from "react";
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
+import { useLocale } from "../../hooks/useLocale";
 import type { ServiceItem } from "../../types";
 
 export default function Services({ services }: { services: ServiceItem[] }) {
+  const { t } = useLocale();
   const [active, setActive] = useState<number>(0);
 
   return (
     <section id="services" className="border-t tr-line px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
       <SectionHeading
-        eyebrow="Services"
-        title="Interior, exterior, sistem, hingga produksinya."
-        sub="Turnkey fit-out & project — dari konsep hingga serah terima kunci."
+        eyebrow={t.services.eyebrow}
+        title={t.services.title}
+        sub={t.services.sub}
       />
 
       <div className="mt-12">

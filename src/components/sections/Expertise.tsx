@@ -1,14 +1,18 @@
 /* Expertise — OUR EXPERTISE, 4 kolom bernomor (brief v0: "modern & minimalist").
    Sel-sel bernomor 01–04, hairline top, hover: angka naik tipis + garis brass.
+   i18n (2026-11-02): heading dari useLocale().t; konten sel dari CMS bilingual.
    Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
+import { useLocale } from "../../hooks/useLocale";
 import type { ExpertiseItem } from "../../types";
 
 export default function Expertise({ items }: { items: ExpertiseItem[] }) {
+  const { t } = useLocale();
+
   return (
     <section id="expertise" className="border-t tr-line px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
-      <SectionHeading eyebrow="Our Expertise" title="Keahlian yang mengerjakan segalanya, dari awal hingga akhir." />
+      <SectionHeading eyebrow={t.expertise.eyebrow} title={t.expertise.title} />
 
       <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((c, i) => (

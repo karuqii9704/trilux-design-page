@@ -1,6 +1,26 @@
 /* Tipe data CMS — mirrors data/content.json & data/projects.json.
    Sumber kebenaran konten: brief v0 (TRILUX Web Brief_v0.pdf) + knowledge capture
-   .akos/knowledge/FEATURES_KEEP.md. Dummy dinyatakan jujur di UI (clients/news/studio/gallery). */
+   .akos/knowledge/FEATURES_KEEP.md. Dummy dinyatakan jujur di UI (clients/news/studio/gallery).
+
+   i18n (2026-11-02): setiap field teks yang terlihat publik disimpan BILINGUAL
+   di CMS sebagai { id, en }. Tipe Bilingual<T> merepresentasikannya; helper
+   pick() di useContent/useProjects me-flatten ke string sesuai locale aktif
+   sebelum ke komponen, sehingga komponen section tetap menerima string biasa
+   dan tidak perlu tahu soal locale. Field non-teks (slug, tanggal, dimensi,
+   URL, angka) tetap scalar — tidak diterjemahkan. */
+
+export type Locale = "id" | "en";
+
+/** Field teks bilingual di CMS. */
+export type Bilingual = { id: string; en: string };
+
+/* me-flatten {id,en} → string untuk locale tertentu; fallback id.
+   Menerima scalar apa adanya (untuk field non-teks). */
+export function pick(v: Bilingual | string | undefined, locale: Locale): string {
+  if (v === undefined || v === null) return "";
+  if (typeof v === "string") return v;
+  return (v as Bilingual)[locale] ?? (v as Bilingual).id ?? "";
+}
 
 export interface NavItem { label: string; href: string }
 

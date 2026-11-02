@@ -2,12 +2,15 @@
    Reset 2026-11-01: landing/hero/navbar/route dibangun ulang dari nol.
    Gaya: minimal white architectural (referensi Bespoke prompt) × konten Trilux
    (knowledge: .akos/knowledge/FEATURES_KEEP.md). Stage/shapes-based ONLY —
-   tidak ada foto/video layer (standing user call). */
+   tidak ada foto/video layer (standing user call).
+   i18n (2026-11-02): LocaleProvider membungkus App — switcher EN/ID di navbar
+   mengganti SELURUH konten halaman tanpa reload. */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./hooks/useTheme";
+import { LocaleProvider } from "./hooks/useLocale";
 import "./index.css";
 
 const container = document.getElementById("root");
@@ -17,7 +20,9 @@ createRoot(container).render(
   <StrictMode>
     <ErrorBoundary>
       <ThemeProvider>
-        <App />
+        <LocaleProvider>
+          <App />
+        </LocaleProvider>
       </ThemeProvider>
     </ErrorBoundary>
   </StrictMode>,

@@ -8,6 +8,7 @@
    Gambar: 6 URL persis lampiran (Higgs CDN webp proxy, urutan terjaga). */
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { useLocale } from "../hooks/useLocale";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const IMAGES: string[] = [
@@ -42,6 +43,7 @@ function Mask({ top }: { top: boolean }) {
 }
 
 export default function Marquee() {
+  const { t } = useLocale();
   const trackRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const stateRef = useRef({
@@ -125,7 +127,7 @@ export default function Marquee() {
   const slides = [...IMAGES, ...IMAGES]; // duplicated once for seamless loop
 
   return (
-    <section id="work" className="relative py-4 overflow-hidden" aria-label="Portfolio strip">
+    <section id="work" className="relative py-4 overflow-hidden" aria-label={t.marquee.strip}>
       <Mask top />
       <Mask top={false} />
       <div

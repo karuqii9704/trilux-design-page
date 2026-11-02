@@ -1,16 +1,20 @@
 /* News — ARTICLE brief v0: "dummy; perlu artikel inspirasi desain di sosmed dan blog."
    3 kartu artikel dummy (copy jujur dari CMS) — kategori, judul, excerpt, meta.
-   Warna via utilitas tema — otomatis ikut mode gelap/terang. */
+   i18n (2026-11-02): heading + "min read"/"Baca" dari useLocale().t; konten dari
+   CMS bilingual. Warna via utilitas tema — otomatis ikut mode gelap/terang. */
 import Reveal from "../Reveal";
 import SectionHeading from "../SectionHeading";
+import { useLocale } from "../../hooks/useLocale";
 import type { NewsData, NewsItem } from "../../types";
 
 export default function News({ news }: { news: NewsData }) {
+  const { t } = useLocale();
+
   return (
     <section id="news" className="border-t tr-line px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
       <SectionHeading
-        eyebrow="Articles"
-        title="Artikel inspirasi desain."
+        eyebrow={t.news.eyebrow}
+        title={t.news.title}
         sub={news.note}
       />
 
@@ -29,8 +33,8 @@ export default function News({ news }: { news: NewsData }) {
               </h3>
               <p className="mt-3 text-sm tr-muted leading-relaxed flex-1">{a.excerpt}</p>
               <div className="mt-6 pt-4 border-t tr-line flex items-center justify-between text-xs tr-faint">
-                <span>{a.readTime} baca</span>
-                <span className="tr-fg font-medium">Baca →</span>
+                <span>{a.readTime} {t.news.read}</span>
+                <span className="tr-fg font-medium">{t.news.readMore} →</span>
               </div>
             </article>
           </Reveal>
