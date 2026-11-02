@@ -193,7 +193,7 @@ export default function Gallery({ gallery }: { gallery: GalleryData }) {
                   type="button"
                   onClick={() => setZoom(false)}
                   aria-label="Tutup zoom"
-                  className="w-10 h-10 rounded-full tr-btn cursor-pointer"
+                  className="inline-flex w-10 h-10 items-center justify-center rounded-full tr-btn cursor-pointer"
                 >
                   ×
                 </button>

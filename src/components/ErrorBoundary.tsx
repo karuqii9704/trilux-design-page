@@ -42,7 +42,7 @@ export default class ErrorBoundary extends Component<Props, State> {
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="tr-btn text-sm font-medium px-5 py-2.5 cursor-pointer"
+                className="tr-btn inline-flex text-sm font-medium px-5 py-2.5 cursor-pointer"
               >
                 Muat ulang
               </button>

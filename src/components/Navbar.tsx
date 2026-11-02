@@ -1,9 +1,12 @@
-/* Navbar — FLOATING ISLAND (melayang di tengah atas, rounded-full,
-   backdrop-blur, border tipis, shadow lembut) + drawer menu fullscreen.
-   - Island: logo kiri · burger tengah (2 garis, hover shrink) · theme toggle + CTA kanan
-   - Theme toggle: matahari (terang) ↔ bulan (gelap) — ikon bermakna, murni hitam/putih
-   - Drawer: mobile slide-up / desktop slide-from-right (500ms, cubic-bezier(0.16,1,0.3,1))
-   - Links stagger 150 + i*60 ms; hamburger→X morph; body scroll lock
+/* Navbar — FLOATING ISLAND CLAYMORPHISM (melayang di tengah atas, rounded-full,
+   tonjolan cahaya + bayangan ganda lembut, backdrop-blur, border tipis).
+   - Island: logo kiri · menu anchor tengah (desktop) · theme toggle + CTA + burger kanan
+   - BURGER MOBILE (diperbaiki 2026-11-02): hit-area 44px (h-11 w-11), garis 2px
+     lebih tebal + terlihat, posisi FLOW (bukan absolute) → tidak pernah tertindih
+     CTA/logo di layar sempit. Hanya tampil < md.
+   - Theme toggle: matahari (terang) ↔ bulan (gelap) — ikon bermakna.
+   - Drawer: mobile slide-up / desktop slide-from-right (500ms, expo).
+   - Links stagger 150 + i*60 ms; hamburger→X morph; body scroll lock.
    Dipakai Landing dan StudioPage (props opsional). */
 import { useEffect } from "react";
 import { TriluxLogo } from "./Logo";
@@ -56,11 +59,20 @@ const DRAWER_CSS = `
   }
 `;
 
-/* Ikon tema — matahari saat GELAP (klik → terang), bulan saat TERANG (klik → gelap).
-   Garis tipis, konsisten burger 1.5px. */
+/* Ikon tema — matahari saat GELAP (klik → terang), bulan saat TERANG (klik → gelap). */
 function ThemeIcon({ theme }: { theme: "light" | "dark" }) {
   return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       {theme === "light" ? (
         /* bulan — klik untuk gelap */
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -102,37 +114,52 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
     <>
       <style>{DRAWER_CSS}</style>
 
-      {/* ══════════ FLOATING ISLAND (fixed, terpusat, melayang) ══════════ */}
-      <header className="fixed top-0 inset-x-0 z-50 flex justify-center px-3 sm:px-4 pt-3 sm:pt-4 pointer-events-none">
-        <nav className="pointer-events-auto flex items-center justify-between gap-2 w-full max-w-3xl rounded-full border tr-line tr-surface/80 backdrop-blur-xl tr-shadow px-3 sm:px-4 py-2.5 sm:py-3">
+      {/* ══════════ FLOATING ISLAND — claymorphism (fixed, terpusat, melayang) ══════════ */}
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-4 sm:pt-4">
+        <nav className="tr-clay tr-surface pointer-events-auto flex w-full max-w-3xl items-center justify-between gap-2 rounded-full border tr-line px-3 py-2.5 backdrop-blur-xl sm:px-4 sm:py-3">
           {/* LEFT — logo */}
-          <a href="#top" aria-label="Trilux Design — home" className="flex items-center gap-2 tr-fg shrink-0">
+          <a
+            href="#top"
+            aria-label="Trilux Design — home"
+            className="tr-fg flex shrink-0 items-center gap-2"
+          >
             <TriluxLogo size={24} />
-            <span className="hidden sm:inline text-sm font-semibold tracking-tight">
+            <span className="hidden text-sm font-semibold tracking-tight sm:inline">
               Trilux<em className="not-italic font-medium opacity-50">&nbsp;Design</em>
             </span>
           </a>
 
-          {/* CENTER — hamburger (2 garis, absolute centered) */}
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-            aria-expanded={menuOpen}
-            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-[5px] p-2 cursor-pointer tr-fg"
-          >
-            <span className="block w-6 h-[1.5px] bg-current rounded-full transition-all duration-300 hover:w-5" />
-            <span className="block w-6 h-[1.5px] bg-current rounded-full transition-all duration-300 hover:w-5" />
-          </button>
+          {/* CENTER — menu anchor (desktop ≥md saja) */}
+          <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 md:flex lg:gap-8">
+            {LINKS.map((l) =>
+              l.route ? (
+                <RouteLink
+                  key={l.label}
+                  to={l.route}
+                  className="tr-fg text-sm font-normal opacity-80 transition-opacity hover:opacity-50"
+                >
+                  {l.label}
+                </RouteLink>
+              ) : (
+                <a
+                  key={l.label}
+                  href={l.href}
+                  className="tr-fg text-sm font-normal opacity-80 transition-opacity hover:opacity-50"
+                >
+                  {l.label}
+                </a>
+              ),
+            )}
+          </ul>
 
-          {/* RIGHT — theme toggle + CTA */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* RIGHT — theme toggle + CTA (desktop) + burger (mobile) */}
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <button
               type="button"
               onClick={toggle}
               aria-label={theme === "light" ? "Mode gelap" : "Mode terang"}
               title={theme === "light" ? "Mode gelap" : "Mode terang"}
-              className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer tr-fg"
+              className="tr-fg flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5"
             >
               <ThemeIcon theme={theme} />
             </button>
@@ -140,20 +167,32 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               href={WA_URL}
               target="_blank"
               rel="noopener"
-              className="tr-btn hidden sm:inline-flex text-xs font-medium tracking-wide rounded-full px-4 py-2"
+              className="tr-btn hidden rounded-full px-4 py-2 text-xs font-medium tracking-wide sm:inline-flex"
             >
               Book a meeting
             </a>
-            {/* mobile spacer — seimbangkan logo */}
-            <span className="block w-7 sm:hidden" aria-hidden="true" />
+            {/* BURGER — mobile only (< md). Hit area 44px, garis 2px tebal,
+                posisi FLOW (bukan absolute) → tidak pernah tertindih elemen lain. */}
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+              aria-expanded={menuOpen}
+              className="tr-fg flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5 md:hidden"
+            >
+              <span className="flex flex-col items-center justify-center gap-[6px]" aria-hidden="true">
+                <span className="block h-[2px] w-5 rounded-full bg-current transition-all duration-300 hover:w-6" />
+                <span className="block h-[2px] w-5 rounded-full bg-current transition-all duration-300 hover:w-6" />
+              </span>
+            </button>
           </div>
         </nav>
       </header>
 
       {/* ══════════ OVERLAY ══════════ */}
       <div
-        className={`fixed inset-0 tr-overlay backdrop-blur-sm z-[60] transition-opacity duration-500 ${
-          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        className={`tr-overlay fixed inset-0 z-[60] backdrop-blur-sm transition-opacity duration-500 ${
+          menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
         style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
         onClick={() => setMenuOpen(false)}
@@ -162,7 +201,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
 
       {/* ══════════ DRAWER / FULL-SCREEN MENU ══════════ */}
       <aside
-        className="trilux-drawer fixed z-[70] tr-bg"
+        className="trilux-drawer tr-bg fixed z-[70]"
         data-state={menuOpen ? "open" : "closed"}
         role="dialog"
         aria-modal="true"
@@ -170,8 +209,8 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
         aria-hidden={!menuOpen}
       >
         {/* header: logo + close (X morph) */}
-        <div className="flex items-center justify-between px-4 sm:px-6 md:px-10 py-4 sm:py-5">
-          <span className="flex items-center gap-2.5 tr-fg">
+        <div className="flex items-center justify-between px-4 py-4 sm:px-6 sm:py-5 md:px-10">
+          <span className="tr-fg flex items-center gap-2.5">
             <TriluxLogo size={28} />
             <span className="text-base font-semibold tracking-tight">
               Trilux<em className="not-italic font-medium opacity-50">&nbsp;Design</em>
@@ -181,10 +220,10 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
             type="button"
             onClick={() => setMenuOpen(false)}
             aria-label="Close menu"
-            className="relative w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer tr-fg"
+            className="tr-fg relative h-11 w-11 cursor-pointer rounded-full transition-colors hover:bg-black/5"
           >
             <span
-              className={`absolute left-1/2 top-1/2 block w-5 h-[1.5px] bg-current rounded-full transition-all duration-500`}
+              className="absolute left-1/2 top-1/2 block h-[2px] w-5 rounded-full bg-current transition-all duration-500"
               style={{
                 transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
                 transform: menuOpen
@@ -193,7 +232,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               }}
             />
             <span
-              className={`absolute left-1/2 top-1/2 block w-5 h-[1.5px] bg-current rounded-full transition-all duration-500`}
+              className="absolute left-1/2 top-1/2 block h-[2px] w-5 rounded-full bg-current transition-all duration-500"
               style={{
                 transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
                 transform: menuOpen
@@ -205,14 +244,14 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
         </div>
 
         {/* links (stagger 150 + i*60 ms) */}
-        <nav className="px-4 sm:px-6 md:px-10 pt-6" aria-label="Menu">
+        <nav className="px-4 pt-6 sm:px-6 md:px-10" aria-label="Menu">
           {LINKS.map((l, i) =>
             l.route ? (
               <RouteLink
                 key={l.label}
                 to={l.route}
                 onClick={() => setMenuOpen(false)}
-                className="trilux-link block text-3xl font-medium tr-fg py-3 hover:opacity-50 transition-opacity"
+                className="trilux-link tr-fg block py-3 text-3xl font-medium transition-opacity hover:opacity-50"
                 style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
               >
                 {l.label}
@@ -222,7 +261,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                 key={l.label}
                 href={l.href}
                 onClick={() => setMenuOpen(false)}
-                className="trilux-link block text-3xl font-medium tr-fg py-3 hover:opacity-50 transition-opacity"
+                className="trilux-link tr-fg block py-3 text-3xl font-medium transition-opacity hover:opacity-50"
                 style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
               >
                 {l.label}
@@ -237,7 +276,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               target="_blank"
               rel="noopener"
               onClick={() => setMenuOpen(false)}
-              className="trilux-cta-drawer inline-flex text-sm font-medium tr-btn rounded-full px-6 py-3"
+              className="trilux-cta-drawer tr-btn inline-flex rounded-full px-6 py-3 text-sm font-medium"
               style={menuOpen ? { transitionDelay: "400ms" } : { transitionDelay: "0ms" }}
             >
               Book a meeting

@@ -26,7 +26,7 @@ export default function StudioTeaser({ note }: { note: string }) {
             <button
               type="button"
               onClick={() => navigate("/studio")}
-              className="tr-btn text-sm font-medium rounded-full px-6 py-3 cursor-pointer"
+              className="tr-btn inline-flex text-sm font-medium rounded-full px-6 py-3 cursor-pointer"
             >
               Buka Studio
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

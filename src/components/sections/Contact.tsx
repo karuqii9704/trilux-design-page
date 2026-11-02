@@ -22,7 +22,7 @@ export default function Contact({ site }: { site: SiteData }) {
                 href={site.wa}
                 target="_blank"
                 rel="noopener"
-                className="tr-btn text-sm font-medium rounded-full px-6 py-3"
+                className="tr-btn inline-flex text-sm font-medium rounded-full px-6 py-3"
               >
                 Whatsapp →
               </a>

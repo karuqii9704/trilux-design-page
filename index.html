@@ -18,6 +18,19 @@
     <meta property="og:url" content="https://trilux-design-page.vercel.app/" />
     <meta property="og:image" content="https://trilux-design-page.vercel.app/og-cover.jpg" />
 
+    <!-- Anti-FOUC theme: baca localStorage / ?theme= SEBELUM paint (blocking, inline)
+         supaya reload dengan tema gelap tidak flash putih dulu. Sinkron dengan
+         src/hooks/useTheme.tsx (STORAGE_KEY 'trilux-theme', kelas 'trilux-dark'). -->
+    <script>
+      (function () {
+        try {
+          var q = new URLSearchParams(window.location.search).get("theme");
+          var t = (q === "dark" || q === "light") ? q : localStorage.getItem("trilux-theme");
+          if (t === "dark") document.documentElement.classList.add("trilux-dark");
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- Geist — exact load per spec (Google Fonts) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

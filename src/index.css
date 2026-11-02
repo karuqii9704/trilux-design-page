@@ -23,6 +23,8 @@
   --tr-mask: #ffffff;           /* marquee curved mask (ikuti bg) */
   --tr-overlay: rgba(0, 0, 0, 0.5);
   --tr-shadow: rgba(0, 0, 0, 0.1);
+  --tr-glass-bg: rgba(255, 255, 255, 0.55);   /* kartu glass hero */
+  --tr-clay-hi: rgba(255, 255, 255, 0.9);     /* claymorphism highlight atas */
   --tr-grid-line: rgba(0, 0, 0, 0.08);   /* grid floorplan */
   --tr-grid-line-soft: rgba(0, 0, 0, 0.05);
   --tr-dim: #6b6259;            /* label dimensi */
@@ -44,6 +46,8 @@ html.trilux-dark {
   --tr-mask: #0a0a0a;
   --tr-overlay: rgba(0, 0, 0, 0.7);
   --tr-shadow: rgba(0, 0, 0, 0.6);
+  --tr-glass-bg: rgba(255, 255, 255, 0.08);
+  --tr-clay-hi: rgba(255, 255, 255, 0.06);
   --tr-grid-line: rgba(255, 255, 255, 0.14);
   --tr-grid-line-soft: rgba(255, 255, 255, 0.08);
   --tr-dim: #c4c4c4;
@@ -59,7 +63,114 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ═══ utilitas tema (dipakai semua komponen — otomatis ikut mode) ═══ */
+/* ══ utilitas tema — SEMUA warna komponen dari var(--tr-*) (dinamis gelap/terang) ══ */
+
+/* surface polos (hero bg cerah, area polos) */
+.tr-surface-solid { background-color: var(--tr-bg); }
+
+/* claymorphism — floating island lembut: tonjolan cahaya atas + bayangan bawah ganda.
+   Shadow dibuat tegas (bukan .tr-shadow) supaya island terlihat di bg putih maupun
+   bg cerah — syarat utama clay: tepi harus kelihatan, bukan cair jadi satu bg. */
+.tr-clay {
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.10),
+    0 2px 6px rgba(0, 0, 0, 0.06),
+    -6px -6px 12px rgba(255, 255, 255, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+}
+html.trilux-dark .tr-clay {
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* kartu glass untuk hero (template RIVR) */
+.tr-glass {
+  background-color: var(--tr-glass-bg);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--tr-line);
+}
+
+/* corner card — butuh tepi TEGAS agar terlihat di bg polos terang (light)
+   maupun gelap (dark). Warna mengikuti tema (line-strong = fg). */
+.tr-corner {
+  border: 1.5px solid var(--tr-line-strong);
+}
+/* light mode: tepi hitam tegas + shadow clay dangkal tapi terlihat */
+.tr-corner {
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.08),
+    0 2px 5px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+html.trilux-dark .tr-corner {
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+/* marquee curved mask — pakai warna bg halaman */
+.tr-mask-bone { fill: var(--tr-bg); }
+
+/* entrance animation untuk kartu anchor hero (stat + corner) — animasi sekali
+   saat mount (bukan scroll-reveal): kartu sudah pasti di layar pertama. */
+.hero-entrance {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: trilux-hero-entrance 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes trilux-hero-entrance {
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-entrance { animation: none; opacity: 1; transform: none; }
+}
+
+/* ══ hero viewport pendek — compress copy + pindahkan kartu bawah supaya
+   CTA tidak pernah menumpuk stat/corner card (audit CDP 1366x628, 375x667) ══ */
+@media (max-height: 740px) {
+  /* copy lebih compact */
+  section[aria-label*="hero"] h1 { font-size: clamp(2rem, 6vw, 4rem) !important; }
+  section[aria-label*="hero"] .hero-sub { max-width: 46ch !important; font-size: 0.9rem !important; line-height: 1.5 !important; }
+  section[aria-label*="hero"] .hero-sub { font-size: 0.85rem !important; }
+  /* reserve bawah copy: cukup untuk stat card compact + gap aman */
+  section[aria-label*="hero"] .hero-copy { padding-bottom: 11rem !important; }
+  /* kartu bawah: compact + naik sedikit */
+  section[aria-label*="hero"] .hero-statcard { bottom: 7rem !important; }
+  section[aria-label*="hero"] .hero-statcard .tr-glass { padding: 0.5rem 0.7rem !important; gap: 0.5rem !important; }
+  section[aria-label*="hero"] .hero-statcard b { font-size: 0.95rem !important; }
+  section[aria-label*="hero"] .hero-statcard span { font-size: 0.5rem !important; }
+  section[aria-label*="hero"] .hero-cornercard { bottom: 0.6rem !important; }
+  section[aria-label*="hero"] .hero-cornercard button { padding: 0.4rem 0.7rem 0.4rem 1rem !important; gap: 0.6rem !important; }
+  section[aria-label*="hero"] .hero-cornercard b { font-size: 0.8rem !important; }
+  section[aria-label*="hero"] .hero-cornercard span span { font-size: 0.55rem !important; }
+}
+@media (max-height: 740px) and (min-width: 768px) {
+  /* tablet/desktop pendek: stat tetap kiri (tidak perlu pindah kanan) */
+  section[aria-label*="hero"] .hero-statcard { left: 1.5rem !important; right: auto !important; }
+}
+@media (max-height: 600px) {
+  /* layar ultra-pendek (iPhone SE 1st gen 320x568, landscape kecil):
+     copy makin kecil + kartu bawah menempel bawah + stat compact sekali.
+     Reserve bawah copy (pb) harus >= tinggi stat+gap supaya CTA tidak
+     menumpuk stat card yang naik. */
+  section[aria-label*="hero"] h1 { font-size: clamp(1.55rem, 6.5vw, 2.4rem) !important; }
+  section[aria-label*="hero"] .hero-copy { padding-top: 3.5rem !important; padding-bottom: 8.5rem !important; }
+  section[aria-label*="hero"] .hero-sub { font-size: 0.78rem !important; line-height: 1.45 !important; max-width: 40ch !important; }
+  section[aria-label*="hero"] .hero-statcard { bottom: 5rem !important; }
+  section[aria-label*="hero"] .hero-statcard .tr-glass { padding: 0.4rem 0.55rem !important; }
+  section[aria-label*="hero"] .hero-statcard b { font-size: 0.85rem !important; }
+  section[aria-label*="hero"] .hero-cornercard { bottom: 0.5rem !important; }
+  section[aria-label*="hero"] .hero-cornercard button { padding: 0.35rem 0.55rem 0.35rem 0.85rem !important; }
+}
+
+/* teks & util lama (tetap dipakai komponen) */
 .tr-bg           { background-color: var(--tr-bg); }
 .tr-surface      { background-color: var(--tr-surface); }
 .tr-sunken       { background-color: var(--tr-sunken); }
@@ -83,9 +194,12 @@ body {
 .tr-overlay      { background-color: var(--tr-overlay); }
 .tr-shadow       { box-shadow: 0 12px 40px var(--tr-shadow); }
 
-/* tombol primer semantik (terbalik: gelap-di-terang / terang-di-gelap) */
+/* tombol primer semantik (terbalik: gelap-di-terang / terang-di-gelap).
+   NOTE: display TIDAK diatur di sini — konsumen yang atur (inline-flex dsb).
+   Kalau .tr-btn mengatur display, ia akan SELALU menang atas utilitas Tailwind
+   `hidden` (unlayered > utilities layer) → CTA desktop akan lolos tampil di
+   mobile dan menumpuk burger (bug nyata, ditemukan via audit pixel 2026-11-02). */
 .tr-btn {
-  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   background-color: var(--tr-invert-bg);

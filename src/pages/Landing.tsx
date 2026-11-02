@@ -30,7 +30,7 @@ export default function Landing({ content, featured, projects, menuOpen, setMenu
     <>
       <Navbar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <main>
-        <Hero />
+        <Hero intro={content.about.intro} wa={content.site.wa} />
         <Marquee />
         <About about={content.about} />
         <Expertise items={content.expertise} />
