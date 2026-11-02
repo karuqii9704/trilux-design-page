@@ -7,6 +7,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { ThemeProvider } from "./hooks/useTheme";
 import "./index.css";
 
 const container = document.getElementById("root");
@@ -15,7 +16,9 @@ if (!container) throw new Error("#root tidak ditemukan di index.html");
 createRoot(container).render(
   <StrictMode>
     <ErrorBoundary>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </ErrorBoundary>
   </StrictMode>,
 );

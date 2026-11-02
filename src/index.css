@@ -1,15 +1,27 @@
 /* Tailwind v4 (via @tailwindcss/vite).
    Geist = primary typeface (loaded di index.html). Murni hitam/putih —
-   tidak ada purple/cream/dark mode. Aksen brass Trilux hanya sebagai
-   detail kecil (logo mark) — halaman tetap hitam/putih. */
+   tidak ada purple/cream. Mode gelap/terang TANPA warna baru: cukup tukar
+   variabel --tr-bg / --tr-fg / --tr-line (putih↔hitam). Aksen brass hanya
+   detail kecil di logo mark & handle partisi studio (bukan tema). */
 @import "tailwindcss";
 
 :root {
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* tema terang (default) */
+  --tr-bg: #ffffff;
+  --tr-fg: #171717;
+  --tr-line: rgba(0, 0, 0, 0.08);
+}
+
+/* tema gelap — hitam/putih saja (bg hitam, fg putih, line putih transparan) */
+html.trilux-dark {
+  --tr-bg: #0a0a0a;
+  --tr-fg: #f5f5f5;
+  --tr-line: rgba(255, 255, 255, 0.12);
 }
 
 html {
-  background: #ffffff; /* isi gutter scrollbar Windows — html transparan → strip putih */
+  background: var(--tr-bg); /* isi gutter scrollbar Windows — html transparan → strip putih */
 }
 
 body {
@@ -18,15 +30,20 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* utilitas tema (dipakai komponen — menghindari repetisi arbitrary values) */
+.tr-bg   { background-color: var(--tr-bg); }
+.tr-fg   { color: var(--tr-fg); }
+.tr-line { border-color: var(--tr-line); }
+
 /* scroll lock saat drawer menu terbuka (Navbar toggle class) */
 html.trilux-menu-open,
 body.trilux-menu-open {
   overflow: hidden;
 }
 
-/* anchor section — offset di bawah fixed navbar */
+/* anchor section — offset di bawah floating navbar */
 section[id] {
-  scroll-margin-top: 4.5rem;
+  scroll-margin-top: 5.5rem;
 }
 
 /* ---- Reveal on scroll (Reveal.tsx) ---- */

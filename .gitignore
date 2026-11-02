@@ -1,25 +1,38 @@
-.vercel
-node_modules
-dist
-__pycache__
+# dependencies
+node_modules/
+
+# build output
+dist/
+build/
+
+# local env
+.env
+.env.local
+.env.*.local
+
+# editor / OS
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
 
-.vercel
-.env*.local
-Desktop - 2@2x.png
+# logs
+*.log
+npm-debug.log*
 
-# client reference materials — local only, never publish
+# akos run artifacts (local agent state — bukan kode proyek)
+.akos/runs/
+
+# Windows reserved device name — cannot be committed
+nul
+
+# QA scratch (jangan sampai masuk repo)
+qa-*.cjs
+qa_*.cjs
+*.tmp
+
+# referensi & bahan klien — BESAR (189MB) dan bukan bagian source web
 REFERENSI DAN BAHAN/
 
-# internal agent workspace (local only)
-.akos/
-watermelon-ref/
-
-# client brief materials — local only, never publish
-TRILUX Web Brief_v0.pdf
-PRD_Trilux_Design_v2.md
-
-# local scratch / archives — never publish
-legacy-index.html
-scratch_prompt.txt
+# file Figma lokal
+*.fig

@@ -1,13 +1,14 @@
-/* Navbar — fixed top bar + full-screen drawer menu (physics per spec prompt).
-   Adaptasi Trilux: logo Trilux, link anchor ke section brief v0,
-   CTA "Book a meeting" → WA.
-   - Burger: 2 garis, hover shrink w-6→w-5, absolutely centered
-   - Overlay: fade + backdrop-blur
+/* Navbar — FLOATING ISLAND (melayang di tengah atas, rounded-full,
+   backdrop-blur, border tipis, shadow lembut) + drawer menu fullscreen.
+   - Island: logo kiri · burger tengah (2 garis, hover shrink) · theme toggle + CTA kanan
+   - Theme toggle: matahari (terang) ↔ bulan (gelap) — ikon bermakna, murni hitam/putih
    - Drawer: mobile slide-up / desktop slide-from-right (500ms, cubic-bezier(0.16,1,0.3,1))
-   - Links stagger 150 + i*60 ms; hamburger→X morph; body scroll lock */
+   - Links stagger 150 + i*60 ms; hamburger→X morph; body scroll lock
+   Dipakai Landing dan StudioPage (props opsional). */
 import { useEffect } from "react";
 import { TriluxLogo } from "./Logo";
 import { RouteLink } from "../hooks/usePath";
+import { useTheme } from "../hooks/useTheme";
 
 interface NavbarProps {
   menuOpen: boolean;
@@ -55,7 +56,28 @@ const DRAWER_CSS = `
   }
 `;
 
+/* Ikon tema — matahari saat GELAP (klik → terang), bulan saat TERANG (klik → gelap).
+   Garis tipis, konsisten burger 1.5px. */
+function ThemeIcon({ theme }: { theme: "light" | "dark" }) {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {theme === "light" ? (
+        /* bulan — klik untuk gelap */
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      ) : (
+        /* matahari — klik untuk terang */
+        <>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
+  const { theme, toggle } = useTheme();
+
   /* body scroll lock while menu open (spesifikasi: document.body.style.overflow) */
   useEffect(() => {
     if (!menuOpen) return;
@@ -80,14 +102,14 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
     <>
       <style>{DRAWER_CSS}</style>
 
-      {/* ══════════ FIXED TOP BAR ══════════ */}
-      <header className="fixed top-0 left-0 right-0 z-50">
-        <nav className="flex items-center justify-between px-4 sm:px-6 md:px-10 py-4 sm:py-5">
+      {/* ══════════ FLOATING ISLAND (fixed, terpusat, melayang) ══════════ */}
+      <header className="fixed top-0 inset-x-0 z-50 flex justify-center px-3 sm:px-4 pt-3 sm:pt-4 pointer-events-none">
+        <nav className="pointer-events-auto flex items-center justify-between gap-2 w-full max-w-3xl rounded-full border border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.10)] px-3 sm:px-4 py-2.5 sm:py-3">
           {/* LEFT — logo */}
-          <a href="#top" aria-label="Trilux Design — home" className="flex items-center gap-2.5 text-neutral-900">
-            <TriluxLogo size={28} />
-            <span className="text-base font-semibold tracking-tight">
-              Trilux<em className="not-italic font-medium text-neutral-500">&nbsp;Design</em>
+          <a href="#top" aria-label="Trilux Design — home" className="flex items-center gap-2 tr-fg shrink-0">
+            <TriluxLogo size={24} />
+            <span className="hidden sm:inline text-sm font-semibold tracking-tight">
+              Trilux<em className="not-italic font-medium opacity-50">&nbsp;Design</em>
             </span>
           </a>
 
@@ -97,19 +119,28 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
             aria-expanded={menuOpen}
-            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-[5px] p-2 cursor-pointer"
+            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-[5px] p-2 cursor-pointer tr-fg"
           >
-            <span className="block w-6 h-[1.5px] bg-neutral-900 rounded-full transition-all duration-300 hover:w-5" />
-            <span className="block w-6 h-[1.5px] bg-neutral-900 rounded-full transition-all duration-300 hover:w-5" />
+            <span className="block w-6 h-[1.5px] bg-current rounded-full transition-all duration-300 hover:w-5" />
+            <span className="block w-6 h-[1.5px] bg-current rounded-full transition-all duration-300 hover:w-5" />
           </button>
 
-          {/* RIGHT — CTA (desktop only) */}
-          <div className="flex items-center">
+          {/* RIGHT — theme toggle + CTA */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={toggle}
+              aria-label={theme === "light" ? "Mode gelap" : "Mode terang"}
+              title={theme === "light" ? "Mode gelap" : "Mode terang"}
+              className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer tr-fg"
+            >
+              <ThemeIcon theme={theme} />
+            </button>
             <a
               href={WA_URL}
               target="_blank"
               rel="noopener"
-              className="hidden sm:inline-flex text-sm font-medium text-white bg-neutral-900 rounded-full px-5 py-2.5 hover:bg-neutral-800 transition-colors"
+              className="hidden sm:inline-flex text-xs font-medium tracking-wide text-white bg-neutral-900 dark:bg-white dark:text-neutral-900 rounded-full px-4 py-2 hover:opacity-85 transition-opacity"
             >
               Book a meeting
             </a>
@@ -131,7 +162,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
 
       {/* ══════════ DRAWER / FULL-SCREEN MENU ══════════ */}
       <aside
-        className="trilux-drawer fixed z-[70] bg-white"
+        className="trilux-drawer fixed z-[70] tr-bg"
         data-state={menuOpen ? "open" : "closed"}
         role="dialog"
         aria-modal="true"
@@ -140,22 +171,20 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
       >
         {/* header: logo + close (X morph) */}
         <div className="flex items-center justify-between px-4 sm:px-6 md:px-10 py-4 sm:py-5">
-          <span className="flex items-center gap-2.5 text-neutral-900">
+          <span className="flex items-center gap-2.5 tr-fg">
             <TriluxLogo size={28} />
             <span className="text-base font-semibold tracking-tight">
-              Trilux<em className="not-italic font-medium text-neutral-500">&nbsp;Design</em>
+              Trilux<em className="not-italic font-medium opacity-50">&nbsp;Design</em>
             </span>
           </span>
           <button
             type="button"
             onClick={() => setMenuOpen(false)}
             aria-label="Close menu"
-            className="relative w-10 h-10 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer"
+            className="relative w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer tr-fg"
           >
             <span
-              className={`absolute left-1/2 top-1/2 block w-5 h-[1.5px] bg-neutral-900 rounded-full transition-all duration-500 ${
-                menuOpen ? "-rotate-45" : "rotate-0 -translate-y-[3px]"
-              }`}
+              className={`absolute left-1/2 top-1/2 block w-5 h-[1.5px] bg-current rounded-full transition-all duration-500`}
               style={{
                 transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
                 transform: menuOpen
@@ -164,13 +193,11 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               }}
             />
             <span
-              className={`absolute left-1/2 top-1/2 block w-5 h-[1.5px] bg-neutral-900 rounded-full transition-all duration-500 ${
-                menuOpen ? "rotate-45" : "rotate-0 translate-y-[3px]"
-              }`}
+              className={`absolute left-1/2 top-1/2 block w-5 h-[1.5px] bg-current rounded-full transition-all duration-500`}
               style={{
                 transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
                 transform: menuOpen
-                  ? "translate(-50%,-50%) rotate(45deg)"
+                  ? "translate(-50%,-50%) rotate(-45deg)"
                   : "translate(-50%, calc(-50% + 3px)) rotate(0deg)",
               }}
             />
@@ -185,7 +212,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                 key={l.label}
                 to={l.route}
                 onClick={() => setMenuOpen(false)}
-                className="trilux-link block text-3xl font-medium text-neutral-900 py-3 hover:text-neutral-500 transition-colors"
+                className="trilux-link block text-3xl font-medium tr-fg py-3 hover:opacity-50 transition-opacity"
                 style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
               >
                 {l.label}
@@ -195,7 +222,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                 key={l.label}
                 href={l.href}
                 onClick={() => setMenuOpen(false)}
-                className="trilux-link block text-3xl font-medium text-neutral-900 py-3 hover:text-neutral-500 transition-colors"
+                className="trilux-link block text-3xl font-medium tr-fg py-3 hover:opacity-50 transition-opacity"
                 style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
               >
                 {l.label}
@@ -210,7 +237,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
               target="_blank"
               rel="noopener"
               onClick={() => setMenuOpen(false)}
-              className="trilux-cta-drawer inline-flex text-sm font-medium text-white bg-neutral-900 rounded-full px-6 py-3 hover:bg-neutral-800 transition-colors"
+              className="trilux-cta-drawer inline-flex text-sm font-medium text-white bg-neutral-900 dark:bg-white dark:text-neutral-900 rounded-full px-6 py-3 hover:opacity-85 transition-opacity"
               style={menuOpen ? { transitionDelay: "400ms" } : { transitionDelay: "0ms" }}
             >
               Book a meeting

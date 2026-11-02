@@ -3,7 +3,6 @@
    Urutan: Navbar → Hero → Marquee → About → Expertise → Services → Portfolio →
    Gallery → Clients → News → StudioTeaser → Contact → Footer.
    State drawer menu milik landing (Navbar butuh props). */
-import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import Marquee from "../components/Marquee";
@@ -16,17 +15,17 @@ import Clients from "../components/sections/Clients";
 import News from "../components/sections/News";
 import StudioTeaser from "../components/sections/StudioTeaser";
 import Contact from "../components/sections/Contact";
+import FooterIsland from "../components/FooterIsland";
 import type { ContentData, FeaturedProject, ProjectItem } from "../types";
-
 interface LandingProps {
   content: ContentData;
   featured?: FeaturedProject;
   projects: ProjectItem[];
+  menuOpen: boolean;
+  setMenuOpen: (open: boolean) => void;
 }
 
-export default function Landing({ content, featured, projects }: LandingProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
-
+export default function Landing({ content, featured, projects, menuOpen, setMenuOpen }: LandingProps) {
   return (
     <>
       <Navbar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
@@ -43,6 +42,7 @@ export default function Landing({ content, featured, projects }: LandingProps) {
         <StudioTeaser note={content.studio.note} />
         <Contact site={content.site} />
       </main>
+      <FooterIsland />
     </>
   );
 }
