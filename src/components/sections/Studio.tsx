@@ -1,19 +1,18 @@
-/* Studio — STUDIO brief v0 (fitur KEEP utama, reimplementasi fresh ke React):
+/* StudioFloorplan — STUDIO brief v0 (fitur KEEP utama), sekarang sebagai halaman
+   EKSKLUSIF (/studio), bukan section landing:
    "1. partisi/dinding yang bisa di-adjust client
     2. saat drag furnitur, detail ukuran yang bisa di-adjust dalam cm
     dummy; akun belum tersedia"
 
-   Canvas SVG floorplan interaktif:
+   Canvas SVG floorplan interaktif + panel kontrol (dipakai StudioPage.tsx):
    - ruangan default 600×420 cm (Ruang Tamu), grid 40 cm
-   - furnitur DRAGGABLE via pointer events (Sofa 3-seater, Meja TV, Kabinet)
-   - partisi adjustable: drag handle ujung (brass) ubah panjang; drag badan geser posisi;
-     klik tanpa geser = hapus; tombol tambah partisi vertikal/horizontal
-   - stepper ukuran cm (lebar/kedalaman ruang ±20; furnitur terpilih ±10)
-   - label dimensi cm di canvas
-   Disclaimer dummy ditampilkan jujur (brief v0). */
+   - furnitur DRAGGABLE (pointer events): Sofa 3-seater, Meja TV, Kabinet — label cm
+   - partisi adjustable: drag handle brass ubah panjang; drag badan geser posisi;
+     klik tanpa geser = hapus; tombol tambah vertikal/horizontal
+   - stepper cm: lebar/kedalaman ruang ±20; furnitur terpilih ±10
+   - disclaimer dummy jujur (brief v0) */
 import { useMemo, useRef, useState } from "react";
 import Reveal from "../Reveal";
-import SectionHeading from "../SectionHeading";
 import type { FurnitureItem, Partition, StudioData } from "../../types";
 
 const CM_PER_PX = 1; // 1 px SVG = 1 cm pada viewBox room
@@ -28,7 +27,7 @@ type DragState =
   | { kind: "part"; id: string; mode: "resize" | "move"; startClient: Pt; orig: Pt }
   | null;
 
-export default function Studio({ studio }: { studio: StudioData }) {
+export default function StudioFloorplan({ studio }: { studio: StudioData }) {
   const room = studio.room;
   const [roomW, setRoomW] = useState(room.w);
   const [roomD, setRoomD] = useState(room.d);
@@ -104,19 +103,19 @@ export default function Studio({ studio }: { studio: StudioData }) {
     } else {
       const p = partitions.find((x) => x.id === d.id);
       if (!p) return;
+      const scale = toRoom(e.clientX, e.clientY).scale;
       if (d.mode === "resize") {
         if (p.orientation === "horizontal") {
-          const dx = (e.clientX - d.startClient.x) / toRoom(e.clientX, e.clientY).scale / CM_PER_PX;
+          const dx = (e.clientX - d.startClient.x) / scale / CM_PER_PX;
           const newTo = clamp(Math.round(d.orig.y + dx), 0, roomW);
           setPartitions((prev) => prev.map((x) => (x.id === d.id ? { ...x, to: Math.max(x.from + GRID, newTo) } : x)));
         } else {
-          const dy = (e.clientY - d.startClient.y) / toRoom(e.clientX, e.clientY).scale / CM_PER_PX;
+          const dy = (e.clientY - d.startClient.y) / scale / CM_PER_PX;
           const newTo = clamp(Math.round(d.orig.y + dy), 0, roomD);
           setPartitions((prev) => prev.map((x) => (x.id === d.id ? { ...x, to: Math.max(x.from + GRID, newTo) } : x)));
         }
       } else {
         /* move: geser posisi tegak lurus orientasi */
-        const scale = toRoom(e.clientX, e.clientY).scale;
         if (p.orientation === "horizontal") {
           const dy = (e.clientY - d.startClient.y) / scale / CM_PER_PX;
           const ny = clamp(Math.round(d.orig.x + dy), 0, roomD);
@@ -130,13 +129,12 @@ export default function Studio({ studio }: { studio: StudioData }) {
     }
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = () => {
     const d = drag.current;
     drag.current = null;
     /* klik tanpa geser pada partisi → hapus (pola build lama) */
     if (d && d.kind === "part" && !moved.current) {
       setPartitions((prev) => prev.filter((x) => x.id !== d.id));
-      void e;
     }
     moved.current = false;
   };
@@ -181,206 +179,198 @@ export default function Studio({ studio }: { studio: StudioData }) {
   const vh = roomD + PAD * 2;
 
   return (
-    <section id="studio" className="border-t border-neutral-200 px-4 sm:px-6 md:px-10 py-20 sm:py-28 max-w-6xl mx-auto">
-      <SectionHeading
-        eyebrow="Studio"
-        title="Eksplorasi ruang sebelum survei."
-        sub={studio.note}
-      />
+    <Reveal className="mt-8">
+      <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+        {/* ===== Canvas floorplan ===== */}
+        <div className="border border-neutral-200 rounded-sm bg-neutral-50/50 p-3 sm:p-5 overflow-hidden">
+          <svg
+            ref={svgRef}
+            viewBox={`-${PAD} -${PAD} ${vw} ${vh}`}
+            className="w-full h-auto touch-none select-none"
+            role="application"
+            aria-label="Floorplan interaktif — seret furnitur, sesuaikan partisi dan ukuran dalam sentimeter"
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+          >
+            <defs>
+              <pattern id="stGrid" width={GRID} height={GRID} patternUnits="userSpaceOnUse">
+                <path d={`M ${GRID} 0 L 0 0 0 ${GRID}`} fill="none" stroke="#141010" strokeOpacity="0.08" strokeWidth="1" />
+              </pattern>
+            </defs>
 
-      <Reveal className="mt-10">
-        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-          {/* ===== Canvas floorplan ===== */}
-          <div className="border border-neutral-200 rounded-sm bg-neutral-50/50 p-3 sm:p-5 overflow-hidden">
-            <svg
-              ref={svgRef}
-              viewBox={`-${PAD} -${PAD} ${vw} ${vh}`}
-              className="w-full h-auto touch-none select-none"
-              role="application"
-              aria-label="Floorplan interaktif — seret furnitur, sesuaikan partisi dan ukuran dalam sentimeter"
-              onPointerMove={onPointerMove}
-              onPointerUp={onPointerUp}
-              onPointerCancel={onPointerUp}
-            >
-              <defs>
-                <pattern id="stGrid" width={GRID} height={GRID} patternUnits="userSpaceOnUse">
-                  <path d={`M ${GRID} 0 L 0 0 0 ${GRID}`} fill="none" stroke="#141010" strokeOpacity="0.08" strokeWidth="1" />
-                </pattern>
-              </defs>
+            {/* room */}
+            <rect x={0} y={0} width={roomW} height={roomD} fill="url(#stGrid)" stroke="none" />
+            <rect x={0} y={0} width={roomW} height={roomD} fill="none" stroke="#141010" strokeWidth="4" />
+            {gridLines.map((l, i) => (
+              <line key={i} {...l} stroke="#141010" strokeOpacity="0.05" strokeWidth="1" />
+            ))}
 
-              {/* room */}
-              <rect x={0} y={0} width={roomW} height={roomD} fill="url(#stGrid)" stroke="none" />
-              <rect x={0} y={0} width={roomW} height={roomD} fill="none" stroke="#141010" strokeWidth="4" />
-              {gridLines.map((l, i) => (
-                <line key={i} {...l} stroke="#141010" strokeOpacity="0.05" strokeWidth="1" />
-              ))}
+            {/* label dimensi ruangan */}
+            <text x={roomW / 2} y={-14} textAnchor="middle" fontSize="13" fill="#6b6259">
+              {roomW} cm
+            </text>
+            <text x={-14} y={roomD / 2} textAnchor="middle" fontSize="13" fill="#6b6259" transform={`rotate(-90 -14 ${roomD / 2})`}>
+              {roomD} cm
+            </text>
 
-              {/* label dimensi ruangan */}
-              <text x={roomW / 2} y={-14} textAnchor="middle" fontSize="13" fill="#6b6259">
-                {roomW} cm
-              </text>
-              <text x={-14} y={roomD / 2} textAnchor="middle" fontSize="13" fill="#6b6259" transform={`rotate(-90 -14 ${roomD / 2})`}>
-                {roomD} cm
-              </text>
-
-              {/* partisi */}
-              {partitions.map((p) =>
-                p.orientation === "horizontal" ? (
-                  <g key={p.id}>
-                    <line
-                      x1={p.from} y1={p.x} x2={p.to} y2={p.x}
-                      stroke="#b07f3a" strokeWidth="3" className="cursor-grab"
-                      onPointerDown={(e) => onPartDown(e, p.id, "move")}
-                    />
-                    <circle
-                      cx={p.to} cy={p.x} r="8" fill="#b07f3a" className="cursor-ew-resize"
-                      onPointerDown={(e) => onPartDown(e, p.id, "resize")}
-                      aria-label={`Handle partisi ${p.label}`}
-                    />
-                    <text x={(p.from + p.to) / 2} y={p.x - 10} textAnchor="middle" fontSize="12" fill="#8f6524">
-                      {p.label} · {p.to - p.from} cm
-                    </text>
-                  </g>
-                ) : (
-                  <g key={p.id}>
-                    <line
-                      x1={p.x} y1={p.from} x2={p.x} y2={p.to}
-                      stroke="#b07f3a" strokeWidth="3" className="cursor-grab"
-                      onPointerDown={(e) => onPartDown(e, p.id, "move")}
-                    />
-                    <circle
-                      cx={p.x} cy={p.to} r="8" fill="#b07f3a" className="cursor-ns-resize"
-                      onPointerDown={(e) => onPartDown(e, p.id, "resize")}
-                      aria-label={`Handle partisi ${p.label}`}
-                    />
-                    <text x={p.x + 10} y={(p.from + p.to) / 2} fontSize="12" fill="#8f6524">
-                      {p.label} · {p.to - p.from} cm
-                    </text>
-                  </g>
-                ),
-              )}
-
-              {/* furnitur */}
-              {furniture.map((f) => (
-                <g
-                  key={f.id}
-                  transform={`translate(${f.x} ${f.y})`}
-                  className="cursor-grab active:cursor-grabbing"
-                  onPointerDown={(e) => onFurnDown(e, f.id)}
-                >
-                  <rect
-                    width={f.w} height={f.d}
-                    fill="rgba(176,127,58,0.10)"
-                    stroke={selected === f.id ? "#141010" : "#b07f3a"}
-                    strokeWidth={selected === f.id ? 2.5 : 1.5}
+            {/* partisi */}
+            {partitions.map((p) =>
+              p.orientation === "horizontal" ? (
+                <g key={p.id}>
+                  <line
+                    x1={p.from} y1={p.x} x2={p.to} y2={p.x}
+                    stroke="#b07f3a" strokeWidth="3" className="cursor-grab"
+                    onPointerDown={(e) => onPartDown(e, p.id, "move")}
                   />
-                  <text x="4" y="-6" fontSize="12" fill="#141010">{f.label}</text>
-                  <text x={f.w / 2} y={f.d / 2 + 4} textAnchor="middle" fontSize="11" fill="#6b6259">
-                    {f.w} × {f.d} cm
+                  <circle
+                    cx={p.to} cy={p.x} r="8" fill="#b07f3a" className="cursor-ew-resize"
+                    onPointerDown={(e) => onPartDown(e, p.id, "resize")}
+                    aria-label={`Handle partisi ${p.label}`}
+                  />
+                  <text x={(p.from + p.to) / 2} y={p.x - 10} textAnchor="middle" fontSize="12" fill="#8f6524">
+                    {p.label} · {p.to - p.from} cm
                   </text>
                 </g>
-              ))}
-            </svg>
+              ) : (
+                <g key={p.id}>
+                  <line
+                    x1={p.x} y1={p.from} x2={p.x} y2={p.to}
+                    stroke="#b07f3a" strokeWidth="3" className="cursor-grab"
+                    onPointerDown={(e) => onPartDown(e, p.id, "move")}
+                  />
+                  <circle
+                    cx={p.x} cy={p.to} r="8" fill="#b07f3a" className="cursor-ns-resize"
+                    onPointerDown={(e) => onPartDown(e, p.id, "resize")}
+                    aria-label={`Handle partisi ${p.label}`}
+                  />
+                  <text x={p.x + 10} y={(p.from + p.to) / 2} fontSize="12" fill="#8f6524">
+                    {p.label} · {p.to - p.from} cm
+                  </text>
+                </g>
+              ),
+            )}
+
+            {/* furnitur */}
+            {furniture.map((f) => (
+              <g
+                key={f.id}
+                transform={`translate(${f.x} ${f.y})`}
+                className="cursor-grab active:cursor-grabbing"
+                onPointerDown={(e) => onFurnDown(e, f.id)}
+              >
+                <rect
+                  width={f.w} height={f.d}
+                  fill="rgba(176,127,58,0.10)"
+                  stroke={selected === f.id ? "#141010" : "#b07f3a"}
+                  strokeWidth={selected === f.id ? 2.5 : 1.5}
+                />
+                <text x="4" y="-6" fontSize="12" fill="#141010">{f.label}</text>
+                <text x={f.w / 2} y={f.d / 2 + 4} textAnchor="middle" fontSize="11" fill="#6b6259">
+                  {f.w} × {f.d} cm
+                </text>
+              </g>
+            ))}
+          </svg>
+        </div>
+
+        {/* ===== Panel kontrol ===== */}
+        <aside className="space-y-8">
+          {/* Ruangan */}
+          <div className="border-t-2 border-neutral-900 pt-5">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Ruangan</p>
+            <div className="mt-4 space-y-4">
+              <Stepper label="Lebar" value={roomW} unit="cm" onMinus={() => stepRoom("w", -20)} onPlus={() => stepRoom("w", 20)} />
+              <Stepper label="Kedalaman" value={roomD} unit="cm" onMinus={() => stepRoom("d", -20)} onPlus={() => stepRoom("d", 20)} />
+            </div>
+            <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
+              Grid = {GRID} cm. Semua dimensi dalam sentimeter. Nilai dummy per brief.
+            </p>
           </div>
 
-          {/* ===== Panel kontrol ===== */}
-          <aside className="space-y-8">
-            {/* Ruangan */}
-            <div className="border-t-2 border-neutral-900 pt-5">
-              <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Ruangan</p>
-              <div className="mt-4 space-y-4">
-                <Stepper label="Lebar" value={roomW} unit="cm" onMinus={() => stepRoom("w", -20)} onPlus={() => stepRoom("w", 20)} />
-                <Stepper label="Kedalaman" value={roomD} unit="cm" onMinus={() => stepRoom("d", -20)} onPlus={() => stepRoom("d", 20)} />
-              </div>
-              <p className="mt-4 text-xs text-neutral-400 leading-relaxed">
-                Grid = {GRID} cm. Semua dimensi dalam sentimeter. Nilai dummy per brief.
-              </p>
-            </div>
-
-            {/* Partisi */}
-            <div className="border-t border-neutral-200 pt-5">
-              <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Partisi / Dinding</p>
-              <p className="mt-3 text-xs text-neutral-500 leading-relaxed">
-                Tarik handle brass untuk mengubah panjang. Seret badan partisi untuk menggeser posisi.
-                Klik partisi tanpa menggeser untuk menghapus.
-              </p>
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => addPartition("vertical")}
-                  className="text-xs font-medium border border-neutral-300 rounded-full px-3 py-1.5 hover:border-neutral-900 transition-colors cursor-pointer"
-                >
-                  ＋ Partisi vertikal
-                </button>
-                <button
-                  type="button"
-                  onClick={() => addPartition("horizontal")}
-                  className="text-xs font-medium border border-neutral-300 rounded-full px-3 py-1.5 hover:border-neutral-900 transition-colors cursor-pointer"
-                >
-                  ＋ Partisi horizontal
-                </button>
-              </div>
-              <ul className="mt-3 space-y-1.5">
-                {partitions.map((p) => (
-                  <li key={p.id} className="flex items-center justify-between text-sm text-neutral-700">
-                    <span>{p.label}</span>
-                    <span className="tabular-nums text-neutral-500">
-                      {p.orientation === "horizontal" ? "horizontal" : "vertikal"} · {p.to - p.from} cm
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Furnitur */}
-            <div className="border-t border-neutral-200 pt-5">
-              <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Furnitur</p>
-              <p className="mt-3 text-xs text-neutral-500 leading-relaxed">
-                Seret furnitur di canvas. Pilih untuk melihat & mengubah ukuran (cm).
-              </p>
-              <ul className="mt-3 space-y-1.5">
-                {furniture.map((f) => (
-                  <li key={f.id}>
-                    <button
-                      type="button"
-                      onClick={() => setSelected(f.id)}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-sm border transition-colors cursor-pointer ${
-                        selected === f.id
-                          ? "border-neutral-900 bg-neutral-900 text-white"
-                          : "border-neutral-200 hover:border-neutral-900"
-                      }`}
-                    >
-                      <span className="font-medium">{f.label}</span>
-                      <span className="float-right tabular-nums opacity-70">{f.w} × {f.d} cm</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-
-              {selected && selFurn && (
-                <div className="mt-4">
-                  <p className="text-xs text-neutral-500 mb-2">
-                    Ukuran terpilih: <span className="font-medium text-neutral-900">{selFurn.label}</span>
-                  </p>
-                  <Stepper
-                    label="Lebar furnitur"
-                    value={selFurn.w}
-                    unit="cm"
-                    onMinus={() => stepFurn(-10)}
-                    onPlus={() => stepFurn(10)}
-                  />
-                </div>
-              )}
-            </div>
-
-            <p className="text-xs text-neutral-400 border border-neutral-200 rounded-sm p-3 leading-relaxed">
-              Eksplorasi ruang interaktif — dummy. Akun dan fitur kolaborasi belum tersedia
-              (sesuai brief v0).
+          {/* Partisi */}
+          <div className="border-t border-neutral-200 pt-5">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Partisi / Dinding</p>
+            <p className="mt-3 text-xs text-neutral-500 leading-relaxed">
+              Tarik handle brass untuk mengubah panjang. Seret badan partisi untuk menggeser posisi.
+              Klik partisi tanpa menggeser untuk menghapus.
             </p>
-          </aside>
-        </div>
-      </Reveal>
-    </section>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => addPartition("vertical")}
+                className="text-xs font-medium border border-neutral-300 rounded-full px-3 py-1.5 hover:border-neutral-900 transition-colors cursor-pointer"
+              >
+                ＋ Partisi vertikal
+              </button>
+              <button
+                type="button"
+                onClick={() => addPartition("horizontal")}
+                className="text-xs font-medium border border-neutral-300 rounded-full px-3 py-1.5 hover:border-neutral-900 transition-colors cursor-pointer"
+              >
+                ＋ Partisi horizontal
+              </button>
+            </div>
+            <ul className="mt-3 space-y-1.5">
+              {partitions.map((p) => (
+                <li key={p.id} className="flex items-center justify-between text-sm text-neutral-700">
+                  <span>{p.label}</span>
+                  <span className="tabular-nums text-neutral-500">
+                    {p.orientation === "horizontal" ? "horizontal" : "vertikal"} · {p.to - p.from} cm
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Furnitur */}
+          <div className="border-t border-neutral-200 pt-5">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">Furnitur</p>
+            <p className="mt-3 text-xs text-neutral-500 leading-relaxed">
+              Seret furnitur di canvas. Pilih untuk melihat & mengubah ukuran (cm).
+            </p>
+            <ul className="mt-3 space-y-1.5">
+              {furniture.map((f) => (
+                <li key={f.id}>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(f.id)}
+                    className={`w-full text-left px-3 py-2 text-sm rounded-sm border transition-colors cursor-pointer ${
+                      selected === f.id
+                        ? "border-neutral-900 bg-neutral-900 text-white"
+                        : "border-neutral-200 hover:border-neutral-900"
+                    }`}
+                  >
+                    <span className="font-medium">{f.label}</span>
+                    <span className="float-right tabular-nums opacity-70">{f.w} × {f.d} cm</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            {selected && selFurn && (
+              <div className="mt-4">
+                <p className="text-xs text-neutral-500 mb-2">
+                  Ukuran terpilih: <span className="font-medium text-neutral-900">{selFurn.label}</span>
+                </p>
+                <Stepper
+                  label="Lebar furnitur"
+                  value={selFurn.w}
+                  unit="cm"
+                  onMinus={() => stepFurn(-10)}
+                  onPlus={() => stepFurn(10)}
+                />
+              </div>
+            )}
+          </div>
+
+          <p className="text-xs text-neutral-400 border border-neutral-200 rounded-sm p-3 leading-relaxed">
+            Eksplorasi ruang interaktif — dummy. Akun dan fitur kolaborasi belum tersedia
+            (sesuai brief v0).
+          </p>
+        </aside>
+      </div>
+    </Reveal>
   );
 }
 

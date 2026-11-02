@@ -7,19 +7,27 @@
    - Links stagger 150 + i*60 ms; hamburger→X morph; body scroll lock */
 import { useEffect } from "react";
 import { TriluxLogo } from "./Logo";
+import { RouteLink } from "../hooks/usePath";
 
 interface NavbarProps {
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
 }
 
-/* anchor ke section brief v0 (Simulator "please take out" — sengaja tidak ada) */
-const LINKS = [
+interface NavLink {
+  label: string;
+  href?: string; // anchor di landing
+  route?: string; // SPA route (pushState)
+}
+
+/* anchor ke section brief v0 (Simulator "please take out" — sengaja tidak ada).
+   Studio = ROUTE terpisah /studio (halaman eksklusif), bukan anchor. */
+const LINKS: NavLink[] = [
   { label: "Work", href: "#portfolio" },
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Gallery", href: "#gallery" },
-  { label: "Studio", href: "#studio" },
+  { label: "Studio", route: "/studio" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -171,17 +179,29 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
 
         {/* links (stagger 150 + i*60 ms) */}
         <nav className="px-4 sm:px-6 md:px-10 pt-6" aria-label="Menu">
-          {LINKS.map((l, i) => (
-            <a
-              key={l.label}
-              href={l.href}
-              onClick={() => setMenuOpen(false)}
-              className="trilux-link block text-3xl font-medium text-neutral-900 py-3 hover:text-neutral-500 transition-colors"
-              style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
-            >
-              {l.label}
-            </a>
-          ))}
+          {LINKS.map((l, i) =>
+            l.route ? (
+              <RouteLink
+                key={l.label}
+                to={l.route}
+                onClick={() => setMenuOpen(false)}
+                className="trilux-link block text-3xl font-medium text-neutral-900 py-3 hover:text-neutral-500 transition-colors"
+                style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
+              >
+                {l.label}
+              </RouteLink>
+            ) : (
+              <a
+                key={l.label}
+                href={l.href}
+                onClick={() => setMenuOpen(false)}
+                className="trilux-link block text-3xl font-medium text-neutral-900 py-3 hover:text-neutral-500 transition-colors"
+                style={menuOpen ? { transitionDelay: `${150 + i * 60}ms` } : { transitionDelay: "0ms" }}
+              >
+                {l.label}
+              </a>
+            ),
+          )}
 
           {/* drawer CTA — delay 400ms */}
           <div className="pt-12">

@@ -1,32 +1,14 @@
 [
   {
-    "route": "/about",
-    "file": "about/index.html",
-    "title": "About — Visi & Misi"
-  },
-  {
-    "route": "/services",
-    "file": "services/index.html",
-    "title": "Services"
-  },
-  {
-    "route": "/gallery",
-    "file": "gallery/index.html",
-    "title": "Gallery — Tampak 3D"
-  },
-  {
-    "route": "/clients",
-    "file": "clients/index.html",
-    "title": "Our Clients"
-  },
-  {
-    "route": "/news",
-    "file": "news/index.html",
-    "title": "News & Articles"
+    "route": "/",
+    "kind": "landing",
+    "title": "Trilux Design — Interior, Exterior & Architecture",
+    "note": "SPA landing: navbar+hero+marquee+about+expertise+services+portfolio+gallery+clients+news+studio-teaser+contact+footer"
   },
   {
     "route": "/studio",
-    "file": "studio/index.html",
-    "title": "Studio — Floorplan Planner"
+    "kind": "spa-page",
+    "title": "Studio — Eksplorasi Ruang Interaktif (eksklusif)",
+    "note": "Halaman terpisah (vercel.json rewrite /studio → /index.html; client router usePath). Floorplan interaktif: drag furnitur cm, partisi adjustable, stepper cm. Dummy jujur."
   }
 ]

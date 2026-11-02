@@ -5,7 +5,9 @@
   "outputDirectory": "dist",
   "buildCommand": "npm run build",
   "rewrites": [
-    { "source": "/admin", "destination": "/admin/index.html" }
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/studio", "destination": "/index.html" },
+    { "source": "/studio/", "destination": "/index.html" }
   ],
   "headers": [
     {
