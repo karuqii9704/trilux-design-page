@@ -165,63 +165,74 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
     <>
       <style>{DRAWER_CSS}</style>
 
-      {/* ══════════ FLOATING ISLAND — claymorphism (fixed, terpusat, melayang) ══════════
-           OVERLAP FIX (audit CDP 2026-11-02): versi awal memakai menu anchor
-           `absolute left-1/2 -translate-x-1/2` — menu 6 item melebar ke kanan
-           dan MENINDIH switcher/toggle/CTA (rect: Contact 816-867 vs Bahasa
-           792-851 → overlap 35px). SOLUSI: island = 3 segmen flex FLOW yang
-           TIDAK PERNAH saling tumpang — logo kiri (shrink-0), menu tengah
-           (dalam alur flex, menyempit otomatis, hidden di <lg), aksi kanan
-           (shrink-0). Menu center hanya tampil di lg+ (saat semua segmen
-           muat); di <lg langsung burger → drawer. Tidak ada overlap di ukuran
-           apa pun. z-50 < overlay z-60 < drawer z-70 — stacking tegas. */}
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-4 sm:pt-4">
-        <nav
-          className="tr-clay tr-surface pointer-events-auto flex w-full max-w-3xl flex-wrap items-center justify-between gap-2 rounded-full border tr-line px-3 py-2.5 backdrop-blur-xl sm:px-4 sm:py-3"
-          aria-label="Primary"
-        >
-          {/* LEFT — logo (shrink-0, tidak pernah tertindih) */}
-          <a
-            href="#top"
-            aria-label="Trilux Design — home"
-            className="tr-fg flex shrink-0 items-center gap-2"
-          >
+      {/* ══════════ 4 FLOATING ISLANDS TERPISAH (claymorphism) ══════════
+           Desain (permintaan user 2026-11-02): navbar bukan satu pill panjang,
+           tapi EMPAT pulau independen — masing-masing rounded-full, punya
+           border + shadow clay sendiri, melayang terpisah:
+             1. LOGO    — pojok kiri atas
+             2. MENU    — tengah (6 anchor link; hidden < lg, ganti burger)
+             3. KONTRAK — lang switcher + mode toggle (+ burger di < lg)
+             4. BOOK    — CTA "Book a meeting" pill terpisah paling kanan
+           Wrapper pointer-events-none; tiap island pointer-events-auto.
+           Karena masing-masing absolute + shrink-0, mereka TIDAK PERNAH
+           saling tumpang tindih (menu center hidden sebelum sempit).
+           z-50 islands < overlay z-60 < drawer z-70 — stacking tegas. */}
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-50" aria-label="Navbar">
+        {/* ── 1. LOGO — pojok kiri atas ── */}
+        <div className="tr-clay tr-surface pointer-events-auto absolute left-3 top-3 flex items-center gap-2 rounded-full border tr-line px-3 py-2 backdrop-blur-xl sm:left-4 sm:top-4 sm:px-4">
+          <a href="#top" aria-label="Trilux Design — home" className="tr-fg flex items-center gap-2">
             <TriluxLogo size={24} />
             <span className="hidden text-sm font-semibold tracking-tight sm:inline">
               Trilux<em className="not-italic font-medium opacity-50">&nbsp;Design</em>
             </span>
           </a>
+        </div>
 
-          {/* CENTER — menu anchor (lg+ saja; DI DALAM alur flex, min-w-0, menyempit
-              otomatis, tidak pernah keluar ruangnya → tidak bisa menindih segmen
-              kanan). Sembunyi total di <lg (ganti burger). */}
-          <ul className="hidden min-w-0 flex-1 items-center justify-center gap-4 lg:flex xl:gap-6">
-            {LINKS.map((l) => {
-              const label = t.nav[l.key as keyof typeof t.nav];
-              const cls = "tr-fg min-w-0 whitespace-nowrap text-sm font-normal opacity-80 transition-opacity hover:opacity-50";
-              return l.route ? (
-                <li key={l.key} className="min-w-0">
-                  <RouteLink to={l.route} className={cls}>
-                    {label}
-                  </RouteLink>
-                </li>
-              ) : (
-                <li key={l.key} className="min-w-0">
-                  <a href={l.href} className={cls}>
-                    {label}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
+        {/* ── 2. MENU — tengah.
+             lg..xl: varian COMPACT (gap/font kecil) supaya 4 island tetap
+             muat tanpa berpapasan; xl+: varian nyaman. Di <lg → burger
+             (island 3). */}
+        <nav
+          className="tr-clay tr-surface pointer-events-auto absolute left-1/2 top-3 hidden -translate-x-1/2 items-center gap-0.5 rounded-full border tr-line px-1.5 py-1 backdrop-blur-xl sm:top-4 lg:flex xl:gap-1 xl:px-2 xl:py-1.5"
+          aria-label="Primary"
+        >
+          {LINKS.map((l) => {
+            const label = t.nav[l.key as keyof typeof t.nav];
+            const cls = "tr-fg rounded-full px-2.5 py-1.5 text-[13px] font-normal opacity-80 transition-colors hover:bg-black/5 hover:opacity-100 xl:px-3 xl:text-sm";
+            return l.route ? (
+              <RouteLink key={l.key} to={l.route} className={cls}>
+                {label}
+              </RouteLink>
+            ) : (
+              <a key={l.key} href={l.href} className={cls}>
+                {label}
+              </a>
+            );
+          })}
+        </nav>
 
-          {/* RIGHT — switcher + theme + CTA + burger. shrink-0 → selalu di ujung,
-              tidak pernah tertindih menu. Switcher tampil ≥sm; di mobile lewat drawer. */}
-          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-            {/* language switcher — desktop/tablet (≥sm). EN | ID. */}
+        {/* ── kanan: 3. KONTRAK (lang+mode, +burger mobile) · 4. BOOK ── */}
+        <div className="pointer-events-none absolute right-3 top-3 flex items-center gap-2 sm:right-4 sm:top-4">
+          {/* 3. LANGUAGE + MODE (+ burger < lg) */}
+          <div className="tr-clay tr-surface pointer-events-auto flex items-center gap-1 rounded-full border tr-line px-1.5 py-1.5 backdrop-blur-xl sm:px-2">
+            {/* burger — mobile/tablet saja (< lg), menggantikan menu island */}
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label={t.nav.openMenu}
+              aria-expanded={menuOpen}
+              className="tr-fg flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5 lg:hidden"
+            >
+              <span className="flex flex-col items-center justify-center gap-[5px]" aria-hidden="true">
+                <span className="block h-[2px] w-5 rounded-full bg-current transition-all duration-300 hover:w-6" />
+                <span className="block h-[2px] w-5 rounded-full bg-current transition-all duration-300 hover:w-6" />
+              </span>
+            </button>
+            {/* language switcher — EN | ID (≥sm; di mobile lewat drawer) */}
             <span className="hidden sm:inline-flex">
               <LanguageSwitcher compact />
             </span>
+            {/* theme toggle */}
             <button
               type="button"
               onClick={toggle}
@@ -231,30 +242,31 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
             >
               <ThemeIcon theme={theme} />
             </button>
-            <a
-              href={WA_URL}
-              target="_blank"
-              rel="noopener"
-              className="tr-btn hidden shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-medium tracking-wide sm:inline-flex"
-            >
-              {t.nav.bookMeeting}
-            </a>
-            {/* BURGER — mobile only (< lg). Hit area 44px, garis 2px tebal,
-                posisi FLOW (bukan absolute) → tidak pernah tertindih elemen lain. */}
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              aria-label={t.nav.openMenu}
-              aria-expanded={menuOpen}
-              className="tr-fg flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5 lg:hidden"
-            >
-              <span className="flex flex-col items-center justify-center gap-[6px]" aria-hidden="true">
-                <span className="block h-[2px] w-5 rounded-full bg-current transition-all duration-300 hover:w-6" />
-                <span className="block h-[2px] w-5 rounded-full bg-current transition-all duration-300 hover:w-6" />
-              </span>
-            </button>
           </div>
-        </nav>
+
+          {/* 4. BOOK NOW — CTA pill terpisah */}
+          <a
+            href={WA_URL}
+            target="_blank"
+            rel="noopener"
+            className="tr-btn pointer-events-auto inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-xs font-medium tracking-wide sm:px-5 sm:py-3 sm:text-sm"
+          >
+            {t.nav.bookMeeting}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17L17 7M9 7h8v8" />
+            </svg>
+          </a>
+        </div>
       </header>
 
       {/* ══════════ OVERLAY ══════════ */}
